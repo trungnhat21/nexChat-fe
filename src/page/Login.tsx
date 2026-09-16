@@ -166,7 +166,7 @@ export default function LoginPage() {
                     </form>
 
                     <div className="text-center pt-3 fs-15">
-                        Chưa có tài khoản Pulse? <a className="fs-14 text-blue-500 font-bold" href="/register">Đăng ký miễn phí ngay</a>
+                        Chưa có tài khoản Nex? <a className="fs-14 text-blue-500 font-bold" href="/register">Đăng ký miễn phí ngay</a>
                     </div>
                 </div>
             </div>
