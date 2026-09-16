@@ -9,7 +9,11 @@ type inputProps = {
     icon?: string;
     value?: string;
     onChange?: React.ChangeEventHandler<HTMLInputElement>;
+    onBlur?: React.FocusEventHandler<HTMLInputElement>;
     lableRight?: React.ReactNode
+    rightIcon?: React.ReactNode
+    name?: string
+
 };
 export default function Input({
     label,
@@ -18,8 +22,26 @@ export default function Input({
     icon,
     value,
     onChange,
-    lableRight
+    lableRight,
+    rightIcon,
+    onBlur,
+    name
+
 }: inputProps) {
+    if (type === "checkbox") {
+        return (
+            <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                    type="checkbox"
+                    className="cursor-pointer"
+                />
+
+                <span className="fs-14">
+                    {label}
+                </span>
+            </label>
+        )
+    }
     return (
         <div>
             <div className="flex items-center justify-between mb-2">
@@ -32,12 +54,29 @@ export default function Input({
                 {lableRight}
             </div>
             <div className="relative">
+
                 {icon && (
-                    <KTIcon iconName={icon}
+                    <KTIcon
+                        iconName={icon}
                         className="absolute left-4 top-1/2 -translate-y-1/2"
                     />
                 )}
-                <input type={type} placeholder={placeholder} value={value} onChange={onChange} className="w-full border rounded-lg p-4 pl-10 bg-input" />
+                <input
+                    name={name}
+                    type={type}
+                    placeholder={placeholder}
+                    value={value}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    className="w-full border rounded-lg p-4 pl-10 bg-input"
+                />
+
+                {rightIcon && (
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                        {rightIcon}
+                    </div>
+                )}
+
             </div>
 
         </div>

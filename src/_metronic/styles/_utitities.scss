@@ -11,8 +11,15 @@
 .text-primary-custom {
     color: vars.$color-primary;
 }
+//custom font size-> fs
 @for $i from 1 through 400 {
     .fs-#{$i} {
         font-size: #{$i}px;
+    }
+}
+//custom line height -> lh
+@for $i from 1 through 400 {
+    .lh-#{$i} {
+        line-height: #{$i}px;
     }
 }
