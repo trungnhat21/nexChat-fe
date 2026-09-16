@@ -88,7 +88,7 @@ export default function LoginPage() {
                     <div className="mt-6 ml-10 rounded-2xl bg-black/10 p-3">
 
                         {/* image / preview */}
-                        <div className="h-[180px] rounded-xl bg-white/20">
+                        <div className="h-[100px] rounded-xl bg-white/20">
                             <img
                                 src={preview_login}
                                 alt="Preview"
@@ -97,7 +97,7 @@ export default function LoginPage() {
                         </div>
 
                         {/* reaction */}
-                        <div className="mt-2 flex justify-between items-center text-sm">
+                        <div className="mt-3 flex justify-between items-center text-sm">
                             <span>💗 3.4k lượt thả tim</span>
 
                             <span className="px-2 py-1 rounded-full bg-black/20">
