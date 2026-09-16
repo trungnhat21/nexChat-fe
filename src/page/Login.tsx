@@ -3,6 +3,9 @@ import Input from "../component/UI/Input/Input";
 import api from "../api/axios";
 import { useNavigate } from "react-router";
 import Button from "../component/UI/Button/Button";
+import { showError } from "../utils/swal";
+import googleIcon from "../_metronic/assets/images/google_icon.svg";
+import appleIcon from "../_metronic/assets/images/apple_icon.svg";
 
 export default function LoginPgae() {
     //chưa biết user đang nhập gì cần useState
@@ -16,15 +19,13 @@ export default function LoginPgae() {
     const handLogin = async () => {
         try {
             setLoadding(true)
-            const response = await api.post("/auth/login", {
+            await api.post("/auth/login", {
                 email,
                 password
             })
-            console.log("login thành công", response.data);
             navigation("/home");
         } catch (error) {
-            console.error("login thất bại");
-            console.log("response")
+            showError("Email hoặc mật khẩu không đúng")
         }
         finally { // sẽ chạy trước try cath dù api thành công hay thất bại
             setLoadding(false)
@@ -39,7 +40,7 @@ export default function LoginPgae() {
 
                 {/* left */}
                 <div className="w-1/2 bg-blue-500 p-8">
-                    
+
                 </div>
 
                 {/* right */}
@@ -47,6 +48,24 @@ export default function LoginPgae() {
                     <h1 className="text-xl text-black">
                         Đăng nhập tài khoản
                     </h1>
+                    <p className="text-sm whitespace-nowrap text-description">Tiếp tục kết nối tương tác và chia sẻ khoảnh khắc cùng bạn bè</p>
+
+                    <div className="flex mt-4 gap-3">
+                        <Button
+                            className="w-1/2 border border-gray-300 rounded-4xl py-3 flex items-center justify-center fs-14 cursor-pointer bg-input"
+
+                        >
+                            <img src={googleIcon} alt="Google" className="w-4 h-4 relative -left-2" />
+                            Google
+                        </Button>
+
+                        <Button
+                            className="w-1/2 border border-gray-300 rounded-4xl py-3 flex items-center justify-center fs-14 cursor-pointer bg-input"
+                        >
+                            <img src={appleIcon} alt="Apple" className="w-4 h-4 relative -left-2" />
+                            Apple ID
+                        </Button>
+                    </div>
 
                     <div className="mt-6">
                         <Input
@@ -60,8 +79,16 @@ export default function LoginPgae() {
                     </div>
 
                     <div className="mt-3">
+
                         <Input
                             label="Mật khẩu"
+                            lableRight={
+                                <a href="/forgot-password"
+                                    className="text-blue-500 fs-14"
+                                >
+                                    Quên mật khẩu ?
+                                </a>
+                            }
                             placeholder="Nhập mật khẩu của bạn"
                             type="password"
                             icon="lock"
@@ -72,10 +99,10 @@ export default function LoginPgae() {
 
 
                     <Button
-                        className="mt-6 w-full bg-blue-500 text-white p-3 rounded-lg"
+                        className="mt-6 w-full bg-blue-500 text-white p-3 rounded-lg cursor-pointer"
                         onClick={handLogin}
                         type="submit"
-                        loadding = {loadding}
+                        loadding={loadding}
                     >
                         Đăng nhập
                     </Button>

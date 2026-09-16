@@ -1,0 +1,18 @@
+@use "./variable" as vars;
+
+.text-description {
+    color: vars.$color-text-description;
+}
+
+.bg-input {
+    background-color: vars.$color-input-bg;
+}
+
+.text-primary-custom {
+    color: vars.$color-primary;
+}
+@for $i from 1 through 400 {
+    .fs-#{$i} {
+        font-size: #{$i}px;
+    }
+}

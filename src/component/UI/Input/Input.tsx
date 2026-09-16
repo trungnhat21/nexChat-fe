@@ -8,7 +8,8 @@ type inputProps = {
     placeholder?: string;
     icon?: string;
     value?: string;
-    onChange?: React.ChangeEventHandler<HTMLInputElement>
+    onChange?: React.ChangeEventHandler<HTMLInputElement>;
+    lableRight?: React.ReactNode
 };
 export default function Input({
     label,
@@ -16,11 +17,20 @@ export default function Input({
     placeholder,
     icon,
     value,
-    onChange
+    onChange,
+    lableRight
 }: inputProps) {
     return (
         <div>
-            {label && (<label className="text-sm">{label}</label>)}
+            <div className="flex items-center justify-between mb-2">
+                {label && (
+                    <label className="text-sm">
+                        {label}
+                    </label>
+                )}
+
+                {lableRight}
+            </div>
             <div className="relative">
                 {icon && (
                     <KTIcon iconName={icon}

@@ -29,3 +29,19 @@ export const showWarning = (message: string) => {
         title: message,
     });
 };
+
+export const confirmDelete = async (
+    title = "Bạn có chắc muốn xoá ?"
+) => {
+
+    const result = await Swal.fire({
+        icon: "warning",
+        title,
+        text: "Hành động này không thể hoàn tác",
+        showCancelButton: true,
+        confirmButtonText: "Xoá",
+        cancelButtonText: "Huỷ",
+    });
+
+    return result.isConfirmed;
+};
