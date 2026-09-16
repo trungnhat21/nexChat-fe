@@ -5,8 +5,10 @@
   --color-background: #ffffff;
   --color-text: #111827;
   --color-border: #d1d5db;
+  --color-input-bg: #F2F3FF;
 }
 
 body {
   margin: 0;
+  font-family: Arial, sans-serif;
 }
