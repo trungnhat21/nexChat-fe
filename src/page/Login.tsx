@@ -6,7 +6,7 @@ import Button from "../component/UI/Button/Button";
 import { showError } from "../utils/swal";
 import googleIcon from "../_metronic/assets/images/google_icon.svg";
 import appleIcon from "../_metronic/assets/images/apple_icon.svg";
-import login_banner from "../_metronic/assets/images/login_banner.svg";
+import preview_login from "../_metronic/assets/images/preview_login.svg";
 import { KTIcon } from "../_metronic/helpers/components/KTIcon";
 
 import { useFormik } from "formik";
@@ -55,11 +55,93 @@ export default function LoginPage() {
 
                 {/* left */}
                 <div className="w-1/2 overflow-hidden">
-                    <img
-                        src={login_banner}
-                        alt="Login banner"
-                        className="w-full h-full object-cover"
-                    />
+                    {/* logo */}
+                    <div className="flex items-center gap-3">
+                        <div>
+                            logo
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <span className="text-xl font-bold">
+                                Nex
+                            </span>
+                            <span className="px-3 py-1 rounded-full bg-white/15 text-sm">
+                                MẠNG XÃ HỘI 3.0
+                            </span>
+                        </div>
+                    </div>
+                    {/* title +description */}
+                    <div className="mt-8">
+                        <h2 className="text-3xl font-bold leading-tight">
+                            Chào mừng bạn trở lại với
+                            <span className="block text-cyan-300">
+                                Nex
+                            </span>
+                        </h2>
+
+                        <p className="mt-3 text-sm leading-6 text-white/80">
+                            Nền tảng kết nối nhịp đập thế hệ mới.
+                            Khám phá những làn sóng xu hướng,
+                            chia sẻ khoảnh khắc chân thực và chạm tới cộng đồng.
+                        </p>
+                    </div>
+                    {/* 3. Main social card */}
+                    <div className="mt-6 ml-10 rounded-2xl bg-black/10 p-3">
+
+                        {/* image / preview */}
+                        <div className="h-[180px] rounded-xl bg-white/20">
+                            <img
+                                src={preview_login}
+                                alt="Preview"
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
+
+                        {/* reaction */}
+                        <div className="mt-2 flex justify-between items-center text-sm">
+                            <span>💗 3.4k lượt thả tim</span>
+
+                            <span className="px-2 py-1 rounded-full bg-black/20">
+                                #KhamPhaPulse
+                            </span>
+                        </div>
+
+                        {/* people bar */}
+                        <div className="mt-3 flex items-center gap-2 rounded-xl bg-white/10 p-3">
+                            <div className="flex">
+                                <div className="w-7 h-7 rounded-full bg-white"></div>
+                                <div className="-ml-2 w-7 h-7 rounded-full bg-white"></div>
+                            </div>
+
+                            <p className="text-xs ">
+                                Minh Anh và 148 người khác vừa tham gia phòng âm thanh
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* 4. Stats */}
+                    <div className="grid grid-cols-2 gap-4 mt-6">
+
+                        <div className="rounded-2xl bg-white/10 p-4">
+                            <div className="text-2xl font-bold">
+                                +500K
+                            </div>
+
+                            <div className="text-xs text-white/70 mt-1">
+                                NGƯỜI DÙNG NĂNG ĐỘNG
+                            </div>
+                        </div>
+
+                        <div className="rounded-2xl bg-white/10 p-4">
+                            <div className="text-2xl font-bold">
+                                +2M
+                            </div>
+
+                            <div className="text-xs text-white/70 mt-1">
+                                KẾT NỐI MỖI NGÀY
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
 
                 {/* right */}
@@ -170,7 +252,6 @@ export default function LoginPage() {
                     </div>
                 </div>
             </div>
-        </div>
-
+        </div >
     )
 }
