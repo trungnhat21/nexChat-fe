@@ -8,7 +8,15 @@ pipeline {
                     ssh -o StrictHostKeyChecking=no ubuntu@129.146.54.70 '
                         set -e
 
+                        export NVM_DIR="$HOME/.nvm"
+                        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
                         cd /mnt/var/www/nex-chat/nex-chat-fe
+
+                        echo "=== Runtime ==="
+                        node -v
+                        npm -v
+                        pm2 -v
 
                         echo "=== Checkout developer ==="
                         git checkout developer
