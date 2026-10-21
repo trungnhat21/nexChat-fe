@@ -1,4 +1,6 @@
 import { useContext, useEffect, useRef, useState, type FormEvent } from "react";
+import { useNavigate } from "react-router";
+import { logout } from "../../axios/auth";
 import { HomeContext } from "./config";
 import { initialPosts, originalVotes, postHashtags, sampleComments, suggestedFriends } from "./config";
 import type { Comment, ComposerProps, FeedPost, HomeContextValue } from "../../component/type/home";
@@ -159,4 +161,57 @@ export function useDiscoveryActions() {
     }
 
     return { following, friends, openPanel, setSearch, refreshFriends, toggleFollow };
+}
+
+export function useHeaderActions() {
+    const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+    const [loggingOut, setLoggingOut] = useState(false);
+    const accountMenuRef = useRef<HTMLDivElement>(null);
+    const accountButtonRef = useRef<HTMLButtonElement>(null);
+    const logoutButtonRef = useRef<HTMLButtonElement>(null);
+    const navigate = useNavigate();
+    const { announce } = useHome();
+
+    useEffect(() => {
+        if (!accountMenuOpen) return;
+        function closeOutside(event: Event) {
+            if (event.target instanceof Node && !accountMenuRef.current?.contains(event.target)) {
+                setAccountMenuOpen(false);
+            }
+        }
+        function closeOnEscape(event: KeyboardEvent) {
+            if (event.key === "Escape") {
+                setAccountMenuOpen(false);
+                accountButtonRef.current?.focus();
+            }
+        }
+        document.addEventListener("pointerdown", closeOutside);
+        document.addEventListener("focusin", closeOutside);
+        document.addEventListener("keydown", closeOnEscape);
+        return () => {
+            document.removeEventListener("pointerdown", closeOutside);
+            document.removeEventListener("focusin", closeOutside);
+            document.removeEventListener("keydown", closeOnEscape);
+        };
+    }, [accountMenuOpen]);
+
+    function openAccountMenu() {
+        setAccountMenuOpen(true);
+        requestAnimationFrame(() => logoutButtonRef.current?.focus());
+    }
+
+    async function handleLogout() {
+        if (loggingOut) return;
+        setLoggingOut(true);
+        try {
+            await logout();
+            navigate("/", { replace: true });
+        } catch {
+            announce("Không thể đăng xuất. Vui lòng thử lại.");
+        } finally {
+            setLoggingOut(false);
+        }
+    }
+
+    return { accountMenuOpen, setAccountMenuOpen, loggingOut, accountMenuRef, accountButtonRef, logoutButtonRef, openAccountMenu, handleLogout };
 }

@@ -240,7 +240,7 @@
     .home-brand { font-size: 18px; gap: 4px; }
     .home-search { min-width: 60px; }
     .home-header-end { flex: 0 0 auto; min-width: max-content; gap: 2px; }
-    .home-header-end .home-create-button, .home-profile-button > .home-icon { display: none; }
+    .home-header-end .home-create-button { display: none; }
     .home-header-end .home-icon-button { padding: 6px; }
     .home-top-nav { order: 3; justify-content: space-around; width: 100%; margin-bottom: 8px; }
     .home-top-nav > :is(a, button) { flex: 1; text-align: center; padding: 4px 8px; }
@@ -302,3 +302,9 @@
 @for $percent from 0 through 100 {
     .home-poll-progress-#{$percent} { width: #{$percent}#{"%"}; }
 }
+
+.home-account { position: relative; flex-shrink: 0; }
+.home-profile-button[aria-expanded="true"] > .home-icon { transform: rotate(180deg); }
+.home-account-menu { position: absolute; top: calc(100% + 12px); right: 0; min-width: 168px; max-width: calc(100vw - 32px); padding: 6px; border: 1px solid #e1e0ff; border-radius: 12px; background: white; box-shadow: 0 8px 24px #131b2e1a; z-index: 40; }
+.home-account-menu > button { display: block; width: 100%; padding: 10px 12px; border-radius: 8px; text-align: left; color: #b90538; font-weight: 600; }
+.home-account-menu > button:hover, .home-account-menu > button:focus-visible { background: var(--home-soft); }

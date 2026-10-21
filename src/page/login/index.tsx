@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import Input from "../../component/UI/Input/Input";
 import Button from "../../component/UI/Button/Button";
 import googleIcon from "../../_metronic/assets/images/google_icon.svg";
@@ -212,7 +213,7 @@ export default function LoginPage() {
                     </form>
 
                     <div className="text-center pt-3 fs-15">
-                        Chưa có tài khoản Nex? <a className="fs-14 text-blue-500 font-bold" href="/register">Đăng ký miễn phí ngay</a>
+                        Chưa có tài khoản Nex? <Link className="fs-14 text-blue-500 font-bold" to="/register">Đăng ký miễn phí ngay</Link>
                     </div>
                 </div>
             </div>

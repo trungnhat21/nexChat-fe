@@ -7,10 +7,10 @@ export default function Sidebar() {
     const { openPanel } = useHome();
     return <aside className="home-left" aria-label="Hồ sơ và lối tắt">
         <section className="home-card home-user-card">
-            <button className="home-user-summary" onClick={() => openPanel("Hồ sơ cá nhân")}>
+            <Link className="home-user-summary" to="/profile">
                 <Avatar id="3352:474" size={48} online />
                 <span><strong>Lê Minh Tâm <DesignIcon id="3352:481" /></strong><small>@minhtam.tech</small></span>
-            </button>
+            </Link>
             <div className="home-user-stats"><button onClick={() => openPanel("Người theo dõi")}><strong>1.2k</strong><span>Người theo dõi</span></button><button onClick={() => openPanel("Đang theo dõi")}><strong>384</strong><span>Đang theo dõi</span></button></div>
         </section>
         <nav className="home-card home-side-nav" aria-label="Menu cá nhân">
