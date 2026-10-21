@@ -1,56 +1,20 @@
-import { useState } from "react";
-import Input from "../component/UI/Input/Input";
-import api from "../api/axios";
-import { useNavigate } from "react-router";
-import Button from "../component/UI/Button/Button";
-import { showError } from "../utils/swal";
-import googleIcon from "../_metronic/assets/images/google_icon.svg";
-import appleIcon from "../_metronic/assets/images/apple_icon.svg";
-import preview_login from "../_metronic/assets/images/preview_login.svg";
-import { KTIcon } from "../_metronic/helpers/components/KTIcon";
+import Input from "../../component/UI/Input/Input";
+import Button from "../../component/UI/Button/Button";
+import googleIcon from "../../_metronic/assets/images/google_icon.svg";
+import appleIcon from "../../_metronic/assets/images/apple_icon.svg";
+import preview_login from "../../_metronic/assets/images/preview_login.svg";
+import { KTIcon } from "../../_metronic/helpers/components/KTIcon";
 
-import { useFormik } from "formik";
-import * as Yup from "yup";
+import { useLoginActions } from "./actions";
+import "./style.scss";
 
 export default function LoginPage() {
-    const [showPassword, setShowPassword] = useState(false);
-
-    const navigation = useNavigate();
-
-    const formik = useFormik({
-        initialValues: {
-            email: "",
-            password: "",
-        },
-        validationSchema: Yup.object({
-            email: Yup.string()
-                .email("email không đúng định dạng")
-                .required("Vui lòng nhập email"),
-            password: Yup.string()
-                .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
-                .required("Vui lòng nhập mật khẩu")
-        }),
-        onSubmit: async (value) => {
-            try {
-                await api.post
-                    (
-                        "/auth/login",
-                        {
-                            email: value.email,
-                            password: value.password
-                        }
-                    );
-                navigation("/home");
-            } catch (error) {
-                showError("Email hoặc mật khẩu không đúng")
-            }
-        }
-    });
+    const { formik, showPassword, setShowPassword } = useLoginActions();
     return (
         //items-center : can giữa theo chiều dọc
         // justify-center: can giữa theo chiều ngang
         // flex: đặt nó nằm trên 1 hàng
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="login-page">
             <div className="flex w-[900px] min-h-[500px] rounded-2xl overflow-hidden shadow-2xl">
 
                 {/* left */}
