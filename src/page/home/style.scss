@@ -356,3 +356,5 @@
     .home-post-media:not(.has-one) img, .home-post-media:not(.has-one) > video { height: 180px; }
     .home-editor-buttons { gap: 6px; }
 }
+
+.home-post-actions > button:disabled { cursor: wait; opacity: .65; }

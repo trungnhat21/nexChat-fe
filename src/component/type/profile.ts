@@ -23,7 +23,7 @@ export type ProfileHeroProps = {
     onAvatarChange: (event: ChangeEvent<HTMLInputElement>) => void;
     onEdit: () => void; onShare: () => void; onOpen: ProfileOpenDialog;
 };
-export type ProfilePostProps = { post: FeedPost; onNotice: ProfileNotice; onOpen: ProfileOpenDialog };
+export type ProfilePostProps = { post: FeedPost; onStateChange: import("./post").PostStateChange; onLike: import("./post").LikePostAction; onNotice: ProfileNotice; onOpen: ProfileOpenDialog };
 export type ProfileUserAvatarProps = { name: string; src?: string | null; className?: string };
 
 export type ProfileHighlightsProps = { onOpen: ProfileOpenDialog };

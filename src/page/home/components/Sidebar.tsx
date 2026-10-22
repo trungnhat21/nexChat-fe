@@ -1,10 +1,11 @@
 import UserAvatar from "./UserAvatar";
 import { navigationLinks, shortcuts } from "../config";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { DesignIcon } from "./DesignAsset";
 import { useHome } from "../actions";
 
 export default function Sidebar() {
+    const { pathname } = useLocation();
     const { openPanel, user } = useHome();
     return <aside className="home-left" aria-label="Hồ sơ và lối tắt">
         <section className="home-card home-user-card">
@@ -15,8 +16,8 @@ export default function Sidebar() {
         </section>
         <nav className="home-card home-side-nav" aria-label="Menu cá nhân">
             {navigationLinks.map((item, index) => {
-                const content = <><span><DesignIcon id={item.icon} />{item.label}</span>{index === 0 ? <i className="home-active-dot" /> : item.badge && <span className={`home-side-badge ${item.badge === "Hot" ? "is-hot" : item.badge === "5" ? "is-muted" : ""}`}>{item.badge}</span>}</>;
-                return index === 0 ? <Link key={item.label} to="/home" aria-current="page">{content}</Link> : <button key={item.label} onClick={() => openPanel(item.label)}>{content}</button>;
+                const content = <><span><DesignIcon id={item.icon} />{item.label}</span>{(index === 0 && pathname === "/home") || (item.label === "Đã lưu" && pathname === "/saved") ? <i className="home-active-dot" /> : item.badge && <span className={`home-side-badge ${item.badge === "Hot" ? "is-hot" : item.badge === "5" ? "is-muted" : ""}`}>{item.badge}</span>}</>;
+                return index === 0 || item.label === "Đã lưu" ? <Link key={item.label} to={index === 0 ? "/home" : "/saved"} aria-current={pathname === (index === 0 ? "/home" : "/saved") ? "page" : undefined}>{content}</Link> : <button key={item.label} onClick={() => openPanel(item.label)}>{content}</button>;
             })}
         </nav>
         <section className="home-card home-shortcuts">

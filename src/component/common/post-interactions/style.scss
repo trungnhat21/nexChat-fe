@@ -1,0 +1,33 @@
+.post-interactions {
+    .profile-post-actions { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .is-saved { color: #4845d7; background: #efeeff; }
+    button:disabled { opacity: .6; cursor: wait; }
+    textarea { box-sizing: border-box; display: block; width: 100%; resize: vertical; min-height: 64px; padding: 10px; border: 1px solid #d8dce9; border-radius: 10px; background: #fff; color: #182238; font: inherit; }
+    button:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid #4c47df; outline-offset: 2px; }
+    .post-comments, .post-share-panel { margin-top: 14px; padding-top: 14px; border-top: 1px solid #e5e7f0; font-size: 14px; }
+    h3 { margin: 0 0 8px; font-size: 15px; }
+    p { white-space: pre-wrap; overflow-wrap: anywhere; margin: 8px 0; }
+    form + form { margin-top: 14px; }
+    label { display: block; margin-bottom: 6px; }
+    select { border: 1px solid #d8dce9; padding: 6px; border-radius: 6px; background: #fff; color: #182238; }
+    .post-inline-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 8px 0; }
+    .post-inline-actions button, .post-inline-actions a, .post-comments > button { color: #4540cf; font-weight: 600; padding: 6px 4px; }
+    .post-inline-actions small { margin-right: auto; color: #747a90; }
+    .post-share-panel form { margin-top: 16px; }
+    .post-comment { padding: 12px 0; border-bottom: 1px solid #edeef4; }
+    .post-comment header { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .post-comment header img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+    .post-comment time, .post-comment header small { color: #777c90; font-size: 12px; }
+    .post-interaction-error { color: #b90538; padding: 8px; background: #fff0f4; border-radius: 8px; }
+}
+.post-original { margin: 12px 0; padding: 14px; border: 1px solid #dfe3f0; border-radius: 12px; overflow: hidden;
+    header { display: flex; gap: 10px; flex-wrap: wrap; }
+    p { white-space: pre-wrap; overflow-wrap: anywhere; margin: 10px 0; }
+    a { color: #4540cf; }
+    time { font-size: 12px; }
+    .post-original-media { display: grid; gap: 8px; }
+    img, video { display: block; width: 100%; max-height: 460px; object-fit: contain; border-radius: 8px; }
+}
+@media (max-width: 480px) {
+    .post-interactions .home-post-actions, .post-interactions .profile-post-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

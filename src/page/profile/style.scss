@@ -253,3 +253,5 @@
 .profile-feed-error > button { margin-top: 8px; text-decoration: underline; }
 
 .profile-image-status { padding: 8px 24px; color: var(--profile-primary); font-size: 13px; }
+
+.profile-post-actions > button:disabled { cursor: wait; opacity: .65; }

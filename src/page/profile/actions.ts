@@ -1,8 +1,8 @@
 import { uploadProfileImage } from "../../axios/profile";
 import { isAxiosError } from "axios";
-import { listPosts } from "../../axios/posts";
+import { listPosts, setPostLike } from "../../axios/posts";
 import type { CurrentUser } from "../../component/type/auth";
-import type { FeedPost, ProfileAuthor } from "../../component/type/post";
+import type { FeedPost, PostStateChange, ProfileAuthor } from "../../component/type/post";
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router";
 import { getCurrentUser, logout } from "../../axios/auth";
@@ -53,7 +53,6 @@ export function useProfileActions() {
     const [details, setDetails] = useState(initialProfile);
     const [draft, setDraft] = useState(initialProfile);
     const [activeTab, setActiveTab] = useState<ProfileTab>("posts");
-    const [savedPosts, setSavedPosts] = useState<string[]>([]);
     const [dialog, setDialog] = useState<ProfileDialog>(null);
     const [notice, setNotice] = useState("");
     const [loggingOut, setLoggingOut] = useState(false);
@@ -126,6 +125,15 @@ export function useProfileActions() {
         } catch (error) { if (version === generation.current) setError(loadError(error)); }
         finally { setLoadingMore(false); }
     }
+    const changePostState: PostStateChange = (id, patch) => {
+        setPosts(previous => previous.map(post => post.id === id ? { ...post, ...patch } : post));
+    };
+    async function likePost(id: string, liked: boolean) {
+        const version = generation.current;
+        const result = await setPostLike(id, liked);
+        if (version !== generation.current) return;
+        setPosts(previous => previous.map(post => post.id === id ? { ...post, liked: result.liked, likes: result.likes } : post));
+    }
     function editProfile() {
         if (!isOwner) return;
         setDraft(details); setDialog({ kind: "edit", title: "Chỉnh sửa trang cá nhân" });
@@ -135,10 +143,6 @@ export function useProfileActions() {
         if (!isOwner || !draft.name.trim()) return;
         setDetails({ ...draft, name: draft.name.trim(), handle: draft.handle.trim() });
         setDialog(null); setNotice("Đã cập nhật hồ sơ trong bản xem thử, chưa lưu lên máy chủ.");
-    }
-    function toggleSave(postId: string) {
-        setSavedPosts(previous => previous.includes(postId) ? previous.filter(id => id !== postId) : [...previous, postId]);
-        setNotice("Đã cập nhật bài viết đã lưu trong bản xem thử."); setDialog(null);
     }
     async function shareProfile() {
         try {
@@ -153,14 +157,18 @@ export function useProfileActions() {
         catch { setNotice("Không thể đăng xuất. Vui lòng thử lại."); }
         finally { setLoggingOut(false); }
     }
-    return { details, draft, setDraft, activeTab, setActiveTab, savedPosts, dialog, setDialog, notice, setNotice, dialogRef, cover, avatar, avatarSrc, editProfile, saveProfile, toggleSave, shareProfile, loggingOut, handleLogout, currentUser, author, isOwner, posts, total, nextCursor, loading, loadingMore, error, loadMore, reload: () => setRevision(previous => previous + 1) };
+    return { changePostState, likePost, details, draft, setDraft, activeTab, setActiveTab, dialog, setDialog, notice, setNotice, dialogRef, cover, avatar, avatarSrc, editProfile, saveProfile, shareProfile, loggingOut, handleLogout, currentUser, author, isOwner, posts, total, nextCursor, loading, loadingMore, error, loadMore, reload: () => setRevision(previous => previous + 1) };
 }
-export function useProfilePostActions({ post, onNotice }: ProfilePostProps) {
-    async function sharePost() {
-        try {
-            await navigator.clipboard.writeText(window.location.origin + "/profile/" + post.author.id + "#" + post.id);
-            onNotice("Đã sao chép liên kết bài viết.");
-        } catch { onNotice("Không thể sao chép liên kết. Vui lòng thử lại."); }
+export function useProfilePostActions({ post, onLike }: ProfilePostProps) {
+    const likeBusy = useRef(false);
+    const [liking, setLiking] = useState(false);
+    const [likeError, setLikeError] = useState("");
+    async function toggleLike() {
+        if (likeBusy.current) return;
+        likeBusy.current = true; setLiking(true); setLikeError("");
+        try { await onLike(post.id, !post.liked); }
+        catch (error) { setLikeError(isAxiosError(error) && error.response?.status === 401 ? "Phiên đăng nhập đã hết hạn." : "Không thể cập nhật lượt thích. Vui lòng thử lại."); }
+        finally { likeBusy.current = false; setLiking(false); }
     }
-    return { sharePost };
+    return { liking, toggleLike, likeError };
 }

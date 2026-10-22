@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import Discovery from "./components/Discovery";
@@ -10,8 +10,9 @@ import { HomeContext } from "./config";
 import "./style.scss";
 
 export default function HomePage() {
+    const { postId } = useParams<{ postId: string }>();
     const { search, setSearch, notice, setNotice, panel, setPanel, dialogRef, user } = useHomeLayoutActions();
-    const { query, visiblePosts, addPost, editPost, removePost, loading, loadingMore, error, nextCursor, loadMore, reload } = useHomeFeedActions(search);
+    const { changePostState, likePost, query, visiblePosts, addPost, editPost, removePost, loading, loadingMore, error, nextCursor, loadMore, reload } = useHomeFeedActions(search);
 
     return <HomeContext.Provider value={{ user, search, setSearch, announce: setNotice, openPanel: setPanel }}>
         <div className="pulse-home">
@@ -20,12 +21,11 @@ export default function HomePage() {
             <main className="home-grid">
                 <Sidebar />
                 <div className="home-feed" id="home-feed" tabIndex={-1}>
-                    <Stories />
-                    <Composer onPost={addPost} />
+                    {!postId && <><Stories /><Composer onPost={addPost} /></>}
                     {query && <div className="home-search-result"><span>{visiblePosts.length} bài viết phù hợp với “{search}”</span><button onClick={() => setSearch("")}>Xóa tìm kiếm</button></div>}
                     {loading && <section className="home-card home-empty" role="status">Đang tải bài viết...</section>}
                     {error && <section className="home-card home-feed-error" role="alert"><p>{error}</p><button onClick={reload}>Thử lại</button><Link to="/">Đăng nhập</Link></section>}
-                    {!loading && visiblePosts.map(post => <PostCard key={post.id} post={post} onUpdate={editPost} onDelete={removePost} onReload={reload} />)}
+                    {!loading && visiblePosts.map(post => <PostCard key={post.id} post={post} onStateChange={changePostState} onLike={likePost} onUpdate={editPost} onDelete={removePost} onReload={reload} />)}
                     {!loading && nextCursor && <button className="home-load-more" disabled={loadingMore} onClick={loadMore}>{loadingMore ? "Đang tải..." : "Xem thêm bài viết"}</button>}
                     {!loading && !error && visiblePosts.length === 0 && <section className="home-card home-empty"><h2>Chưa tìm thấy bài viết</h2><p>{query ? "Thử tìm theo tác giả, nội dung hoặc hashtag khác." : "Hãy chia sẻ bài viết đầu tiên của bạn."}</p></section>}
                 </div>

@@ -1,12 +1,12 @@
 import { useContext, useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { isAxiosError } from "axios";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { getCurrentUser, logout } from "../../axios/auth";
-import { createPost, deletePost, listPosts, updatePost } from "../../axios/posts";
+import { createPost, deletePost, getPost, listPosts, listSavedPosts, setPostLike, updatePost } from "../../axios/posts";
 import { confirmDelete } from "../../utils/swal";
 import { HomeContext, postLimits, mediaTypes, suggestedFriends } from "./config";
 import type { CurrentUser } from "../../component/type/auth";
-import type { ComposerProps, FeedPost, NewPostMedia, PostCardProps, PostDraft, PostPrivacy, UploadProgress } from "../../component/type/post";
+import type { ComposerProps, FeedPost, NewPostMedia, PostCardProps, PostDraft, PostPrivacy, PostStateChange, UploadProgress } from "../../component/type/post";
 
 export function useHome() { return useContext(HomeContext); }
 export function focusComposer() {
@@ -45,7 +45,8 @@ export function useHomeLayoutActions() {
     }, [panel]);
     return { search, setSearch, notice, setNotice, panel, setPanel, dialogRef, user };
 }
-export function useHomeFeedActions(search: string) {
+export function useHomeFeedActions(search: string, savedOnly = false) {
+    const { postId } = useParams<{ postId: string }>();
     const [posts, setPosts] = useState<FeedPost[]>([]);
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
@@ -60,26 +61,35 @@ export function useHomeFeedActions(search: string) {
         const controller = new AbortController();
         const timer = window.setTimeout(() => {
             setLoading(true); setError("");
-            void listPosts(query, undefined, controller.signal).then(result => {
+            void (postId ? getPost(postId, controller.signal).then(result => ({ posts: [result.post], nextCursor: null })) : savedOnly ? listSavedPosts(query, undefined, controller.signal) : listPosts(query, undefined, controller.signal)).then(result => {
                 if (active) { setPosts(result.posts); setNextCursor(result.nextCursor); }
             }).catch(error => { if (active) setError(postError(error)); })
                 .finally(() => { if (active) setLoading(false); });
         }, query ? 250 : 0);
         return () => { active = false; window.clearTimeout(timer); controller.abort(); };
-    }, [query, revision]);
+    }, [query, revision, postId, savedOnly]);
 
     async function loadMore() {
         if (!nextCursor || loadingMore) return;
         const version = generation.current;
         setLoadingMore(true); setError("");
         try {
-            const result = await listPosts(query, nextCursor);
+            const result = await (savedOnly ? listSavedPosts(query, nextCursor) : listPosts(query, nextCursor));
             if (version === generation.current) {
                 setPosts(previous => [...previous, ...result.posts.filter(post => !previous.some(existing => existing.id === post.id))]);
                 setNextCursor(result.nextCursor);
             }
         } catch (error) { if (version === generation.current) setError(postError(error)); }
         finally { setLoadingMore(false); }
+    }
+    const changePostState: PostStateChange = (id, patch) => {
+        setPosts(previous => previous.map(post => post.id === id ? { ...post, ...patch } : post).filter(post => !savedOnly || post.saved));
+    };
+    async function likePost(id: string, liked: boolean) {
+        const version = generation.current;
+        const result = await setPostLike(id, liked);
+        if (version !== generation.current) return;
+        setPosts(previous => previous.map(post => post.id === id ? { ...post, liked: result.liked, likes: result.likes } : post));
     }
     async function addPost(draft: PostDraft, onProgress: UploadProgress) {
         const post = await createPost(draft, onProgress);
@@ -95,7 +105,7 @@ export function useHomeFeedActions(search: string) {
     }
     const normalized = query.toLocaleLowerCase("vi");
     const visiblePosts = posts.filter(post => (post.author.name + " " + post.content).toLocaleLowerCase("vi").includes(normalized));
-    return { query, visiblePosts, addPost, editPost, removePost, loading, loadingMore, error, nextCursor, loadMore, reload: () => setRevision(previous => previous + 1) };
+    return { changePostState, likePost, query, visiblePosts, addPost, editPost, removePost, loading, loadingMore, error, nextCursor, loadMore, reload: () => setRevision(previous => previous + 1) };
 }
 export function useComposerActions({ onPost, post }: ComposerProps) {
     const [text, setText] = useState(post?.content ?? "");
@@ -131,7 +141,7 @@ export function useComposerActions({ onPost, post }: ComposerProps) {
     async function submitPost(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         if (submitting) return;
-        if (!text.trim() && !files.length && !retained.length) { setError("Hãy nhập nội dung hoặc đính kèm ảnh/video."); return; }
+        if (!post?.isRepost && !text.trim() && !files.length && !retained.length) { setError("Hãy nhập nội dung hoặc đính kèm ảnh/video."); return; }
         setSubmitting(true); setError(""); setProgress(0);
         try {
             await onPost({ content: text.trim(), privacy, files: files.map(item => item.file), keepMediaIds: retained.map(item => item.id) }, setProgress);
@@ -143,11 +153,20 @@ export function useComposerActions({ onPost, post }: ComposerProps) {
     }
     return { text, setText, privacy, setPrivacy, files, retained, setRetained, fileInputRef, addFiles, removeFile, submitPost, submitting, error, progress };
 }
-export function usePostActions({ post, onUpdate, onDelete }: PostCardProps) {
+export function usePostActions({ post, onUpdate, onDelete, onLike }: PostCardProps) {
     const [editing, setEditing] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [error, setError] = useState("");
-    const { announce, openPanel } = useHome();
+    const { announce } = useHome();
+    const likeBusy = useRef(false);
+    const [liking, setLiking] = useState(false);
+    async function toggleLike() {
+        if (likeBusy.current) return;
+        likeBusy.current = true; setLiking(true); setError("");
+        try { await onLike(post.id, !post.liked); }
+        catch (error) { setError(postError(error)); }
+        finally { likeBusy.current = false; setLiking(false); }
+    }
     async function saveEdit(draft: PostDraft, onProgress: UploadProgress) { await onUpdate(post.id, draft, onProgress); setEditing(false); }
     async function remove() {
         if (deleting) return;
@@ -158,11 +177,7 @@ export function usePostActions({ post, onUpdate, onDelete }: PostCardProps) {
         catch (error) { setError(postError(error)); }
         finally { setDeleting(false); }
     }
-    async function share() {
-        try { await navigator.clipboard.writeText(window.location.origin + "/home#" + post.id); announce("Đã sao chép liên kết bài viết."); }
-        catch { openPanel("Chia sẻ bài viết"); }
-    }
-    return { editing, setEditing, deleting, error, saveEdit, remove, share, openPanel };
+    return { liking, toggleLike, editing, setEditing, deleting, error, saveEdit, remove };
 }
 export function useDiscoveryActions() {
     const [following, setFollowing] = useState<string[]>([]);
