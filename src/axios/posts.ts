@@ -1,8 +1,8 @@
 import api from "./index";
 import type { PostDraft, PostPage, PostResult, UploadProgress } from "../component/type/post";
 
-export async function listPosts(search = "", cursor?: string, signal?: AbortSignal) {
-    const response = await api.get<PostPage>("/posts", { params: { search, cursor }, signal });
+export async function listPosts(search = "", cursor?: string, signal?: AbortSignal, authorId?: string) {
+    const response = await api.get<PostPage>("/posts", { params: { search, cursor, authorId }, signal });
     return response.data;
 }
 function postForm(draft: PostDraft) {

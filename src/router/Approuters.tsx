@@ -11,6 +11,7 @@ export default function AppRouters(){
             <Route path="/register" element={<RegisterPage/>}/>
             <Route path="/home" element={<HomePage/>}/>
             <Route path="/profile" element={<ProfilePage/>}/>
+            <Route path="/profile/:userId" element={<ProfilePage/>}/>
         </Routes>
     )
 }

@@ -37,7 +37,7 @@ import asset35 from "../../_metronic/assets/images/profile/icon-25.svg";
 import asset36 from "../../_metronic/assets/images/profile/icon-26.svg";
 import asset37 from "../../_metronic/assets/images/profile/icon-27.svg";
 import asset38 from "../../_metronic/assets/images/profile/icon-28.svg";
-import type { ProfileDetails, ProfilePost } from "../../component/type/profile";
+import type { ProfileDetails } from "../../component/type/profile";
 
 export const profileAssets = {
     "3360:482": { src: asset10 },
@@ -102,10 +102,7 @@ export const profileAssets = {
 } as const;
 
 export const initialProfile: ProfileDetails = {
-    name: "Lê Minh Tâm", handle: "@minhtam.tech",
-    role: "Founder & Tech Lead @ VN-Tech Labs", specialty: "AI & UI/UX Explorer",
-    bio: "Xây dựng sản phẩm công nghệ tạo tác động thực tiễn.\nĐam mê Generative AI, UI/UX System & Khởi nghiệp.\n📍 TP. Hồ Chí Minh",
-    website: "minhtam.tech", company: "VN-Tech Labs", joined: "Gia nhập T8, 2023",
+    name: "Trang cá nhân", handle: "", role: "", specialty: "", bio: "", website: "", company: "", joined: "",
 };
 
 export const highlights = [
@@ -123,33 +120,8 @@ export const profileTabs = [
     { id: "about", label: "V\u1ec1\nt\u00f4i", title: "Về tôi", icon: "3360:862" },
 ] as const;
 
-export const profilePosts: ProfilePost[] = [
-    {
-        id: "profile-pinned", kind: "pinned", time: "Hôm qua lúc 19:42",
-        content: "Chào mừng anh em đến với trang cá nhân của\nmình! Mình thường xuyên chia sẻ các nghiên cứu\nvề AI-first Design System và kinh nghiệm xây\ndựng sản phẩm công nghệ tại Việt Nam. 🚀✨",
-        tags: ["#AI", "#ProductDesign", "#TechInVietnam", "#PulseSocial"],
-        likes: 245, comments: 38, shares: 12,
-        assets: { avatar: "3360:614", verified: "3360:619", globe: "3360:626", more: "3360:629", reaction: "3360:660", heart: "3360:664", like: "3360:676", comment: "3360:681", share: "3360:686" },
-    },
-    {
-        id: "profile-poll", kind: "poll", time: "3 ngày trước",
-        content: "Khảo sát nhanh dành cho anh em lập trình viên &\ndesigner: Công cụ hỗ trợ AI nào bạn đang đưa\nvào quy trình phát triển sản phẩm hàng ngày\nnhiều nhất? 🤖💡",
-        likes: 312, comments: 84, shares: 19,
-        assets: { avatar: "3360:693", verified: "3360:698", globe: "3360:705", more: "3360:708", reaction: "3360:755", like: "3360:767", comment: "3360:772", share: "3360:777" },
-    },
-    {
-        id: "profile-workspace", kind: "image", time: "5 ngày trước",
-        content: "Bản thiết kế giao diện Pulse Mobile Workspace\nphiên bản 2.0 vừa hoàn tất! Tối ưu trải nghiệm\nlướt newfeed cho các tech founder & creator Việt\nNam. Các bác thấy layout mới này thế nào? 📱✨",
-        likes: 419, comments: 52, shares: 27,
-        assets: { avatar: "3360:784", verified: "3360:789", globe: "3360:796", more: "3360:799", reaction: "3360:812", heart: "3360:816", like: "3360:828", comment: "3360:833", share: "3360:838" },
-    },
-];
-
-export const pollOptions = [
-    { label: "GitHub Copilot & Cursor AI", votes: 338, icon: "3360:719" },
-    { label: "ChatGPT Plus & Claude 3.5 Sonnet", votes: 116, icon: "3360:729" },
-    { label: "Midjourney & v0.dev", votes: 74, icon: "3360:739" },
-] as const;
+export const profilePostIcons = { more: "3360:629", like: "3360:676", comment: "3360:681", share: "3360:686" } as const;
+export const profilePrivacyLabels = { public: "Công khai", friends: "Bạn bè", private: "Chỉ mình tôi" } as const;
 
 export const profileLimits = { imageSize: 10 * 1024 * 1024, noticeDuration: 4500 };
 

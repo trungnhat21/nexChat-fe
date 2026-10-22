@@ -1,3 +1,4 @@
+import type { FeedPost, PostMedia } from "./post";
 import type { ChangeEvent, RefObject } from "react";
 import type { profileAssets, profileTabs } from "../../page/profile/config";
 
@@ -8,33 +9,24 @@ export type ProfileDetails = {
     bio: string; website: string; company: string; joined: string;
 };
 export type ProfileAssetProps = { id: ProfileAssetId; className?: string; alt?: string; src?: string | null };
-export type ProfilePost = {
-    id: string; kind: "pinned" | "poll" | "image"; time: string; content: string;
-    tags?: string[]; likes: number; comments: number; shares: number;
-    assets: {
-        avatar: ProfileAssetId; verified: ProfileAssetId; globe: ProfileAssetId;
-        more: ProfileAssetId; reaction: ProfileAssetId; heart?: ProfileAssetId;
-        like: ProfileAssetId; comment: ProfileAssetId; share: ProfileAssetId;
-    };
-};
 export type ProfileDialog = {
     kind: "edit" | "notice" | "image" | "post" | "account";
-    title: string; image?: ProfileAssetId; postId?: string;
+    title: string; image?: ProfileAssetId; media?: PostMedia; postId?: string;
 } | null;
 export type ProfileNotice = (message: string) => void;
 export type ProfileOpenDialog = (dialog: NonNullable<ProfileDialog>) => void;
 export type ProfileHeroProps = {
+    isOwner: boolean; postCount: number; uploading: boolean;
     details: ProfileDetails; coverSrc: string | null; avatarSrc: string | null;
     coverInputRef: RefObject<HTMLInputElement | null>; avatarInputRef: RefObject<HTMLInputElement | null>;
     onCoverChange: (event: ChangeEvent<HTMLInputElement>) => void;
     onAvatarChange: (event: ChangeEvent<HTMLInputElement>) => void;
     onEdit: () => void; onShare: () => void; onOpen: ProfileOpenDialog;
 };
-export type ProfilePostProps = {
-    post: ProfilePost; details: ProfileDetails; avatarSrc: string | null;
-    onNotice: ProfileNotice; onOpen: ProfileOpenDialog;
-};
-export type ProfileComment = { id: string; text: string };
-export type ProfilePollProps = { onNotice: ProfileNotice; onDiscuss: () => void };
+export type ProfilePostProps = { post: FeedPost; onNotice: ProfileNotice; onOpen: ProfileOpenDialog };
+export type ProfileUserAvatarProps = { name: string; src?: string | null; className?: string };
 
 export type ProfileHighlightsProps = { onOpen: ProfileOpenDialog };
+
+export type ProfileImageKind = "avatar" | "cover";
+export type ProfileImageResponse = { success: boolean; kind: ProfileImageKind; url: string };

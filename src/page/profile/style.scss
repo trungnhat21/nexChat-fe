@@ -236,3 +236,20 @@
 @media (min-width: 600px) {
     .profile-cover > .profile-image > img, .profile-showcase > img { object-fit: cover; }
 }
+
+.profile-user-avatar { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; border-radius: 50%; background: #e5eeff; color: var(--profile-primary); font-weight: 600; vertical-align: middle; }
+.profile-user-avatar > img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.profile-main-avatar > .profile-user-avatar { width: 100%; height: 100%; font-size: 28px; }
+.profile-main-avatar:disabled { opacity: 1; cursor: default; }
+.profile-header-account .profile-user-avatar { width: 32px; height: 32px; font-size: 12px; }
+.profile-live-post .profile-post-content { white-space: pre-wrap; }
+.profile-live-media { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+.profile-live-media > :only-child { grid-column: 1 / -1; }
+.profile-live-media > button { min-width: 0; border-radius: 12px; overflow: hidden; }
+.profile-live-media img, .profile-live-media > video { display: block; width: 100%; max-height: 500px; object-fit: contain; border-radius: 12px; background: #0b1c30; }
+.profile-media-grid > button > :is(img,video) { display: block; width: 100%; height: 160px; object-fit: cover; border-radius: 8px; background: #e5eeff; }
+.profile-load-more { width: 100%; padding: 12px; background: white; border-radius: 12px; color: var(--profile-primary); font-weight: 600; }
+.profile-feed-error { color: #b90538; }
+.profile-feed-error > button { margin-top: 8px; text-decoration: underline; }
+
+.profile-image-status { padding: 8px 24px; color: var(--profile-primary); font-size: 13px; }

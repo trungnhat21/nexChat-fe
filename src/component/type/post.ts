@@ -6,7 +6,8 @@ export type FeedPost = {
     likes: number; comments: number; media: PostMedia[];
 };
 export type PostDraft = { content: string; privacy: PostPrivacy; files: File[]; keepMediaIds: string[] };
-export type PostPage = { success: boolean; posts: FeedPost[]; nextCursor: string | null };
+export type ProfileAuthor = { id: string; name: string; handle: string | null; avatar: string | null; cover?: string | null; bio: string | null; createdAt: string };
+export type PostPage = { success: boolean; posts: FeedPost[]; nextCursor: string | null; total?: number; author?: ProfileAuthor };
 export type PostResult = { success: boolean; post: FeedPost };
 export type NewPostMedia = { id: string; file: File; url: string };
 export type UploadProgress = (percent: number) => void;
