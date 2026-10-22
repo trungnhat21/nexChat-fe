@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import type { Comment, FeedPost, HomeContextValue, Story } from "../../component/type/home";
+import type { HomeContextValue, Story } from "../../component/type/home";
 import asset0 from "../../_metronic/assets/images/home/current-user.png";
 import asset1 from "../../_metronic/assets/images/home/create-story.png";
 import asset2 from "../../_metronic/assets/images/home/story-ha-my.png";
@@ -167,27 +167,6 @@ export const onlineFriends = [
 ] as const;
 
 
-// Design fixtures: interactions stay in this browser session until feed APIs exist.
-export const initialPosts: FeedPost[] = [
-    {
-        id: "design-system", author: "Đặng Hoàng Anh", avatar: "3352:656",
-        role: "Product Designer tại Pulse Vietnam", time: "2 giờ trước", kind: "image",
-        content: "Vừa hoàn thiện concept hệ sinh thái Design System mới dành cho Pulse! Trải nghiệm ứng dụng ánh sáng tân tiến kết hợp phong cách Glassmorphism nhẹ nhàng mang lại cảm giác cực kỳ êm ái cho mắt khi sử dụng liên tục ban ngày lẫn ban đêm. 🚀✨",
-        likes: 342, comments: 48,
-    },
-    {
-        id: "ai-poll", author: "Trần Quốc Nam", avatar: "3352:793",
-        role: "Tech Lead @ VN-Tech Labs", time: "5 giờ trước", kind: "poll",
-        content: "Khảo sát nhanh dành cho anh em lập trình viên & designer: Công cụ hỗ trợ AI nào bạn đang đưa vào quy trình phát triển sản phẩm hàng ngày nhiều nhất? Hãy bình chọn dưới đây nhé! 👇",
-        likes: 189, comments: 32,
-    },
-];
-
-export const sampleComments: Comment[] = [
-    { id: "tuan-kiet", author: "Vũ Tuấn Kiệt", text: "Bản phối màu và tương phản thị giác này nhìn hút mắt thật sự! Bạn có định phát hành bản Figma UI Kit cho cộng đồng không?", avatar: "3352:749", time: "45 phút trước", likes: 12 },
-    { id: "phuong-thao", author: "Nguyễn Phương Thảo", text: "Tuyệt tác luôn Hoàng Anh ơi! Rất hóng phiên bản chính thức trên App Store vào tháng sau nhé! 🔥", avatar: "3352:768", time: "18 phút trước", likes: 4 },
-];
-
 export const navigationLinks = [
         { label: "Bảng tin", icon: "3352:499", badge: "" },
         { label: "Khám phá", icon: "3352:506", badge: "Hot" },
@@ -204,16 +183,13 @@ export const shortcuts = [
                 ["VN", "Khởi Nghiệp Công Nghệ", "42.1k thành viên"],
             ] as const;
 
-export const composerTools = [
-                    ["3352:631", "Ảnh / Video"], ["3352:636", "Gắn thẻ"],
-                    ["3352:641", "Cảm xúc"], ["3352:646", "Thăm dò"],
-                ] as const;
-
-export const pollOptions = ["GitHub Copilot & Cursor AI", "ChatGPT Plus & Claude 3.5 Sonnet", "Midjourney & v0.dev"];
-export const originalVotes = [799, 275, 174];
-export const postHashtags = ["#PulseDesign", "#UXResearch", "#TechInVietnam", "#ProductDesign"];
+export const postLimits = { contentLength: 5000, files: 5, fileBytes: 25 * 1024 * 1024, totalBytes: 50 * 1024 * 1024 } as const;
+export const mediaTypes: string[] = ["image/jpeg", "image/png", "image/gif", "image/webp", "video/mp4", "video/webm"];
+export const mediaAccept = mediaTypes.join(",");
+export const privacyLabels = { public: "Công khai", friends: "Bạn bè", private: "Chỉ mình tôi" } as const;
 
 export const HomeContext = createContext<HomeContextValue>({
+    user: null,
     search: "",
     setSearch: (_value: string) => { void _value; },
     announce: (_message: string) => { void _message; },

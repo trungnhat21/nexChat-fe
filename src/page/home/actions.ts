@@ -1,149 +1,169 @@
-import { useContext, useEffect, useRef, useState, type FormEvent } from "react";
+import { useContext, useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
+import { isAxiosError } from "axios";
 import { useNavigate } from "react-router";
-import { logout } from "../../axios/auth";
-import { HomeContext } from "./config";
-import { initialPosts, originalVotes, postHashtags, sampleComments, suggestedFriends } from "./config";
-import type { Comment, ComposerProps, FeedPost, HomeContextValue } from "../../component/type/home";
+import { getCurrentUser, logout } from "../../axios/auth";
+import { createPost, deletePost, listPosts, updatePost } from "../../axios/posts";
+import { confirmDelete } from "../../utils/swal";
+import { HomeContext, postLimits, mediaTypes, suggestedFriends } from "./config";
+import type { CurrentUser } from "../../component/type/auth";
+import type { ComposerProps, FeedPost, NewPostMedia, PostCardProps, PostDraft, PostPrivacy, UploadProgress } from "../../component/type/post";
 
-export function useHome() {
-    return useContext(HomeContext);
-}
-
+export function useHome() { return useContext(HomeContext); }
 export function focusComposer() {
     const field = document.getElementById("home-compose");
     field?.scrollIntoView({ behavior: "smooth", block: "center" });
     field?.focus({ preventScroll: true });
 }
-
+export function postError(error: unknown) {
+    if (isAxiosError(error)) {
+        if (error.response?.status === 401) return "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
+        const message: unknown = error.response?.data?.message;
+        if (typeof message === "string" && error.response?.status !== 500) return message;
+        if (!error.response) return "Không kết nối được máy chủ. Nội dung của bạn vẫn được giữ để thử lại.";
+    }
+    return "Không thể lưu thay đổi. Vui lòng thử lại.";
+}
 export function useHomeLayoutActions() {
     const [search, setSearch] = useState("");
     const [notice, setNotice] = useState("");
     const [panel, setPanel] = useState("");
+    const [user, setUser] = useState<CurrentUser | null>(null);
     const dialogRef = useRef<HTMLDialogElement>(null);
-
+    useEffect(() => {
+        let active = true;
+        void getCurrentUser().then(response => { if (active) setUser(response.data.currentUser); }).catch(() => {});
+        return () => { active = false; };
+    }, []);
     useEffect(() => {
         if (!notice) return;
         const timer = window.setTimeout(() => setNotice(""), 4500);
         return () => window.clearTimeout(timer);
     }, [notice]);
-
     useEffect(() => {
         if (panel && !dialogRef.current?.open) dialogRef.current?.showModal();
         if (!panel) dialogRef.current?.close();
     }, [panel]);
-
-    return { search, setSearch, notice, setNotice, panel, setPanel, dialogRef };
+    return { search, setSearch, notice, setNotice, panel, setPanel, dialogRef, user };
 }
+export function useHomeFeedActions(search: string) {
+    const [posts, setPosts] = useState<FeedPost[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [error, setError] = useState("");
+    const [nextCursor, setNextCursor] = useState<string | null>(null);
+    const [revision, setRevision] = useState(0);
+    const generation = useRef(0);
+    const query = search.trim();
+    useEffect(() => {
+        let active = true;
+        generation.current++;
+        const controller = new AbortController();
+        const timer = window.setTimeout(() => {
+            setLoading(true); setError("");
+            void listPosts(query, undefined, controller.signal).then(result => {
+                if (active) { setPosts(result.posts); setNextCursor(result.nextCursor); }
+            }).catch(error => { if (active) setError(postError(error)); })
+                .finally(() => { if (active) setLoading(false); });
+        }, query ? 250 : 0);
+        return () => { active = false; window.clearTimeout(timer); controller.abort(); };
+    }, [query, revision]);
 
-export function useHomeFeedActions({ search, setSearch }: Pick<HomeContextValue, "search" | "setSearch">) {
-    const [posts, setPosts] = useState<FeedPost[]>(initialPosts);
-    const query = search.trim().toLocaleLowerCase("vi");
-    const visiblePosts = posts.filter(post => `${post.author} ${post.content} ${post.kind === "image" ? postHashtags.join(" ") : ""}`.toLocaleLowerCase("vi").includes(query));
-
-    function addPost(content: string) {
-        const post: FeedPost = {
-            id: crypto.randomUUID(), author: "Lê Minh Tâm", avatar: "3352:623",
-            role: "Bài viết xem thử • Chưa lưu lên máy chủ", time: "Vừa xong",
-            content, kind: "text", likes: 0, comments: 0,
-        };
-        setPosts(previous => [post, ...previous]);
-    }
-
-    return { search, setSearch, query, visiblePosts, addPost };
-}
-
-export function useComposerActions({ onPost }: ComposerProps) {
-    const [text, setText] = useState("");
-    const { announce, openPanel } = useHome();
-
-    function submitPost(event: FormEvent<HTMLFormElement>) {
-        event.preventDefault();
-        if (!text.trim()) { focusComposer(); return; }
-        onPost(text.trim());
-        setText("");
-        announce("Đã thêm bài viết vào bản xem thử. Nội dung chưa lưu lên máy chủ.");
-    }
-
-    return { text, setText, submitPost, openPanel };
-}
-
-export function usePollActions() {
-    const [selected, setSelected] = useState(0);
-    const { announce } = useHome();
-    const totalVotes = originalVotes.reduce((sum, votes) => sum + votes, 0);
-
-    function selectOption(index: number) {
-        setSelected(index);
-        announce("Đã cập nhật lựa chọn trong bản xem thử, chưa lưu lên máy chủ.");
-    }
-
-    function getPercentage(index: number) {
-        return Math.round(((originalVotes[index] + Number(selected === index) - Number(index === 0)) / totalVotes) * 100);
-    }
-
-    return { selected, selectOption, getPercentage };
-}
-
-export function useCommentActions() {
-    const [liked, setLiked] = useState(false);
-    return { liked, toggleLike: () => setLiked(previous => !previous) };
-}
-
-export function usePostActions(post: FeedPost) {
-    const isImage = post.kind === "image";
-    const [liked, setLiked] = useState(isImage);
-    const [saved, setSaved] = useState(false);
-    const [commentsOpen, setCommentsOpen] = useState(isImage);
-    const [comments, setComments] = useState<Comment[]>(isImage ? sampleComments : []);
-    const [draft, setDraft] = useState("");
-    const inputRef = useRef<HTMLInputElement>(null);
-    const { announce, openPanel, setSearch } = useHome();
-    const likeCount = post.likes + Number(liked) - Number(isImage);
-    const commentCount = post.comments + comments.length - (isImage ? sampleComments.length : 0);
-
-    function reply(author?: string) {
-        setCommentsOpen(true);
-        if (author) setDraft(`@${author} `);
-        requestAnimationFrame(() => inputRef.current?.focus());
-    }
-
-    async function share() {
+    async function loadMore() {
+        if (!nextCursor || loadingMore) return;
+        const version = generation.current;
+        setLoadingMore(true); setError("");
         try {
-            await navigator.clipboard.writeText(`${window.location.origin}/home#${post.id}`);
-            announce("Đã sao chép liên kết bài viết.");
-        } catch { openPanel("Chia sẻ bài viết"); }
+            const result = await listPosts(query, nextCursor);
+            if (version === generation.current) {
+                setPosts(previous => [...previous, ...result.posts.filter(post => !previous.some(existing => existing.id === post.id))]);
+                setNextCursor(result.nextCursor);
+            }
+        } catch (error) { if (version === generation.current) setError(postError(error)); }
+        finally { setLoadingMore(false); }
     }
-
-    function toggleLike() {
-        setLiked(previous => !previous);
-        announce("Đã cập nhật lượt thích trong bản xem thử.");
+    async function addPost(draft: PostDraft, onProgress: UploadProgress) {
+        const post = await createPost(draft, onProgress);
+        setPosts(previous => [post, ...previous.filter(item => item.id !== post.id)]);
     }
-
-    function toggleSave() {
-        setSaved(previous => !previous);
-        announce(saved ? "Đã bỏ lưu trong bản xem thử." : "Đã lưu trong bản xem thử, chưa lưu lên máy chủ.");
+    async function editPost(id: string, draft: PostDraft, onProgress: UploadProgress) {
+        const post = await updatePost(id, draft, onProgress);
+        setPosts(previous => previous.map(item => item.id === id ? post : item));
     }
-
-    function submitComment(event: FormEvent<HTMLFormElement>) {
-        event.preventDefault();
-        if (!draft.trim()) return;
-        const comment: Comment = {
-            id: crypto.randomUUID(), author: "Lê Minh Tâm", avatar: "3352:731",
-            text: draft.trim(), time: "Vừa xong", likes: 0,
-        };
-        setComments(previous => [...previous, comment]);
-        setDraft("");
-        announce("Đã thêm bình luận trong bản xem thử, chưa lưu lên máy chủ.");
+    async function removePost(id: string) {
+        await deletePost(id);
+        setPosts(previous => previous.filter(post => post.id !== id));
     }
-
-    function insertEmoji() {
-        setDraft(previous => `${previous} 😊`);
-        inputRef.current?.focus();
-    }
-
-    return { isImage, liked, saved, commentsOpen, comments, draft, setDraft, inputRef, openPanel, setSearch, likeCount, commentCount, reply, share, toggleLike, toggleSave, submitComment, insertEmoji };
+    const normalized = query.toLocaleLowerCase("vi");
+    const visiblePosts = posts.filter(post => (post.author.name + " " + post.content).toLocaleLowerCase("vi").includes(normalized));
+    return { query, visiblePosts, addPost, editPost, removePost, loading, loadingMore, error, nextCursor, loadMore, reload: () => setRevision(previous => previous + 1) };
 }
-
+export function useComposerActions({ onPost, post }: ComposerProps) {
+    const [text, setText] = useState(post?.content ?? "");
+    const [privacy, setPrivacy] = useState<PostPrivacy>(post?.privacy ?? "public");
+    const [files, setFiles] = useState<NewPostMedia[]>([]);
+    const [retained, setRetained] = useState(post?.media ?? []);
+    const [submitting, setSubmitting] = useState(false);
+    const [error, setError] = useState("");
+    const [progress, setProgress] = useState(0);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const urls = useRef(new Set<string>());
+    const { announce } = useHome();
+    useEffect(() => {
+        const objectUrls = urls.current;
+        return () => { objectUrls.forEach(url => URL.revokeObjectURL(url)); objectUrls.clear(); };
+    }, []);
+    function addFiles(event: ChangeEvent<HTMLInputElement>) {
+        const added = Array.from(event.target.files ?? []);
+        event.target.value = "";
+        if (!added.length) return;
+        if (added.length + files.length + retained.length > postLimits.files) { setError("Tối đa 5 file mỗi bài viết."); return; }
+        if (added.some(file => !mediaTypes.includes(file.type) || !file.size || file.size > postLimits.fileBytes)) { setError("Chọn ảnh JPEG, PNG, GIF, WebP hoặc video MP4, WebM có dung lượng tối đa 25 MB/file."); return; }
+        const total = [...files.map(item => item.file), ...added, ...retained].reduce((sum,file) => sum + file.size,0);
+        if (total > postLimits.totalBytes) { setError("Tổng media tối đa 50 MB."); return; }
+        setError("");
+        setFiles(previous => [...previous, ...added.map(file => { const url = URL.createObjectURL(file); urls.current.add(url); return { id: crypto.randomUUID(), file, url }; })]);
+    }
+    function removeFile(id: string) {
+        const file = files.find(item => item.id === id);
+        if (file) { URL.revokeObjectURL(file.url); urls.current.delete(file.url); }
+        setFiles(previous => previous.filter(item => item.id !== id));
+    }
+    async function submitPost(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+        if (submitting) return;
+        if (!text.trim() && !files.length && !retained.length) { setError("Hãy nhập nội dung hoặc đính kèm ảnh/video."); return; }
+        setSubmitting(true); setError(""); setProgress(0);
+        try {
+            await onPost({ content: text.trim(), privacy, files: files.map(item => item.file), keepMediaIds: retained.map(item => item.id) }, setProgress);
+            urls.current.forEach(url => URL.revokeObjectURL(url)); urls.current.clear();
+            setText(""); setFiles([]); setRetained([]); setPrivacy("public");
+            announce(post ? "Đã cập nhật bài viết." : "Đã đăng bài viết.");
+        } catch (error) { setError(postError(error)); }
+        finally { setSubmitting(false); }
+    }
+    return { text, setText, privacy, setPrivacy, files, retained, setRetained, fileInputRef, addFiles, removeFile, submitPost, submitting, error, progress };
+}
+export function usePostActions({ post, onUpdate, onDelete }: PostCardProps) {
+    const [editing, setEditing] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+    const [error, setError] = useState("");
+    const { announce, openPanel } = useHome();
+    async function saveEdit(draft: PostDraft, onProgress: UploadProgress) { await onUpdate(post.id, draft, onProgress); setEditing(false); }
+    async function remove() {
+        if (deleting) return;
+        const confirmed = await confirmDelete("Xóa bài viết này?");
+        if (!confirmed) return;
+        setDeleting(true); setError("");
+        try { await onDelete(post.id); announce("Đã xóa bài viết."); }
+        catch (error) { setError(postError(error)); }
+        finally { setDeleting(false); }
+    }
+    async function share() {
+        try { await navigator.clipboard.writeText(window.location.origin + "/home#" + post.id); announce("Đã sao chép liên kết bài viết."); }
+        catch { openPanel("Chia sẻ bài viết"); }
+    }
+    return { editing, setEditing, deleting, error, saveEdit, remove, share, openPanel };
+}
 export function useDiscoveryActions() {
     const [following, setFollowing] = useState<string[]>([]);
     const [offset, setOffset] = useState(0);

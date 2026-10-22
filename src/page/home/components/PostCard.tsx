@@ -1,57 +1,36 @@
-import { Avatar, DesignIcon, DesignImage } from "./DesignAsset";
-import type { CommentItemProps, PostCardProps } from "../../../component/type/home";
-import { pollOptions, postHashtags } from "../config";
-import { useCommentActions, usePollActions, usePostActions } from "../actions";
+import { useState } from "react";
+import { DesignIcon } from "./DesignAsset";
+import UserAvatar from "./UserAvatar";
+import Composer from "./Composer";
+import { privacyLabels } from "../config";
+import { usePostActions } from "../actions";
+import type { PostCardProps, PostMedia } from "../../../component/type/post";
 
-
-function CommentItem({ comment, onReply }: CommentItemProps) {
-    const { liked, toggleLike } = useCommentActions();
-    return <div className="home-comment">
-        <Avatar id={comment.avatar} size={32} />
-        <div className="home-comment-body"><div className="home-comment-bubble"><div><strong>{comment.author}</strong><time>{comment.time}</time></div><p>{comment.text}</p></div>
-            <div className="home-comment-actions"><button aria-label={`Thích bình luận của ${comment.author}`} aria-pressed={liked} onClick={toggleLike}><DesignIcon id={comment.id === "phuong-thao" ? "3352:780" : "3352:761"} />{comment.likes + Number(liked)}</button><button onClick={onReply}>Trả lời</button></div>
-        </div>
-    </div>;
+function Media({ media, onReload }: { media: PostMedia; onReload: () => void }) {
+    const [failed, setFailed] = useState(false);
+    if (failed) return <div className="home-media-error"><p>Không tải được {media.name}. Liên kết có thể đã hết hạn.</p><button onClick={onReload}>Tải lại bảng tin</button></div>;
+    return media.type.startsWith("video/") ? <video src={media.url} controls preload="metadata" onError={() => setFailed(true)} aria-label={media.name} /> : <a href={media.url} target="_blank" rel="noreferrer"><img src={media.url} alt={media.name} loading="lazy" onError={() => setFailed(true)} /></a>;
 }
-
-function Poll() {
-    const { selected, selectOption, getPercentage } = usePollActions();
-    return <div className="home-poll" role="group" aria-label="Bình chọn công cụ AI">
-        {pollOptions.map((label, index) => {
-            const percent = getPercentage(index);
-            return <button className={`home-poll-option ${selected === index ? "is-selected" : ""}`} aria-pressed={selected === index} key={label} onClick={() => selectOption(index)}>
-                <span className={`home-poll-bar home-poll-progress-${percent}`} />
-                <span className="home-poll-label">{selected === index ? <DesignIcon id="3352:819" /> : <span className="home-poll-radio" />}{label}</span><strong>{percent}%</strong>
-            </button>;
-        })}
-        <div className="home-poll-meta"><span>Tổng cộng 1,248 phiếu bầu</span><span>Còn lại 2 ngày bình chọn</span></div>
-    </div>;
-}
-
-export default function PostCard({ post }: PostCardProps) {
-    const { isImage, liked, saved, commentsOpen, comments, draft, setDraft, inputRef, openPanel, setSearch, likeCount, commentCount, reply, share, toggleLike, toggleSave, submitComment, insertEmoji } = usePostActions(post);
-    return <article className={`home-card home-post home-post-${post.kind}`} id={post.id}>
+export default function PostCard(props: PostCardProps) {
+    const { post, onReload } = props;
+    const { editing, setEditing, deleting, error, saveEdit, remove, share, openPanel } = usePostActions(props);
+    const createdAt = new Date(post.createdAt);
+    if (editing) return <article className="home-card home-post-editor"><h2>Chỉnh sửa bài viết</h2><Composer post={post} onPost={saveEdit} onCancel={() => setEditing(false)} /></article>;
+    return <article className="home-card home-post" id={post.id}>
         <header className="home-post-header">
-            <Avatar id={post.avatar} size={post.kind === "text" ? 40 : 44} online />
-            <div className="home-post-author"><div><strong>{post.author}</strong>{post.kind !== "text" && <DesignIcon id={isImage ? "3352:663" : "3352:800"} />}<time>• {post.time}</time></div><small>{post.role} <DesignIcon id={isImage ? "3352:670" : "3352:807"} /></small></div>
-            <button className="home-icon-button" aria-label={`Tùy chọn bài viết của ${post.author}`} onClick={() => openPanel("Tùy chọn bài viết")}><DesignIcon id={isImage ? "3352:673" : "3352:810"} /></button>
+            <UserAvatar name={post.author.name} src={post.author.avatar} size={44} />
+            <div className="home-post-author"><div><strong>{post.author.name}</strong></div><small><time dateTime={post.createdAt}>{createdAt.toLocaleString("vi-VN", { dateStyle: "medium", timeStyle: "short" })}</time> · {privacyLabels[post.privacy]}{post.updatedAt !== post.createdAt && " · Đã chỉnh sửa"}</small></div>
+            {post.canEdit && <details className="home-post-menu"><summary className="home-icon-button" aria-label={`Tùy chọn bài viết của ${post.author.name}`}><DesignIcon id="3352:673" /></summary><div><button onClick={() => setEditing(true)} disabled={deleting}>Chỉnh sửa bài viết</button><button className="home-delete-post" onClick={remove} disabled={deleting}>{deleting ? "Đang xóa..." : "Xóa bài viết"}</button></div></details>}
         </header>
-        <div className="home-post-content"><p>{post.content}</p>
-            {isImage && <div className="home-hashtags">{postHashtags.map(tag => <button key={tag} onClick={() => setSearch(tag)}>{tag}</button>)}</div>}
-        </div>
-        {isImage && <DesignImage id="3352:688" className="home-post-photo" alt="Concept ứng dụng Pulse trên điện thoại với hệ thống thiết kế mới" />}
-        {post.kind === "poll" && <Poll />}
-        {isImage && <div className="home-post-stats"><button onClick={() => openPanel("Người thích bài viết")}><span className="home-reactions"><span><DesignIcon id="3352:694" /></span><span><DesignIcon id="3352:699" /></span></span>{likeCount} người thích</button><span><button onClick={() => reply()}>{commentCount} bình luận</button><button onClick={share}>15 lượt chia sẻ</button></span></div>}
+        {post.content && <div className="home-post-content"><p>{post.content}</p></div>}
+        {!!post.media.length && <div className={`home-post-media ${post.media.length === 1 ? "has-one" : ""}`}>{post.media.map(media => <Media key={media.id + media.url} media={media} onReload={onReload} />)}</div>}
+        <div className="home-post-stats"><span>{post.likes} lượt thích</span><span>{post.comments} bình luận</span></div>
         <div className="home-post-actions">
-            <button className={liked ? "is-liked" : ""} aria-pressed={liked} onClick={toggleLike}><DesignIcon id={isImage ? "3352:710" : "3352:850"} />{isImage ? (liked ? "Đã thích" : "Thích") : `${likeCount} Thích`}</button>
-            <button onClick={() => reply()} aria-expanded={commentsOpen}><DesignIcon id={isImage ? "3352:715" : "3352:855"} />{isImage ? "Bình luận" : `${commentCount} Ý kiến`}</button>
-            <button onClick={share}><DesignIcon id={isImage ? "3352:720" : "3352:860"} />Chia sẻ</button>
-            <button className={saved ? "is-saved" : ""} aria-pressed={saved} onClick={toggleSave}><DesignIcon id={isImage ? "3352:725" : "3352:865"} />{saved ? "Đã lưu" : "Lưu"}</button>
+            <button onClick={() => openPanel("Thích bài viết")}><DesignIcon id="3352:710" />Thích</button>
+            <button onClick={() => openPanel("Bình luận")}><DesignIcon id="3352:715" />Bình luận</button>
+            <button onClick={share}><DesignIcon id="3352:720" />Chia sẻ</button>
+            <button onClick={() => openPanel("Lưu bài viết")}><DesignIcon id="3352:725" />Lưu</button>
         </div>
-        {commentsOpen && <section className="home-comments" aria-label="Bình luận">
-            <form className="home-comment-form" onSubmit={submitComment}><Avatar id="3352:731" size={32} /><div className="home-comment-input"><input ref={inputRef} value={draft} maxLength={2000} onChange={event => setDraft(event.target.value)} placeholder="Viết bình luận công khai của bạn..." aria-label="Viết bình luận" /><button type="button" aria-label="Chèn cảm xúc" onClick={insertEmoji}><DesignIcon id="3352:738" /></button><button type="button" aria-label="Đính kèm vào bình luận" onClick={() => openPanel("Đính kèm bình luận")}><DesignIcon id="3352:741" /></button><button type="submit" aria-label="Gửi bình luận"><DesignIcon id="3352:744" /></button></div></form>
-            {comments.map(comment => <CommentItem key={comment.id} comment={comment} onReply={() => reply(comment.author)} />)}
-            {isImage && <button className="home-more-comments" onClick={() => openPanel("Các bình luận khác")}>Xem thêm 46 bình luận khác...</button>}
-        </section>}
+        {error && <p className="home-feed-error" role="alert">{error}</p>}
     </article>;
 }

@@ -1,17 +1,17 @@
+import UserAvatar from "./UserAvatar";
 import { navigationLinks, shortcuts } from "../config";
 import { Link } from "react-router";
-import { Avatar, DesignIcon } from "./DesignAsset";
+import { DesignIcon } from "./DesignAsset";
 import { useHome } from "../actions";
 
 export default function Sidebar() {
-    const { openPanel } = useHome();
+    const { openPanel, user } = useHome();
     return <aside className="home-left" aria-label="Hồ sơ và lối tắt">
         <section className="home-card home-user-card">
             <Link className="home-user-summary" to="/profile">
-                <Avatar id="3352:474" size={48} online />
-                <span><strong>Lê Minh Tâm <DesignIcon id="3352:481" /></strong><small>@minhtam.tech</small></span>
+                <UserAvatar name={[user?.lastName, user?.firstName].filter(Boolean).join(" ") || user?.userName || "Tài khoản"} src={user?.avatar} size={48} />
+                <span><strong>{[user?.lastName, user?.firstName].filter(Boolean).join(" ") || user?.userName || "Tài khoản của bạn"}</strong><small>{user?.userName ? "@"+user.userName : user?.email}</small></span>
             </Link>
-            <div className="home-user-stats"><button onClick={() => openPanel("Người theo dõi")}><strong>1.2k</strong><span>Người theo dõi</span></button><button onClick={() => openPanel("Đang theo dõi")}><strong>384</strong><span>Đang theo dõi</span></button></div>
         </section>
         <nav className="home-card home-side-nav" aria-label="Menu cá nhân">
             {navigationLinks.map((item, index) => {

@@ -16,3 +16,6 @@ export type RegisterResponse = {
     message: string;
     data: { id: string; email: string };
 };
+
+export type CurrentUser = { id: string; email: string; userName: string | null; firstName: string | null; lastName: string | null; avatar: string | null; status: string; createdAt: string; updatedAt: string };
+export type AuthSession = { accessToken: string; currentUser: CurrentUser };

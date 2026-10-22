@@ -1,18 +1,19 @@
+import UserAvatar from "./UserAvatar";
 import { Link } from "react-router";
 import Button from "../../../component/UI/Button/Button";
 import Input from "../../../component/UI/Input/Input";
-import { Avatar, DesignIcon, DesignImage } from "./DesignAsset";
+import { DesignIcon, DesignImage } from "./DesignAsset";
 import { focusComposer, useHeaderActions, useHome } from "../actions";
 
 export default function Header() {
-    const { search, setSearch, openPanel } = useHome();
+    const { search, setSearch, openPanel, user } = useHome();
     const { accountMenuOpen, setAccountMenuOpen, loggingOut, accountMenuRef, accountButtonRef, logoutButtonRef, openAccountMenu, handleLogout } = useHeaderActions();
     return <header className="home-header">
         <div className="home-header-start">
             <Link to="/home" className="home-brand" aria-label="Pulse — Trang chủ"><DesignImage id="3352:1019" /><span>Pulse</span></Link>
             <div className="home-search">
                 <DesignIcon id="3352:1027" />
-                <Input name="feedSearch" aria-label="Tìm kiếm trong bảng tin mẫu" placeholder="Tìm kiếm bạn bè, bài viết, hashtag..." value={search} onChange={event => setSearch(event.target.value)} inputClassName="home-search-field" compact />
+                <Input name="feedSearch" aria-label="Tìm kiếm bài viết" maxLength={200} placeholder="Tìm kiếm bạn bè, bài viết, hashtag..." value={search} onChange={event => setSearch(event.target.value)} inputClassName="home-search-field" compact />
             </div>
         </div>
         <nav className="home-top-nav" aria-label="Điều hướng chính">
@@ -27,7 +28,7 @@ export default function Header() {
                 <button type="button" className="home-profile-button" ref={accountButtonRef} aria-label="Tài khoản của bạn" aria-haspopup="menu" aria-expanded={accountMenuOpen} aria-controls={accountMenuOpen ? "home-account-menu" : undefined} onClick={() => setAccountMenuOpen(!accountMenuOpen)} onKeyDown={event => {
                     if (event.key === "ArrowDown") { event.preventDefault(); openAccountMenu(); }
                 }}>
-                    <Avatar id="3352:1056" size={32} online /><DesignIcon id="3352:1058" />
+                    <UserAvatar name={[user?.lastName, user?.firstName].filter(Boolean).join(" ") || user?.userName || "Tài khoản"} src={user?.avatar} size={32} /><DesignIcon id="3352:1058" />
                 </button>
                 {accountMenuOpen && <div className="home-account-menu" id="home-account-menu" role="menu" aria-label="Tài khoản">
                     <button type="button" role="menuitem" ref={logoutButtonRef} disabled={loggingOut} onClick={handleLogout}>{loggingOut ? "Đang đăng xuất..." : "Đăng xuất"}</button>
