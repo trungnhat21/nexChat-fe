@@ -1,6 +1,7 @@
 import PostInteractions from "../../../component/common/post-interactions";
 import OriginalPost from "../../../component/common/post-interactions/OriginalPost";
 import { useState } from "react";
+import { Link } from "react-router";
 import { DesignIcon } from "./DesignAsset";
 import UserAvatar from "./UserAvatar";
 import Composer from "./Composer";
@@ -21,8 +22,8 @@ export default function PostCard(props: PostCardProps) {
     if (editing) return <article className="home-card home-post-editor"><h2>Chỉnh sửa bài viết</h2><Composer post={post} onPost={saveEdit} onCancel={() => setEditing(false)} /></article>;
     return <article className="home-card home-post" id={post.id}>
         <header className="home-post-header">
-            <UserAvatar name={post.author.name} src={post.author.avatar} size={44} />
-            <div className="home-post-author"><div><strong>{post.author.name}</strong></div><small><time dateTime={post.createdAt}>{createdAt.toLocaleString("vi-VN", { dateStyle: "medium", timeStyle: "short" })}</time> · {privacyLabels[post.privacy]}{post.updatedAt !== post.createdAt && " · Đã chỉnh sửa"}</small></div>
+            <Link className="home-post-profile-link" to={`/profile/${post.author.id}`} aria-label={`Xem trang cá nhân của ${post.author.name}`}><UserAvatar name={post.author.name} src={post.author.avatar} size={44} /></Link>
+            <div className="home-post-author"><div><Link className="home-post-profile-link" to={`/profile/${post.author.id}`}><strong>{post.author.name}</strong></Link></div><small><time dateTime={post.createdAt}>{createdAt.toLocaleString("vi-VN", { dateStyle: "medium", timeStyle: "short" })}</time> · {privacyLabels[post.privacy]}{post.updatedAt !== post.createdAt && " · Đã chỉnh sửa"}</small></div>
             {post.canEdit && <details className="home-post-menu"><summary className="home-icon-button" aria-label={`Tùy chọn bài viết của ${post.author.name}`}><DesignIcon id="3352:673" /></summary><div><button onClick={() => setEditing(true)} disabled={deleting}>Chỉnh sửa bài viết</button><button className="home-delete-post" onClick={remove} disabled={deleting}>{deleting ? "Đang xóa..." : "Xóa bài viết"}</button></div></details>}
         </header>
         {post.content && <div className="home-post-content"><p>{post.content}</p></div>}

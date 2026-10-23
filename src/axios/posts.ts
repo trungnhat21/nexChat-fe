@@ -46,8 +46,8 @@ export async function repostPost(id: string, content: string, privacy: PostPriva
 export async function listComments(id: string, cursor?: string, signal?: AbortSignal) {
     return (await api.get<CommentPage>("/posts/" + id + "/comments", { params: { cursor }, signal })).data;
 }
-export async function createComment(id: string, content: string) {
-    return (await api.post<CommentResult>("/posts/" + id + "/comments", { content })).data;
+export async function createComment(id: string, content: string, parentCommentId?: string) {
+    return (await api.post<CommentResult>("/posts/" + id + "/comments", { content, ...(parentCommentId ? { parentCommentId } : {}) })).data;
 }
 export async function editComment(postId: string, id: string, content: string) {
     return (await api.patch<CommentResult>("/posts/" + postId + "/comments/" + id, { content })).data;

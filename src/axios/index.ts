@@ -6,6 +6,7 @@ let accessToken: string | null = null;
 let refreshRequest: Promise<string> | null = null;
 
 export function setAccessToken(token: string | null) { accessToken = token; }
+export function getAccessToken() { return accessToken; }
 function isProtected(url = "") { return !/^\/?auth\/(login|register|refresh|logout)$/.test(url); }
 async function refreshSession(): Promise<string> {
     if (!refreshRequest) {

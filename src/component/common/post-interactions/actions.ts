@@ -19,6 +19,8 @@ export function usePostInteractions({ post, onStateChange, onNotice, onReposted 
     const [loading, setLoading] = useState(false);
     const [nextCursor, setNextCursor] = useState<string | null>(null);
     const [text, setText] = useState("");
+    const [replyingTo, setReplyingTo] = useState<string | null>(null);
+    const [replyText, setReplyText] = useState("");
     const [editing, setEditing] = useState<string | null>(null);
     const [editText, setEditText] = useState("");
     const [busy, setBusy] = useState("");
@@ -67,8 +69,18 @@ export function usePostInteractions({ post, onStateChange, onNotice, onReposted 
         void perform("comment", async () => {
             const result = await createComment(post.id, text.trim());
             if (!active.current) return;
-            if (result.comment) setComments(previous => [result.comment!, ...previous.filter(item => item.id !== result.comment!.id)]);
+            if (result.comment) setComments(previous => [{ ...result.comment!, replies: [] }, ...previous.filter(item => item.id !== result.comment!.id)]);
             setText(""); onStateChange(post.id, { comments: result.total });
+        });
+    }
+    function submitReply(event: FormEvent, parent: PostComment) {
+        event.preventDefault();
+        if (!replyText.trim()) return;
+        void perform("reply", async () => {
+            const result = await createComment(post.id, replyText.trim(), parent.id);
+            if (!active.current) return;
+            if (result.comment) setComments(previous => previous.map(item => item.id === parent.id ? { ...item, replies: [...(item.replies ?? []), result.comment!] } : item));
+            setReplyText(""); setReplyingTo(null); onStateChange(post.id, { comments: result.total });
         });
     }
     function saveEdit(event: FormEvent) {
@@ -86,7 +98,7 @@ export function usePostInteractions({ post, onStateChange, onNotice, onReposted 
         void perform("delete", async () => {
             const result = await deleteComment(post.id, comment.id);
             if (!active.current) return;
-            setComments(previous => previous.filter(item => item.id !== comment.id));
+            setComments(previous => comment.replies ? previous.filter(item => item.id !== comment.id) : previous.map(item => ({ ...item, replies: item.replies?.filter(reply => reply.id !== comment.id) })));
             if (editing === comment.id) setEditing(null);
             onStateChange(post.id, { comments: result.total });
         });
@@ -111,7 +123,7 @@ export function usePostInteractions({ post, onStateChange, onNotice, onReposted 
             onNotice("Đã đăng lại trên nexChat."); onReposted?.();
         });
     }
-    return { commentsOpen, toggleComments, comments, loaded, loading, nextCursor, loadComments, text, setText,
+    return { commentsOpen, setCommentsOpen, toggleComments, comments, loaded, loading, nextCursor, loadComments, text, setText, replyingTo, setReplyingTo, replyText, setReplyText, submitReply,
         editing, setEditing, editText, setEditText, busy, error, shareOpen, setShareOpen, repostText, setRepostText, privacy, setPrivacy,
         copied, repostedId, submitComment, saveEdit, removeComment, toggleSaved, copyLink, submitRepost };
 }

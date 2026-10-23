@@ -12,7 +12,7 @@ import "./style.scss";
 
 export default function ProfilePage() {
     const navigate = useNavigate();
-    const { changePostState, likePost, details, draft, setDraft, activeTab, setActiveTab, dialog, setDialog, notice, setNotice, dialogRef, cover, avatar, editProfile, saveProfile, shareProfile, loggingOut, handleLogout, currentUser, author, isOwner, posts, total, nextCursor, loading, loadingMore, error, loadMore, reload, avatarSrc } = useProfileActions();
+    const { changePostState, likePost, details, draft, setDraft, activeTab, setActiveTab, dialog, setDialog, notice, setNotice, dialogRef, cover, avatar, editProfile, saveProfile, shareProfile, loggingOut, handleLogout, currentUser, author, isOwner, posts, total, nextCursor, loading, loadingMore, error, loadMoreError, loadMore, reload, avatarSrc, relationship, relationshipBusy, performFriendAction, toggleFollow } = useProfileActions();
     const visiblePosts = posts;
     const media = posts.flatMap(post => post.media);
 
@@ -23,7 +23,7 @@ export default function ProfilePage() {
             <div className="profile-header-end"><button className="profile-icon-button" aria-label="Cài đặt trang cá nhân" onClick={() => setDialog({ kind: "account", title: "Tài khoản của bạn" })}><ProfileIcon id="3360:877" /></button><button className="profile-header-account" aria-label="Tài khoản của bạn" onClick={() => setDialog({ kind: "account", title: "Tài khoản của bạn" })}><ProfileUserAvatar src={currentUser?.avatar ?? null} name={[currentUser?.lastName, currentUser?.firstName].filter(Boolean).join(" ") || "Tài khoản"} /></button></div>
         </div></header>
         <main className="profile-shell">
-            <ProfileHero uploading={cover.uploading || avatar.uploading} isOwner={isOwner} postCount={total} details={details} coverSrc={author?.cover ?? null} avatarSrc={avatarSrc} coverInputRef={cover.inputRef} avatarInputRef={avatar.inputRef} onCoverChange={cover.onChange} onAvatarChange={avatar.onChange} onEdit={editProfile} onShare={shareProfile} onOpen={setDialog} />
+            <ProfileHero uploading={cover.uploading || avatar.uploading} isOwner={isOwner} postCount={total} details={details} coverSrc={author?.cover ?? null} avatarSrc={avatarSrc} coverInputRef={cover.inputRef} avatarInputRef={avatar.inputRef} onCoverChange={cover.onChange} onAvatarChange={avatar.onChange} onRemoveAvatar={() => void avatar.remove()} onEdit={editProfile} onShare={shareProfile} onOpen={setDialog} relationship={relationship} relationshipBusy={relationshipBusy} onFriendAction={performFriendAction} onFollow={toggleFollow} />
             {(cover.uploading || avatar.uploading) && <p className="profile-image-status" role="status">Đang tải ảnh lên...</p>}
             <ProfileHighlights onOpen={setDialog} />
             <nav className="profile-tabs" aria-label="Nội dung trang cá nhân">{profileTabs.filter(tab => tab.id !== "saved" || isOwner).map(tab => <button key={tab.id} aria-current={activeTab === tab.id ? "page" : undefined} onClick={() => tab.id === "saved" ? navigate("/saved") : setActiveTab(tab.id)}><ProfileIcon id={tab.icon} /><span>{tab.label}</span></button>)}</nav>
@@ -32,7 +32,7 @@ export default function ProfilePage() {
                 {error && <section className="profile-empty profile-feed-error" role="alert"><p>{error}</p><button onClick={reload}>Thử lại</button></section>}
                 {!loading && activeTab === "posts" && <>{visiblePosts.map(post => <ProfilePostCard key={post.id} post={post} onStateChange={changePostState} onLike={likePost} onNotice={setNotice} onOpen={setDialog} />)}{!error && visiblePosts.length === 0 && <section className="profile-empty"><h2>Chưa có bài viết để hiển thị</h2><p>Các bài viết của tài khoản này sẽ xuất hiện ở đây.</p></section>}</>}
                 {!loading && activeTab === "media" && <section className="profile-media"><h2>Ảnh & Video</h2><div className="profile-media-grid">{media.map(item => <button key={item.id} onClick={() => setDialog({ kind: "image", title: item.name, media: item })}>{item.type.startsWith("video/") ? <video src={item.url} preload="metadata" aria-label={item.name} /> : <img src={item.url} alt={item.name} loading="lazy" />}<span>{item.name}</span></button>)}</div>{!media.length && <p>Chưa có ảnh hoặc video trong các bài viết đã tải.</p>}</section>}
-                {!loading && nextCursor && activeTab !== "about" && <button className="profile-load-more" disabled={loadingMore} onClick={loadMore}>{loadingMore ? "Đang tải..." : "Xem thêm bài viết"}</button>}
+                {!loading && nextCursor && activeTab !== "about" && <><button className="profile-load-more" disabled={loadingMore} onClick={loadMore}>{loadingMore ? "Đang tải..." : loadMoreError ? "Thử tải lại bài viết" : "Xem thêm bài viết"}</button>{loadMoreError && <p className="profile-feed-error" role="alert">{loadMoreError}</p>}</>}
                 {activeTab === "about" && <section className="profile-about"><h2>Về {details.name}</h2><p>{details.bio}</p><dl><dt>Công việc</dt><dd>{details.role}</dd><dt>Sở thích</dt><dd>{details.specialty}</dd><dt>Website</dt><dd>{details.website}</dd><dt>Công ty</dt><dd>{details.company}</dd><dt>Tham gia</dt><dd>{details.joined}</dd></dl></section>}
             </div>
         </main>

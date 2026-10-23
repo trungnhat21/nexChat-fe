@@ -4,10 +4,41 @@ import Button from "../../../component/UI/Button/Button";
 import Input from "../../../component/UI/Input/Input";
 import { DesignIcon, DesignImage } from "./DesignAsset";
 import { focusComposer, useHeaderActions, useHome } from "../actions";
+import { useNotificationCenter } from "../notification-center-context";
+import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router";
+
+function notificationText(type: string, actorName: string) {
+    if (type === "friend_request") return `${actorName} đã gửi lời mời kết bạn.`;
+    if (type === "friend_accept") return `${actorName} đã chấp nhận lời mời kết bạn.`;
+    if (type === "new_post") return `${actorName} vừa đăng bài viết mới.`;
+    if (type === "message") return `${actorName} đã gửi cho bạn một tin nhắn.`;
+    if (type === "comment") return `${actorName} đã bình luận.`;
+    if (type === "comment_reaction") return `${actorName} đã bày tỏ cảm xúc với bình luận của bạn.`;
+    if (type === "post_reaction") return `${actorName} đã thích bài viết của bạn.`;
+    return "Bạn có thông báo mới.";
+}
 
 export default function Header() {
     const { search, setSearch, openPanel, user } = useHome();
+    const { notifications, unreadCount, isOpen, openNotifications, closeNotifications, markRead } = useNotificationCenter();
     const { accountMenuOpen, setAccountMenuOpen, loggingOut, accountMenuRef, accountButtonRef, logoutButtonRef, openAccountMenu, handleLogout } = useHeaderActions();
+    const notificationsRef = useRef<HTMLDivElement>(null);
+    const navigate = useNavigate();
+    useEffect(() => {
+        function onPointerDown(event: PointerEvent) {
+            if (event.target instanceof Node && !notificationsRef.current?.contains(event.target)) closeNotifications();
+        }
+        document.addEventListener("pointerdown", onPointerDown);
+        return () => document.removeEventListener("pointerdown", onPointerDown);
+    }, [closeNotifications]);
+
+    async function openNotification(id: string, type: string, referenceId: string | null, actorId?: string) {
+        try { await markRead(id); } catch { /* Keep navigation usable if marking the item read fails. */ }
+        closeNotifications();
+        if (type === "new_post" && referenceId) navigate("/posts/" + referenceId);
+        else if (actorId) navigate("/profile/" + actorId);
+    }
     return <header className="home-header">
         <div className="home-header-start">
             <Link to="/home" className="home-brand" aria-label="Pulse — Trang chủ"><DesignImage id="3352:1019" /><span>Pulse</span></Link>
@@ -22,8 +53,25 @@ export default function Header() {
         </nav>
         <div className="home-header-end">
             <Button className="home-primary home-create-button" onClick={focusComposer}><DesignIcon id="3352:1039" />Đăng bài</Button>
-            <button className="home-icon-button" aria-label="Tin nhắn, 2 chưa đọc" onClick={() => openPanel("Tin nhắn")}><DesignIcon id="3352:1045" /><span className="home-badge">2</span></button>
-            <button className="home-icon-button" aria-label="Thông báo, 3 chưa đọc" onClick={() => openPanel("Thông báo")}><DesignIcon id="3352:1050" /><span className="home-badge">3</span></button>
+            <button className="home-icon-button" aria-label="Tin nhan" onClick={() => openPanel("Tin nhắn")}><DesignIcon id="3352:1045" /></button>
+            <div className="home-notification-wrap" ref={notificationsRef}>
+                <button className="home-icon-button" aria-label={`Thông báo, ${unreadCount} chưa đọc`} aria-haspopup="dialog" aria-expanded={isOpen} onClick={() => isOpen ? closeNotifications() : openNotifications()}><DesignIcon id="3352:1050" />{unreadCount > 0 && <span className="home-badge">{unreadCount > 99 ? "99+" : unreadCount}</span>}</button>
+                {isOpen && <section className="home-notification-panel" role="dialog" aria-label="Thông báo">
+                    <header><h2>Thông báo</h2><span>{unreadCount > 0 ? `${unreadCount} chưa đọc` : "Mới nhất"}</span></header>
+                    <div className="home-notification-list">
+                        {!notifications.length && <p className="home-notification-empty">Bạn chưa có thông báo nào.</p>}
+                        {notifications.map(notification => {
+                            const actor = notification.actor;
+                            const actorName = actor ? [actor.last_name, actor.first_name].filter(Boolean).join(" ") || actor.user_name || "Người dùng" : "Hệ thống";
+                            return <button key={notification.id} className={`home-notification-item ${notification.isRead ? "is-read" : "is-unread"}`} onClick={() => void openNotification(notification.id, notification.type, notification.referenceId, actor?.id)}>
+                                {actor?.avatar ? <img src={actor.avatar} alt="" /> : <span className="home-notification-avatar">{actorName.slice(0, 1).toUpperCase()}</span>}
+                                <span className="home-notification-copy"><strong>{actorName}</strong><span>{notificationText(notification.type, actorName)}</span><small>{new Date(notification.createdAt).toLocaleString("vi-VN", { dateStyle: "short", timeStyle: "short" })}</small></span>
+                                {!notification.isRead && <i aria-label="Chưa đọc" />}
+                            </button>;
+                        })}
+                    </div>
+                </section>}
+            </div>
             <div className="home-account" ref={accountMenuRef}>
                 <button type="button" className="home-profile-button" ref={accountButtonRef} aria-label="Tài khoản của bạn" aria-haspopup="menu" aria-expanded={accountMenuOpen} aria-controls={accountMenuOpen ? "home-account-menu" : undefined} onClick={() => setAccountMenuOpen(!accountMenuOpen)} onKeyDown={event => {
                     if (event.key === "ArrowDown") { event.preventDefault(); openAccountMenu(); }

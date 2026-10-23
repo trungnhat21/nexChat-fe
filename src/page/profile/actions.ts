@@ -1,4 +1,5 @@
-import { uploadProfileImage } from "../../axios/profile";
+import { removeProfileAvatar, uploadProfileImage } from "../../axios/profile";
+import { acceptFriendRequest, cancelFriendRequest, followUser, getRelationship, rejectFriendRequest, unfollowUser, unfriend, sendFriendRequest } from "../../axios/friends";
 import { isAxiosError } from "axios";
 import { listPosts, setPostLike } from "../../axios/posts";
 import type { CurrentUser } from "../../component/type/auth";
@@ -8,8 +9,9 @@ import { useNavigate, useParams } from "react-router";
 import { getCurrentUser, logout } from "../../axios/auth";
 import { initialProfile, profileLimits } from "./config";
 import type { ProfileDialog, ProfileImageKind, ProfileNotice, ProfilePostProps, ProfileTab } from "../../component/type/profile";
+import type { RelationshipState } from "../../component/type/relationship";
 
-function useProfileImage(kind: ProfileImageKind, enabled: boolean, ownerId: string | undefined, onNotice: ProfileNotice, onUploaded: (kind: ProfileImageKind, url: string) => void) {
+function useProfileImage(kind: ProfileImageKind, enabled: boolean, ownerId: string | undefined, onNotice: ProfileNotice, onUploaded: (kind: ProfileImageKind, url: string | null) => void) {
     const [uploading, setUploading] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const busy = useRef(false);
@@ -39,7 +41,23 @@ function useProfileImage(kind: ProfileImageKind, enabled: boolean, ownerId: stri
             }
         } finally { busy.current = false; if (active.current) setUploading(false); }
     }
-    return { inputRef, onChange, uploading };
+    async function remove() {
+        if (kind !== "avatar" || !enabled || busy.current) return;
+        busy.current = true; setUploading(true);
+        try {
+            await removeProfileAvatar();
+            if (active.current && target.current.enabled && target.current.ownerId === ownerId) {
+                onUploaded("avatar", null);
+                onNotice("ÄÃ£ xÃ³a áº£nh Ä‘áº¡i diá»‡n.");
+            }
+        } catch (error) {
+            if (active.current && target.current.enabled && target.current.ownerId === ownerId) {
+                const message: unknown = isAxiosError(error) ? error.response?.data?.message : null;
+                onNotice(typeof message === "string" ? message : "KhÃ´ng thá»ƒ xÃ³a áº£nh Ä‘áº¡i diá»‡n. Vui lÃ²ng thá»­ láº¡i.");
+            }
+        } finally { busy.current = false; if (active.current) setUploading(false); }
+    }
+    return { inputRef, onChange, remove, uploading };
 }
 
 function loadError(error: unknown): string {
@@ -58,19 +76,22 @@ export function useProfileActions() {
     const [loggingOut, setLoggingOut] = useState(false);
     const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
     const [author, setAuthor] = useState<ProfileAuthor | null>(null);
+    const [relationship, setRelationship] = useState<RelationshipState | null>(null);
+    const [relationshipBusy, setRelationshipBusy] = useState(false);
     const [posts, setPosts] = useState<FeedPost[]>([]);
     const [total, setTotal] = useState(0);
     const [nextCursor, setNextCursor] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
     const [error, setError] = useState("");
+    const [loadMoreError, setLoadMoreError] = useState("");
     const [revision, setRevision] = useState(0);
     const generation = useRef(0);
     const dialogRef = useRef<HTMLDialogElement>(null);
     const navigate = useNavigate();
     const isOwner = !!author && currentUser?.id === author.id;
     const avatarSrc = author?.avatar ?? null;
-    function applyImage(kind: ProfileImageKind, url: string) {
+    function applyImage(kind: ProfileImageKind, url: string | null) {
         setAuthor(previous => previous ? { ...previous, [kind]: url } : previous);
         if (kind === "avatar") {
             setCurrentUser(previous => previous ? { ...previous, avatar: url } : previous);
@@ -86,7 +107,7 @@ export function useProfileActions() {
         const controller = new AbortController();
         void Promise.resolve().then(async () => {
             if (!active) return;
-            setLoading(true); setError(""); setPosts([]); setAuthor(null); setTotal(0); setNextCursor(null); setDetails(initialProfile);
+            setLoading(true); setError(""); setLoadMoreError(""); setPosts([]); setAuthor(null); setRelationship(null); setTotal(0); setNextCursor(null); setDetails(initialProfile);
             try {
                 if (userId !== undefined && (!/^[1-9]\d{0,19}$/.test(userId) || BigInt(userId) > 18446744073709551615n)) throw new Error("ID tài khoản không hợp lệ.");
                 const session = await getCurrentUser();
@@ -97,11 +118,41 @@ export function useProfileActions() {
                 setCurrentUser(session.data.currentUser); setAuthor(result.author); setPosts(result.posts);
                 setTotal(result.total ?? result.posts.length); setNextCursor(result.nextCursor);
                 setDetails({ ...initialProfile, name: result.author.name, handle: result.author.handle ? "@"+result.author.handle : "", bio: result.author.bio ?? "", joined: "Gia nhập " + new Date(result.author.createdAt).toLocaleDateString("vi-VN", { month: "long", year: "numeric" }) });
+                try { setRelationship(await getRelationship(targetId)); }
+                catch { if (active) setNotice("Không tải được trạng thái quan hệ. Bạn vẫn có thể xem bài viết."); }
             } catch (error) { if (active) setError(loadError(error)); }
             finally { if (active) setLoading(false); }
         });
         return () => { active = false; controller.abort(); };
     }, [userId, revision]);
+
+    async function performFriendAction(action: "request" | "cancel" | "accept" | "reject" | "unfriend") {
+        if (!author || relationshipBusy || (action !== "request" && !relationship)) return;
+        setRelationshipBusy(true);
+        try {
+            if (action === "request") {
+                const result = await sendFriendRequest(author.id);
+                setRelationship(previous => ({ ...previous, friendStatus: "outgoing", requestId: result.friendship.id, following: previous?.following ?? false, followers: previous?.followers ?? 0, followingCount: previous?.followingCount ?? 0, friends: previous?.friends ?? 0 }));
+            }
+            if (action === "cancel" && relationship?.requestId) await cancelFriendRequest(relationship.requestId);
+            if (action === "accept" && relationship?.requestId) await acceptFriendRequest(relationship.requestId);
+            if (action === "reject" && relationship?.requestId) await rejectFriendRequest(relationship.requestId);
+            if (action === "unfriend") await unfriend(author.id);
+            try { setRelationship(await getRelationship(author.id)); }
+            catch { if (action !== "request") throw new Error("RELATIONSHIP_REFRESH_FAILED"); }
+        } catch (error) {
+            const serverMessage = isAxiosError(error) ? error.response?.data?.message : null;
+            setNotice(typeof serverMessage === "string" ? serverMessage : "Không thể cập nhật quan hệ. Vui lòng thử lại.");
+        }
+        finally { setRelationshipBusy(false); }
+    }
+    async function toggleFollow() {
+        if (!author || !relationship || relationshipBusy) return;
+        setRelationshipBusy(true);
+        try { if (relationship.following) await unfollowUser(author.id); else await followUser(author.id); setRelationship(await getRelationship(author.id)); }
+        catch { setNotice("Không thể cập nhật theo dõi. Vui lòng thử lại."); }
+        finally { setRelationshipBusy(false); }
+    }
     useEffect(() => {
         if (!notice) return;
         const timer = window.setTimeout(() => setNotice(""), profileLimits.noticeDuration);
@@ -115,14 +166,14 @@ export function useProfileActions() {
     async function loadMore() {
         if (!author || !nextCursor || loadingMore) return;
         const version = generation.current;
-        setLoadingMore(true); setError("");
+        setLoadingMore(true); setLoadMoreError("");
         try {
             const result = await listPosts("", nextCursor, undefined, author.id);
             if (version !== generation.current) return;
             if (result.posts.some(post => post.author.id !== author.id)) throw new Error("Bài viết không khớp tài khoản đang xem.");
             setPosts(previous => [...previous, ...result.posts.filter(post => !previous.some(item => item.id === post.id))]);
             setNextCursor(result.nextCursor);
-        } catch (error) { if (version === generation.current) setError(loadError(error)); }
+        } catch (error) { if (version === generation.current) setLoadMoreError(loadError(error)); }
         finally { setLoadingMore(false); }
     }
     const changePostState: PostStateChange = (id, patch) => {
@@ -157,7 +208,7 @@ export function useProfileActions() {
         catch { setNotice("Không thể đăng xuất. Vui lòng thử lại."); }
         finally { setLoggingOut(false); }
     }
-    return { changePostState, likePost, details, draft, setDraft, activeTab, setActiveTab, dialog, setDialog, notice, setNotice, dialogRef, cover, avatar, avatarSrc, editProfile, saveProfile, shareProfile, loggingOut, handleLogout, currentUser, author, isOwner, posts, total, nextCursor, loading, loadingMore, error, loadMore, reload: () => setRevision(previous => previous + 1) };
+    return { changePostState, likePost, details, draft, setDraft, activeTab, setActiveTab, dialog, setDialog, notice, setNotice, dialogRef, cover, avatar, avatarSrc, editProfile, saveProfile, shareProfile, loggingOut, handleLogout, currentUser, author, isOwner, posts, total, nextCursor, loading, loadingMore, error, loadMoreError, loadMore, relationship, relationshipBusy, performFriendAction, toggleFollow, reload: () => setRevision(previous => previous + 1) };
 }
 export function useProfilePostActions({ post, onLike }: ProfilePostProps) {
     const likeBusy = useRef(false);

@@ -3,8 +3,10 @@ import { isAxiosError } from "axios";
 import { useNavigate, useParams } from "react-router";
 import { getCurrentUser, logout } from "../../axios/auth";
 import { createPost, deletePost, getPost, listPosts, listSavedPosts, setPostLike, updatePost } from "../../axios/posts";
+import { acceptFriendRequest, cancelFriendRequest, followUser, getFriendSuggestions, rejectFriendRequest, sendFriendRequest, unfollowUser, unfriend } from "../../axios/friends";
+import type { SuggestedUser } from "../../component/type/relationship";
 import { confirmDelete } from "../../utils/swal";
-import { HomeContext, postLimits, mediaTypes, suggestedFriends } from "./config";
+import { HomeContext, postLimits, mediaTypes } from "./config";
 import type { CurrentUser } from "../../component/type/auth";
 import type { ComposerProps, FeedPost, NewPostMedia, PostCardProps, PostDraft, PostPrivacy, PostStateChange, UploadProgress } from "../../component/type/post";
 
@@ -180,22 +182,41 @@ export function usePostActions({ post, onUpdate, onDelete, onLike }: PostCardPro
     return { liking, toggleLike, editing, setEditing, deleting, error, saveEdit, remove };
 }
 export function useDiscoveryActions() {
-    const [following, setFollowing] = useState<string[]>([]);
-    const [offset, setOffset] = useState(0);
+    const [friends, setFriends] = useState<SuggestedUser[]>([]);
+    const [busy, setBusy] = useState<string[]>([]);
     const { openPanel, announce, setSearch } = useHome();
-    const friends = [...suggestedFriends.slice(offset), ...suggestedFriends.slice(0, offset)];
-
-    function refreshFriends() {
-        setOffset(previous => (previous + 1) % suggestedFriends.length);
-        announce("Đã đổi thứ tự gợi ý mẫu.");
+    const navigate = useNavigate();
+    async function loadSuggestions() {
+        try { setFriends(await getFriendSuggestions()); }
+        catch { announce("Không tải được gợi ý kết bạn."); }
     }
-
-    function toggleFollow(name: string) {
-        setFollowing(previous => previous.includes(name) ? previous.filter(item => item !== name) : [...previous, name]);
-        announce("Đã cập nhật theo dõi trong bản xem thử, chưa lưu lên máy chủ.");
+    useEffect(() => {
+        let active = true;
+        void getFriendSuggestions().then(users => { if (active) setFriends(users); }).catch(() => { if (active) announce("Không tải được gợi ý kết bạn."); });
+        return () => { active = false; };
+    }, [announce]);
+    function refreshFriends() { void loadSuggestions(); }
+    async function friendAction(user: SuggestedUser, action: "request" | "accept" | "reject" | "cancel" | "unfriend") {
+        if (busy.includes(user.id)) return;
+        setBusy(current => [...current, user.id]);
+        try {
+            if (action === "request") await sendFriendRequest(user.id);
+            if (action === "accept" && user.requestId) await acceptFriendRequest(user.requestId);
+            if (action === "reject" && user.requestId) await rejectFriendRequest(user.requestId);
+            if (action === "cancel" && user.requestId) await cancelFriendRequest(user.requestId);
+            if (action === "unfriend") await unfriend(user.id);
+            await loadSuggestions();
+        } catch { announce("Không thể cập nhật lời mời kết bạn."); }
+        finally { setBusy(current => current.filter(id => id !== user.id)); }
     }
-
-    return { following, friends, openPanel, setSearch, refreshFriends, toggleFollow };
+    async function toggleFollow(user: SuggestedUser) {
+        if (busy.includes(user.id)) return;
+        setBusy(current => [...current, user.id]);
+        try { if (user.following) await unfollowUser(user.id); else await followUser(user.id); await loadSuggestions(); }
+        catch { announce("Không thể cập nhật theo dõi."); }
+        finally { setBusy(current => current.filter(id => id !== user.id)); }
+    }
+    return { friends, busy, openPanel, setSearch, refreshFriends, friendAction, toggleFollow, openProfile: (id: string) => navigate("/profile/" + id) };
 }
 
 export function useHeaderActions() {

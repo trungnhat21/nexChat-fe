@@ -1,6 +1,7 @@
 import type { FeedPost, PostMedia } from "./post";
 import type { ChangeEvent, RefObject } from "react";
 import type { profileAssets, profileTabs } from "../../page/profile/config";
+import type { RelationshipState } from "./relationship";
 
 export type ProfileAssetId = keyof typeof profileAssets;
 export type ProfileTab = typeof profileTabs[number]["id"];
@@ -17,10 +18,14 @@ export type ProfileNotice = (message: string) => void;
 export type ProfileOpenDialog = (dialog: NonNullable<ProfileDialog>) => void;
 export type ProfileHeroProps = {
     isOwner: boolean; postCount: number; uploading: boolean;
+    relationship: RelationshipState | null; relationshipBusy: boolean;
+    onFriendAction: (action: "request" | "cancel" | "accept" | "reject" | "unfriend") => void;
+    onFollow: () => void;
     details: ProfileDetails; coverSrc: string | null; avatarSrc: string | null;
     coverInputRef: RefObject<HTMLInputElement | null>; avatarInputRef: RefObject<HTMLInputElement | null>;
     onCoverChange: (event: ChangeEvent<HTMLInputElement>) => void;
     onAvatarChange: (event: ChangeEvent<HTMLInputElement>) => void;
+    onRemoveAvatar: () => void;
     onEdit: () => void; onShare: () => void; onOpen: ProfileOpenDialog;
 };
 export type ProfilePostProps = { post: FeedPost; onStateChange: import("./post").PostStateChange; onLike: import("./post").LikePostAction; onNotice: ProfileNotice; onOpen: ProfileOpenDialog };

@@ -8,13 +8,14 @@ import PostCard from "./components/PostCard";
 import { useHomeFeedActions, useHomeLayoutActions } from "./actions";
 import { HomeContext } from "./config";
 import "./style.scss";
+import { NotificationCenterProvider } from "./NotificationCenter";
 
 export default function HomePage() {
     const { postId } = useParams<{ postId: string }>();
     const { search, setSearch, notice, setNotice, panel, setPanel, dialogRef, user } = useHomeLayoutActions();
     const { changePostState, likePost, query, visiblePosts, addPost, editPost, removePost, loading, loadingMore, error, nextCursor, loadMore, reload } = useHomeFeedActions(search);
 
-    return <HomeContext.Provider value={{ user, search, setSearch, announce: setNotice, openPanel: setPanel }}>
+    return <NotificationCenterProvider userId={user?.id}><HomeContext.Provider value={{ user, search, setSearch, announce: setNotice, openPanel: setPanel }}>
         <div className="pulse-home">
             <a className="home-skip-link" href="#home-feed">Chuyển đến bảng tin</a>
             <Header />
@@ -37,5 +38,5 @@ export default function HomePage() {
                 <div className="home-dialog-body"><div className="home-widget-heading"><h2 id="home-dialog-title">{panel}</h2><button aria-label="Đóng" onClick={() => setPanel("")}>✕</button></div><p>Tính năng này chưa được hỗ trợ. Bạn có thể tạo, chỉnh sửa, xóa bài viết và đính kèm ảnh/video trên bảng tin.</p><button className="home-primary" onClick={() => setPanel("")}>Đã hiểu</button></div>
             </dialog>
         </div>
-    </HomeContext.Provider>;
+    </HomeContext.Provider></NotificationCenterProvider>;
 }

@@ -7,3 +7,7 @@ export async function uploadProfileImage(kind: ProfileImageKind, image: File) {
     const response = await api.patch<ProfileImageResponse>("/profile/images/" + kind, data, { headers: { "Content-Type": undefined } });
     return response.data;
 }
+
+export async function removeProfileAvatar() {
+    return (await api.delete<{ success: boolean; kind: "avatar"; url: null }>("/profile/images/avatar")).data;
+}

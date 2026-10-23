@@ -19,7 +19,7 @@ export type PostStateChange = (id: string, patch: Partial<Pick<FeedPost, "saved"
 export type PostCardProps = { post: FeedPost; onStateChange: PostStateChange; onLike: LikePostAction; onUpdate: (id: string, draft: PostDraft, onProgress: UploadProgress) => Promise<void>; onDelete: (id: string) => Promise<void>; onReload: () => void };
 export type UserAvatarProps = { name: string; src?: string | null | undefined; size?: 28 | 32 | 40 | 44 | 48 };
 
-export type PostComment = { id: string; postId: string; content: string; createdAt: string; updatedAt: string; canEdit: boolean; author: { id: string; name: string; avatar: string | null } };
+export type PostComment = { id: string; postId: string; content: string; createdAt: string; updatedAt: string; canEdit: boolean; author: { id: string; name: string; avatar: string | null }; replies?: PostComment[] };
 export type CommentPage = { success: boolean; comments: PostComment[]; total: number; nextCursor: string | null };
 export type CommentResult = { success: boolean; comment: PostComment | null; total: number };
 export type SavedResult = { success: boolean; id: string; saved: boolean };
