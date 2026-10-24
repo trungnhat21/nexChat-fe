@@ -1,15 +1,6 @@
 import { createContext } from "react";
-import type { HomeContextValue, Story } from "../../component/type/home";
+import type { HomeContextValue } from "../../component/type/home";
 import asset0 from "../../_metronic/assets/images/home/current-user.png";
-import asset1 from "../../_metronic/assets/images/home/create-story.png";
-import asset2 from "../../_metronic/assets/images/home/story-ha-my.png";
-import asset3 from "../../_metronic/assets/images/home/avatar-ha-my.png";
-import asset4 from "../../_metronic/assets/images/home/story-quang-huy.png";
-import asset5 from "../../_metronic/assets/images/home/avatar-quang-huy.png";
-import asset6 from "../../_metronic/assets/images/home/story-tran-dat.png";
-import asset7 from "../../_metronic/assets/images/home/avatar-tran-dat.png";
-import asset8 from "../../_metronic/assets/images/home/story-bao-ngoc.png";
-import asset9 from "../../_metronic/assets/images/home/avatar-bao-ngoc.png";
 import asset10 from "../../_metronic/assets/images/home/composer-avatar.png";
 import asset11 from "../../_metronic/assets/images/home/author-hoang-anh.png";
 import asset12 from "../../_metronic/assets/images/home/post-design-system.png";
@@ -70,16 +61,7 @@ export const designAssets = {
     "3352:530": { src: asset30 },
     "3352:536": { src: asset31 },
     "3352:544": { src: asset32 },
-    "3352:584": { src: asset1 },
     "3352:588": { src: asset33 },
-    "3352:594": { src: asset2 },
-    "3352:597": { src: asset3 },
-    "3352:601": { src: asset4 },
-    "3352:604": { src: asset5 },
-    "3352:608": { src: asset6 },
-    "3352:611": { src: asset7 },
-    "3352:615": { src: asset8 },
-    "3352:618": { src: asset9 },
     "3352:623": { src: asset10 },
     "3352:631": { src: asset34 },
     "3352:636": { src: asset35 },
@@ -129,13 +111,6 @@ export const designAssets = {
     "3352:1056": { src: asset24 },
     "3352:1058": { src: asset60 },
 } as const;
-
-export const stories: Story[] = [
-    { name: "Hà My", image: "3352:594", avatar: "3352:597" },
-    { name: "Quang Huy", image: "3352:601", avatar: "3352:604" },
-    { name: "Trần Đạt", image: "3352:608", avatar: "3352:611" },
-    { name: "Bảo Ngọc", image: "3352:615", avatar: "3352:618" },
-];
 
 export const trends = [
     { category: "Công nghệ • Xu hướng hàng đầu", tag: "#TechSummit2025", count: "14.8k bài viết", icon: "3352:889" },
