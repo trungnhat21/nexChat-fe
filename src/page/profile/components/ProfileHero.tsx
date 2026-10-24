@@ -3,8 +3,9 @@ import Button from "../../../component/UI/Button/Button";
 import { ProfileIcon, ProfileImage } from "./ProfileAsset";
 import type { ProfileHeroProps } from "../../../component/type/profile";
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router";
 
-export default function ProfileHero({ uploading, isOwner, postCount, details, coverSrc, avatarSrc, coverInputRef, avatarInputRef, onCoverChange, onAvatarChange, onRemoveAvatar, onEdit, onShare, onOpen, relationship, relationshipBusy, onFriendAction, onFollow }: ProfileHeroProps) {
+export default function ProfileHero({ uploading, isOwner, recipientId, postCount, details, coverSrc, avatarSrc, coverInputRef, avatarInputRef, onCoverChange, onAvatarChange, onRemoveAvatar, onEdit, onShare, onOpen, relationship, relationshipBusy, onFriendAction, onFollow }: ProfileHeroProps) {
     const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
     const avatarMenuRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
@@ -43,6 +44,7 @@ export default function ProfileHero({ uploading, isOwner, postCount, details, co
                     {relationship?.friendStatus === "friends" && <Button loadding={relationshipBusy} onClick={() => onFriendAction("unfriend")}>Bạn bè · Hủy kết bạn</Button>}
                     {relationship && relationship.friendStatus !== "blocked" && <Button loadding={relationshipBusy} onClick={onFollow}>{relationship.following ? "Đang theo dõi" : "Theo dõi"}</Button>}
                 </>}
+                {!isOwner && recipientId && <Link className="profile-primary profile-message-link" to={`/messages?userId=${encodeURIComponent(recipientId)}`}>Nhắn tin</Link>}
                 <button className="profile-square" aria-label="Chia sẻ trang cá nhân" onClick={onShare}><ProfileIcon id="3360:544" /></button>
                 <button className="profile-square" aria-label="Tùy chọn trang cá nhân" onClick={() => onOpen({ kind: "account", title: "Tài khoản của bạn" })}><ProfileIcon id="3360:547" /></button>
             </div>

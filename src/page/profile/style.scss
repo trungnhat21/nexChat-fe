@@ -28,6 +28,7 @@
     h1, h2, h3 { font-family: "Profile Manrope", Arial, sans-serif; }
     .profile-primary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 16px; border-radius: 8px; background: var(--profile-primary); color: white; font-size: 12px; line-height: 16px; font-weight: 600; box-shadow: 0 1px 1px #0000000d; }
     .profile-primary:hover { background: #002a88; }
+.profile-message-link { text-decoration: none; }
 }
 
 .profile-image { display: block; position: relative; overflow: hidden; flex-shrink: 0; }

@@ -20,9 +20,6 @@ import asset16 from "../../_metronic/assets/images/home/author-quoc-nam.png";
 import asset17 from "../../_metronic/assets/images/home/friend-linh-san.png";
 import asset18 from "../../_metronic/assets/images/home/friend-hoang-bach.png";
 import asset19 from "../../_metronic/assets/images/home/friend-tuyet-mai.png";
-import asset20 from "../../_metronic/assets/images/home/online-thuy-duong.png";
-import asset21 from "../../_metronic/assets/images/home/online-gia-bao.png";
-import asset22 from "../../_metronic/assets/images/home/online-khanh-linh.png";
 import asset23 from "../../_metronic/assets/images/home/pulse-logo.png";
 import asset24 from "../../_metronic/assets/images/home/profile.png";
 import asset25 from "../../_metronic/assets/images/home/icon-verified.svg";
@@ -55,7 +52,6 @@ import asset51 from "../../_metronic/assets/images/home/icon-26.svg";
 import asset52 from "../../_metronic/assets/images/home/icon-27.svg";
 import asset53 from "../../_metronic/assets/images/home/icon-28.svg";
 import asset54 from "../../_metronic/assets/images/home/icon-29.svg";
-import asset55 from "../../_metronic/assets/images/home/icon-30.svg";
 import asset56 from "../../_metronic/assets/images/home/icon-search.svg";
 import asset57 from "../../_metronic/assets/images/home/icon-31.svg";
 import asset58 from "../../_metronic/assets/images/home/icon-32.svg";
@@ -125,12 +121,6 @@ export const designAssets = {
     "3352:931": { src: asset17 },
     "3352:941": { src: asset18 },
     "3352:951": { src: asset19 },
-    "3352:972": { src: asset20 },
-    "3352:977": { src: asset55 },
-    "3352:982": { src: asset21 },
-    "3352:987": { src: asset55 },
-    "3352:992": { src: asset22 },
-    "3352:997": { src: asset55 },
     "3352:1019": { src: asset23 },
     "3352:1027": { src: asset56 },
     "3352:1039": { src: asset57 },
@@ -159,13 +149,6 @@ export const suggestedFriends = [
     { name: "Hoàng Bách", mutual: 8, avatar: "3352:941" },
     { name: "Trần Tuyết Mai", mutual: 12, avatar: "3352:951" },
 ] as const;
-
-export const onlineFriends = [
-    { name: "Lê Thùy Dương", avatar: "3352:972", icon: "3352:977" },
-    { name: "Ngô Gia Bảo", avatar: "3352:982", icon: "3352:987" },
-    { name: "Đỗ Khánh Linh", avatar: "3352:992", icon: "3352:997" },
-] as const;
-
 
 export const navigationLinks = [
         { label: "Bảng tin", icon: "3352:499", badge: "" },

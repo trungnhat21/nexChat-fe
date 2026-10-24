@@ -21,7 +21,7 @@ function notificationText(type: string, actorName: string) {
 
 export default function Header() {
     const { search, setSearch, openPanel, user } = useHome();
-    const { notifications, unreadCount, isOpen, openNotifications, closeNotifications, markRead } = useNotificationCenter();
+    const { notifications, unreadCount, unreadMessageCount, isOpen, openNotifications, closeNotifications, markRead } = useNotificationCenter();
     const { accountMenuOpen, setAccountMenuOpen, loggingOut, accountMenuRef, accountButtonRef, logoutButtonRef, openAccountMenu, handleLogout } = useHeaderActions();
     const notificationsRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
@@ -53,7 +53,7 @@ export default function Header() {
         </nav>
         <div className="home-header-end">
             <Button className="home-primary home-create-button" onClick={focusComposer}><DesignIcon id="3352:1039" />Đăng bài</Button>
-            <button className="home-icon-button" aria-label="Tin nhan" onClick={() => openPanel("Tin nhắn")}><DesignIcon id="3352:1045" /></button>
+            <button className="home-icon-button" aria-label={`Tin nhắn, ${unreadMessageCount} chưa đọc`} onClick={() => navigate("/messages")}><DesignIcon id="3352:1045" />{unreadMessageCount > 0 && <span className="home-badge">{unreadMessageCount > 99 ? "99+" : unreadMessageCount}</span>}</button>
             <div className="home-notification-wrap" ref={notificationsRef}>
                 <button className="home-icon-button" aria-label={`Thông báo, ${unreadCount} chưa đọc`} aria-haspopup="dialog" aria-expanded={isOpen} onClick={() => isOpen ? closeNotifications() : openNotifications()}><DesignIcon id="3352:1050" />{unreadCount > 0 && <span className="home-badge">{unreadCount > 99 ? "99+" : unreadCount}</span>}</button>
                 {isOpen && <section className="home-notification-panel" role="dialog" aria-label="Thông báo">

@@ -3,6 +3,15 @@ import type { RelationshipState, SuggestedUser } from "../component/type/relatio
 
 export async function getRelationship(userId: string) { return (await api.get<{ relationship: RelationshipState }>(`/friends/relationship/${userId}`)).data.relationship; }
 export async function getFriendSuggestions() { return (await api.get<{ users: SuggestedUser[] }>("/friends/suggestions")).data.users; }
+export type AcceptedFriend = { id: string; name: string; avatar: string | null };
+export async function getAcceptedFriends() {
+    const response = await api.get<{ friends: Array<{ id: string; user_name: string | null; first_name: string | null; last_name: string | null; avatar: string | null }> }>("/friends");
+    return response.data.friends.map(friend => ({
+        id: friend.id,
+        name: [friend.last_name, friend.first_name].filter(Boolean).join(" ") || friend.user_name || "User",
+        avatar: friend.avatar,
+    }));
+}
 export async function sendFriendRequest(userId: string) {
     return (await api.post<{ success: boolean; friendship: { id: string; requesterId: string; addresseeId: string; status: string } }>("/friends/request", { addresseeId: userId })).data;
 }

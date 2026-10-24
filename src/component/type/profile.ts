@@ -17,7 +17,7 @@ export type ProfileDialog = {
 export type ProfileNotice = (message: string) => void;
 export type ProfileOpenDialog = (dialog: NonNullable<ProfileDialog>) => void;
 export type ProfileHeroProps = {
-    isOwner: boolean; postCount: number; uploading: boolean;
+    isOwner: boolean; recipientId: string | null; postCount: number; uploading: boolean;
     relationship: RelationshipState | null; relationshipBusy: boolean;
     onFriendAction: (action: "request" | "cancel" | "accept" | "reject" | "unfriend") => void;
     onFollow: () => void;
