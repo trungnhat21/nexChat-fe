@@ -2,7 +2,9 @@ import "./Input.scss"
 import { KTIcon } from "../../../_metronic/helpers/components/KTIcon";
 import type React from "react";
 
-type inputProps = {
+type inputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "size"> & {
+    inputClassName?: string;
+    compact?: boolean;
     label?: string;
     type?: string;
     placeholder?: string;
@@ -25,7 +27,10 @@ export default function Input({
     lableRight,
     rightIcon,
     onBlur,
-    name
+    name,
+    inputClassName,
+    compact = false,
+    ...inputAttributes
 
 }: inputProps) {
     if (type === "checkbox") {
@@ -44,7 +49,7 @@ export default function Input({
     }
     return (
         <div>
-            <div className="flex items-center justify-between mb-2">
+            {(!compact || label || lableRight) && <div className="flex items-center justify-between mb-2">
                 {label && (
                     <label className="text-sm">
                         {label}
@@ -52,7 +57,7 @@ export default function Input({
                 )}
 
                 {lableRight}
-            </div>
+            </div>}
             <div className="relative">
 
                 {icon && (
@@ -62,13 +67,14 @@ export default function Input({
                     />
                 )}
                 <input
+                    {...inputAttributes}
                     name={name}
                     type={type}
                     placeholder={placeholder}
                     value={value}
                     onChange={onChange}
                     onBlur={onBlur}
-                    className="w-full border rounded-lg p-4 pl-10 bg-input"
+                    className={inputClassName ?? "w-full border rounded-lg p-4 pl-10 bg-input"}
                 />
 
                 {rightIcon && (

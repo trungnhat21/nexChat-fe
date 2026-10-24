@@ -1,0 +1,21 @@
+export type StoryVisibility = "public" | "friends" | "followers" | "private";
+export type StoryOwner = { id: string; name: string; avatar: string | null };
+export type StoryItem = {
+    id: string;
+    caption: string | null;
+    mediaType: string;
+    mediaUrl: string;
+    fileName: string;
+    fileSize: number;
+    createdAt: string;
+    expiresAt: string;
+    visibility: StoryVisibility;
+    viewed: boolean;
+    viewCount: number;
+    reactionCounts: Record<string, number>;
+    myReaction: string | null;
+    canDelete: boolean;
+    owner: StoryOwner;
+};
+export type StoryPage = { success: boolean; stories: StoryItem[]; nextCursor: string | null };
+export type StoryViewers = { success: boolean; viewers: Array<{ id: string; name: string; avatar: string | null; viewedAt: string }> };
