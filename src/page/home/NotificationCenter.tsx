@@ -5,9 +5,10 @@ import { listNotifications, markAllNotificationsRead, markNotificationRead } fro
 import type { AppNotification } from "../../component/type/notification";
 import { getAcceptedFriends, type AcceptedFriend } from "../../axios/friends";
 import { listConversations } from "../../axios/messages";
+import { getCurrentUser } from "../../axios/auth";
 import { NotificationCenterContext } from "./notification-center-context";
 
-export function NotificationCenterProvider({ userId, children }: { userId: string | undefined; children: ReactNode }) {
+export function NotificationCenterProvider({ userId, children }: { userId?: string; children: ReactNode }) {
     const [notifications, setNotifications] = useState<AppNotification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
@@ -17,10 +18,33 @@ export function NotificationCenterProvider({ userId, children }: { userId: strin
     const [presenceUserId, setPresenceUserId] = useState<string | undefined>();
     const [onlineFriendsLoading, setOnlineFriendsLoading] = useState(true);
     const [unreadMessageCount, setUnreadMessageCount] = useState(0);
+    const [realtimeSocket, setRealtimeSocket] = useState<Socket | null>(null);
+    const [sessionUserId, setSessionUserId] = useState<string | undefined>();
+    const activeUserId = userId ?? sessionUserId;
     const openRef = useRef(false);
     const activeRef = useRef(false);
     const socketRef = useRef<Socket | null>(null);
+    const presenceSnapshotReceivedRef = useRef(false);
+    const pendingPresenceUpdatesRef = useRef(new Map<string, boolean>());
     const unreadRequestRef = useRef(0);
+
+    useEffect(() => {
+        if (userId) return;
+        let disposed = false;
+        const resolveUser = () => {
+            void getCurrentUser().then(response => {
+                if (!disposed) setSessionUserId(response.data.currentUser.id);
+            }).catch(() => {
+                if (!disposed) setSessionUserId(undefined);
+            });
+        };
+        resolveUser();
+        window.addEventListener("nexchat:auth-change", resolveUser);
+        return () => {
+            disposed = true;
+            window.removeEventListener("nexchat:auth-change", resolveUser);
+        };
+    }, [userId]);
 
     const refreshUnreadMessages = useCallback(async () => {
         const request = ++unreadRequestRef.current;
@@ -56,12 +80,12 @@ export function NotificationCenterProvider({ userId, children }: { userId: strin
 
     useEffect(() => {
         activeRef.current = true;
-        if (!userId) return () => { activeRef.current = false; };
+        if (!activeUserId) return () => { activeRef.current = false; };
         let disposed = false;
         void getAcceptedFriends().then(result => {
-            if (!disposed) { setFriends(result); setFriendsUserId(userId); }
+            if (!disposed) { setFriends(result); setFriendsUserId(activeUserId); }
         }).catch(() => {
-            if (!disposed) { setFriends([]); setFriendsUserId(userId); }
+            if (!disposed) { setFriends([]); setFriendsUserId(activeUserId); }
         }).finally(() => {
             if (!disposed) setOnlineFriendsLoading(false);
         });
@@ -76,21 +100,30 @@ export function NotificationCenterProvider({ userId, children }: { userId: strin
             const socketUrl = import.meta.env.VITE_API_BASE_URL || window.location.origin;
             const socket = io(socketUrl, { auth: { token }, withCredentials: true, reconnection: true });
             socketRef.current = socket;
+            setRealtimeSocket(socket);
             socket.on("connect", () => {
+                presenceSnapshotReceivedRef.current = false;
+                pendingPresenceUpdatesRef.current.clear();
                 socket.emit("presence:watch");
                 void refreshUnreadMessages().catch(() => undefined);
             });
             socket.on("presence:snapshot", (snapshot: Record<string, boolean>) => {
-                if (snapshot && typeof snapshot === "object") { setPresence(snapshot); setPresenceUserId(userId); }
+                if (snapshot && typeof snapshot === "object" && !Array.isArray(snapshot)) {
+                    setPresence({ ...snapshot, ...Object.fromEntries(pendingPresenceUpdatesRef.current) });
+                    pendingPresenceUpdatesRef.current.clear();
+                    presenceSnapshotReceivedRef.current = true;
+                    setPresenceUserId(activeUserId);
+                }
             });
             socket.on("presence:update", (event: { userId?: string; isOnline?: boolean }) => {
                 if (event?.userId && typeof event.isOnline === "boolean") {
+                    if (!presenceSnapshotReceivedRef.current) pendingPresenceUpdatesRef.current.set(event.userId, event.isOnline);
                     setPresence(current => ({ ...current, [event.userId!]: event.isOnline! }));
-                    setPresenceUserId(userId);
+                    setPresenceUserId(activeUserId);
                 }
             });
             socket.on("message:new", (event: { conversationId?: string; message?: { id?: string; sender?: { id?: string } | null } }) => {
-                if (event?.conversationId && event.message?.id && event.message.sender?.id !== userId) {
+                if (event?.conversationId && event.message?.id && event.message.sender?.id !== activeUserId) {
                     socket.emit("message:delivered", { conversationId: event.conversationId, messageId: event.message.id });
                 }
                 void refreshUnreadMessages().catch(() => undefined);
@@ -114,8 +147,9 @@ export function NotificationCenterProvider({ userId, children }: { userId: strin
             activeRef.current = false;
             socketRef.current?.disconnect();
             socketRef.current = null;
+            setRealtimeSocket(null);
         };
-    }, [userId, refreshNotifications, loadAndMarkVisible, refreshUnreadMessages]);
+    }, [activeUserId, refreshNotifications, loadAndMarkVisible, refreshUnreadMessages]);
 
     const openNotifications = useCallback(() => {
         openRef.current = true;
@@ -131,9 +165,9 @@ export function NotificationCenterProvider({ userId, children }: { userId: strin
         setUnreadCount(count => Math.max(0, count - 1));
     }, [notifications]);
 
-    const onlineFriends = friendsUserId === userId && presenceUserId === userId
+    const onlineFriends = friendsUserId === activeUserId && presenceUserId === activeUserId
         ? friends.filter(friend => presence[friend.id] === true)
         : [];
-    const isLoadingOnlineFriends = Boolean(userId) && (onlineFriendsLoading || friendsUserId !== userId);
-    return <NotificationCenterContext.Provider value={{ notifications, unreadCount, isOpen, openNotifications, closeNotifications, markRead, onlineFriends, onlineFriendsLoading: isLoadingOnlineFriends, unreadMessageCount }}>{children}</NotificationCenterContext.Provider>;
+    const isLoadingOnlineFriends = Boolean(activeUserId) && (onlineFriendsLoading || friendsUserId !== activeUserId);
+    return <NotificationCenterContext.Provider value={{ notifications, unreadCount, isOpen, openNotifications, closeNotifications, markRead, onlineFriends, onlineFriendsLoading: isLoadingOnlineFriends, unreadMessageCount, socket: realtimeSocket }}>{children}</NotificationCenterContext.Provider>;
 }

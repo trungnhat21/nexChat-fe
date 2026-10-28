@@ -1,6 +1,7 @@
 import { createContext, useContext } from "react";
 import type { AppNotification } from "../../component/type/notification";
 import type { AcceptedFriend } from "../../axios/friends";
+import type { Socket } from "socket.io-client";
 
 export type NotificationCenterValue = {
     notifications: AppNotification[];
@@ -12,10 +13,11 @@ export type NotificationCenterValue = {
     onlineFriends: AcceptedFriend[];
     onlineFriendsLoading: boolean;
     unreadMessageCount: number;
+    socket: Socket | null;
 };
 
 export const NotificationCenterContext = createContext<NotificationCenterValue>({
-    notifications: [], unreadCount: 0, isOpen: false, onlineFriends: [], onlineFriendsLoading: false, unreadMessageCount: 0,
+    notifications: [], unreadCount: 0, isOpen: false, onlineFriends: [], onlineFriendsLoading: false, unreadMessageCount: 0, socket: null,
     openNotifications: () => undefined, closeNotifications: () => undefined, markRead: async () => undefined,
 });
 

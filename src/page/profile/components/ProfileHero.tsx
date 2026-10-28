@@ -5,7 +5,7 @@ import type { ProfileHeroProps } from "../../../component/type/profile";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 
-export default function ProfileHero({ uploading, isOwner, recipientId, postCount, details, coverSrc, avatarSrc, coverInputRef, avatarInputRef, onCoverChange, onAvatarChange, onRemoveAvatar, onEdit, onShare, onOpen, relationship, relationshipBusy, onFriendAction, onFollow }: ProfileHeroProps) {
+export default function ProfileHero({ uploading, isOwner, recipientId, postCount, details, coverSrc, avatarSrc, coverInputRef, avatarInputRef, onCoverChange, onAvatarChange, onRemoveAvatar, onRemoveCover, onEdit, onShare, onOpen, relationship, relationshipBusy, onFriendAction, onFollow }: ProfileHeroProps) {
     const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
     const avatarMenuRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
@@ -23,8 +23,8 @@ export default function ProfileHero({ uploading, isOwner, recipientId, postCount
         };
     }, []);
     return <section className="profile-hero" aria-label="Thông tin trang cá nhân">
-        <div className="profile-cover"><ProfileImage id="3360:518" src={coverSrc} alt="Ảnh bìa trang cá nhân" /><div className="profile-cover-gradient" />
-            {isOwner && <button className="profile-cover-change" disabled={uploading} onClick={() => coverInputRef.current?.click()}><ProfileIcon id="3360:522" />Đổi ảnh bìa</button>}
+        <div className="profile-cover">{coverSrc && <ProfileImage id="3360:518" src={coverSrc} alt="Ảnh bìa trang cá nhân" />}<div className="profile-cover-gradient" />
+            {isOwner && <div className="profile-cover-actions">{coverSrc && <button className="profile-cover-remove" disabled={uploading} onClick={onRemoveCover}>Xóa ảnh bìa</button>}<button className="profile-cover-change" disabled={uploading} onClick={() => coverInputRef.current?.click()}><ProfileIcon id="3360:522" />Đổi ảnh bìa</button></div>}
             <input ref={coverInputRef} type="file" accept="image/jpeg,image/png,image/gif,image/webp" disabled={!isOwner || uploading} aria-label="Chọn ảnh bìa" hidden onChange={onCoverChange} />
         </div>
         <div className="profile-hero-info"><div className="profile-avatar-row">
