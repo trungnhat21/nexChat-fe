@@ -1,4 +1,4 @@
-import { removeProfileAvatar, uploadProfileImage } from "../../axios/profile";
+import { removeProfileImage, uploadProfileImage } from "../../axios/profile";
 import { acceptFriendRequest, cancelFriendRequest, followUser, getRelationship, rejectFriendRequest, unfollowUser, unfriend, sendFriendRequest } from "../../axios/friends";
 import { isAxiosError } from "axios";
 import { listPosts, setPostLike } from "../../axios/posts";
@@ -7,6 +7,7 @@ import type { FeedPost, PostStateChange, ProfileAuthor } from "../../component/t
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router";
 import { getCurrentUser, logout } from "../../axios/auth";
+import { confirmDelete } from "../../utils/swal";
 import { initialProfile, profileLimits } from "./config";
 import type { ProfileDialog, ProfileImageKind, ProfileNotice, ProfilePostProps, ProfileTab } from "../../component/type/profile";
 import type { RelationshipState } from "../../component/type/relationship";
@@ -42,13 +43,14 @@ function useProfileImage(kind: ProfileImageKind, enabled: boolean, ownerId: stri
         } finally { busy.current = false; if (active.current) setUploading(false); }
     }
     async function remove() {
-        if (kind !== "avatar" || !enabled || busy.current) return;
+        if (!enabled || busy.current) return;
+        if (kind === "cover" && !(await confirmDelete("Bạn có chắc muốn xóa ảnh bìa?"))) return;
         busy.current = true; setUploading(true);
         try {
-            await removeProfileAvatar();
+            await removeProfileImage(kind);
             if (active.current && target.current.enabled && target.current.ownerId === ownerId) {
-                onUploaded("avatar", null);
-                onNotice("ÄÃ£ xÃ³a áº£nh Ä‘áº¡i diá»‡n.");
+                onUploaded(kind, null);
+                onNotice(kind === "avatar" ? "Đã xóa ảnh đại diện." : "Đã xóa ảnh bìa.");
             }
         } catch (error) {
             if (active.current && target.current.enabled && target.current.ownerId === ownerId) {

@@ -4,6 +4,7 @@ export type ChatMessage = {
     id: string;
     conversationId: string;
     clientMessageId: string | null;
+    messageType?: "text" | "image" | "file" | "system";
     content: string;
     createdAt: string;
     isMine: boolean;

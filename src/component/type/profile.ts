@@ -26,12 +26,11 @@ export type ProfileHeroProps = {
     onCoverChange: (event: ChangeEvent<HTMLInputElement>) => void;
     onAvatarChange: (event: ChangeEvent<HTMLInputElement>) => void;
     onRemoveAvatar: () => void;
+    onRemoveCover: () => void;
     onEdit: () => void; onShare: () => void; onOpen: ProfileOpenDialog;
 };
 export type ProfilePostProps = { post: FeedPost; onStateChange: import("./post").PostStateChange; onLike: import("./post").LikePostAction; onNotice: ProfileNotice; onOpen: ProfileOpenDialog };
 export type ProfileUserAvatarProps = { name: string; src?: string | null; className?: string };
-
-export type ProfileHighlightsProps = { onOpen: ProfileOpenDialog };
 
 export type ProfileImageKind = "avatar" | "cover";
 export type ProfileImageResponse = { success: boolean; kind: ProfileImageKind; url: string };

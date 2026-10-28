@@ -1,14 +1,7 @@
-import asset0 from "../../_metronic/assets/images/profile/highlight-ai.png";
-import asset1 from "../../_metronic/assets/images/profile/highlight-tech.png";
-import asset2 from "../../_metronic/assets/images/profile/highlight-design.png";
-import asset3 from "../../_metronic/assets/images/profile/highlight-life.png";
-import asset4 from "../../_metronic/assets/images/profile/highlight-travel.png";
 import asset5 from "../../_metronic/assets/images/profile/cover.png";
 import asset6 from "../../_metronic/assets/images/profile/avatar.png";
 import asset7 from "../../_metronic/assets/images/profile/workspace-preview.png";
-import asset8 from "../../_metronic/assets/images/profile/logo.png";
 import asset9 from "../../_metronic/assets/images/profile/header-avatar.png";
-import asset10 from "../../_metronic/assets/images/profile/icon-0.svg";
 import asset11 from "../../_metronic/assets/images/profile/icon-1.svg";
 import asset12 from "../../_metronic/assets/images/profile/icon-2.svg";
 import asset13 from "../../_metronic/assets/images/profile/icon-3.svg";
@@ -40,12 +33,6 @@ import asset38 from "../../_metronic/assets/images/profile/icon-28.svg";
 import type { ProfileDetails } from "../../component/type/profile";
 
 export const profileAssets = {
-    "3360:482": { src: asset10 },
-    "3360:489": { src: asset0 },
-    "3360:495": { src: asset1 },
-    "3360:501": { src: asset2 },
-    "3360:507": { src: asset3 },
-    "3360:513": { src: asset4 },
     "3360:518": { src: asset5 },
     "3360:522": { src: asset11 },
     "3360:532": { src: asset6 },
@@ -96,7 +83,6 @@ export const profileAssets = {
     "3360:857": { src: asset35 },
     "3360:862": { src: asset36 },
     "3360:870": { src: asset37 },
-    "3360:872": { src: asset8 },
     "3360:877": { src: asset38 },
     "3360:880": { src: asset9 },
 } as const;
@@ -104,14 +90,6 @@ export const profileAssets = {
 export const initialProfile: ProfileDetails = {
     name: "Trang cá nhân", handle: "", role: "", specialty: "", bio: "", website: "", company: "", joined: "",
 };
-
-export const highlights = [
-    { title: "Dự án AI", image: "3360:489" },
-    { title: "Tech Summit", image: "3360:495" },
-    { title: "Design Sys", image: "3360:501" },
-    { title: "Đời sống", image: "3360:507" },
-    { title: "Du lịch", image: "3360:513" },
-] as const;
 
 export const profileTabs = [
     { id: "posts", label: "B\u00e0i\nvi\u1ebft", title: "Bài viết", icon: "3360:846" },

@@ -52,6 +52,7 @@ export function useMessagesActions() {
     const [hasOlder, setHasOlder] = useState(false);
     const [olderCursor, setOlderCursor] = useState<string | null>(null);
     const [online, setOnline] = useState(typeof navigator === "undefined" ? true : navigator.onLine);
+    const [callSocket, setCallSocket] = useState<Socket | null>(null);
     const selectedRef = useRef<string | null>(null);
     const userRef = useRef<CurrentUser | null>(null);
     const mountedRef = useRef(false);
@@ -301,6 +302,7 @@ export function useMessagesActions() {
                     const socketUrl = import.meta.env.VITE_API_BASE_URL || window.location.origin;
                     const socket = io(socketUrl, { auth: { token }, withCredentials: true, reconnection: true });
                     socketRef.current = socket;
+                    setCallSocket(socket);
                     socket.on("connect", () => {
                         socket.emit("presence:watch");
                         const activeConversationId = selectedRef.current;
@@ -381,6 +383,7 @@ export function useMessagesActions() {
             mountedRef.current = false;
             socketRef.current?.disconnect();
             socketRef.current = null;
+            setCallSocket(null);
         };
     }, [appendMessage, openConversation, refreshConversations, refreshFriends]);
 
@@ -407,7 +410,7 @@ export function useMessagesActions() {
         ? "Bạn không thể nhắn tin với chính mình."
         : actionError;
     return {
-        currentUser, conversations, friends, presence, typingUserId, selectedId, selectedConversation, messages, draft, updateDraft,
+        currentUser, conversations, friends, presence, typingUserId, selectedId, selectedConversation, messages, draft, updateDraft, callSocket,
         loading, listError, messageError, actionError: visibleActionError, loadingMessages, loadingOlder,
         hasOlder, online, openConversation, openFriend, loadOlderMessages, markVisibleMessages, send, retry, retryConversations,
     };

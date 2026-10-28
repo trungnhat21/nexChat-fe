@@ -1,8 +1,13 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef } from "react";
 import { Link } from "react-router";
+import { useLocation, useNavigate } from "react-router";
+import { Phone, Video } from "lucide-react";
 import type { ChatMessage } from "../../component/type/message";
 import { useMessagesActions } from "./actions";
+import { useCalls } from "./useCalls";
 import "./style.scss";
+
+const CallOverlay = lazy(() => import("./CallOverlay"));
 
 function formatTime(value: string) {
     return new Date(value).toLocaleString("vi-VN", { dateStyle: "short", timeStyle: "short" });
@@ -13,11 +18,30 @@ function Avatar({ name, src, online }: { name: string; src: string | null; onlin
 }
 
 export default function MessagesPage() {
+    const location = useLocation();
+    const navigate = useNavigate();
     const {
         currentUser, conversations, friends, presence, typingUserId, selectedId, selectedConversation, messages, draft, updateDraft,
         loading, listError, messageError, actionError, loadingMessages, loadingOlder,
-        hasOlder, online, openConversation, openFriend, loadOlderMessages, markVisibleMessages, send, retry, retryConversations,
+        hasOlder, online, callSocket, openConversation, openFriend, loadOlderMessages, markVisibleMessages, send, retry, retryConversations,
     } = useMessagesActions();
+    const navigationCallState = location.state as { incomingCameraOff?: boolean; incomingCallId?: string; startCall?: "audio" | "video" } | null;
+    const incomingCameraOff = Boolean(navigationCallState?.incomingCameraOff);
+    const calls = useCalls(callSocket, selectedId, selectedConversation, online, currentUser?.id ?? null);
+    const startAudioCall = calls.startAudio;
+    const startVideoCall = calls.startVideo;
+    const startedNavigationCall = useRef<string | null>(null);
+
+    useEffect(() => {
+        const requestedCall = navigationCallState?.startCall;
+        if (!requestedCall || !selectedConversation) return;
+        const requestKey = `${selectedConversation.id}:${requestedCall}`;
+        if (startedNavigationCall.current === requestKey) return;
+        startedNavigationCall.current = requestKey;
+        if (requestedCall === "audio") startAudioCall();
+        else startVideoCall();
+        navigate(`${location.pathname}${location.search}`, { replace: true, state: null });
+    }, [location.pathname, location.search, navigate, navigationCallState?.startCall, selectedConversation, startAudioCall, startVideoCall]);
     const historyRef = useRef<HTMLDivElement>(null);
     const stickToBottom = useRef(true);
     const restoreScroll = useRef<number | null>(null);
@@ -103,7 +127,7 @@ export default function MessagesPage() {
                 {!selectedId && <div className="messages-chat-empty"><span>✉</span><h2>Chọn một cuộc trò chuyện</h2><p>Tin nhắn riêng tư của bạn sẽ xuất hiện tại đây.</p>{actionError && <p className="messages-error" role="alert">{actionError}</p>}</div>}
                 {selectedId && <>
                     <header className="messages-chat-heading">
-                        {selectedConversation ? <><Avatar name={selectedConversation.participant.name} src={selectedConversation.participant.avatar} online={presence[selectedConversation.participant.id] ?? selectedConversation.participant.online} /><span><strong>{selectedConversation.participant.name}</strong><small className={`messages-presence ${presence[selectedConversation.participant.id] ?? selectedConversation.participant.online ? "is-online" : ""}`}>{presence[selectedConversation.participant.id] ?? selectedConversation.participant.online ? "Đang hoạt động" : "Ngoại tuyến"}</small></span><Link to={`/profile/${selectedConversation.participant.id}`}>Trang cá nhân</Link></> : <span>Đang mở cuộc trò chuyện…</span>}
+                        {selectedConversation ? <><Avatar name={selectedConversation.participant.name} src={selectedConversation.participant.avatar} online={presence[selectedConversation.participant.id] ?? selectedConversation.participant.online} /><span><strong>{selectedConversation.participant.name}</strong><small className={`messages-presence ${presence[selectedConversation.participant.id] ?? selectedConversation.participant.online ? "is-online" : ""}`}>{presence[selectedConversation.participant.id] ?? selectedConversation.participant.online ? "Đang hoạt động" : "Ngoại tuyến"}</small></span><div className="messages-chat-actions"><button type="button" aria-label="Gọi thoại" title="Gọi thoại" onClick={calls.startAudio} disabled={!online || calls.busy || Boolean(calls.activeCall)}><Phone size={21} strokeWidth={2.5} /></button><button type="button" aria-label="Gọi video" title="Gọi video" onClick={calls.startVideo} disabled={!online || calls.busy || Boolean(calls.activeCall)}><Video size={22} strokeWidth={2.5} /></button><Link to={`/profile/${selectedConversation.participant.id}`}>Trang cá nhân</Link></div></> : <span>Đang mở cuộc trò chuyện…</span>}
                     </header>
                     <div className="messages-history" ref={historyRef} onScroll={onHistoryScroll} aria-live="polite">
                         {loadingOlder && <p className="messages-hint">Đang tải tin nhắn cũ hơn…</p>}
@@ -114,7 +138,7 @@ export default function MessagesPage() {
                         }}>Tải tin nhắn cũ hơn</button>}
                         {loadingMessages && <p className="messages-hint" role="status">Đang tải tin nhắn…</p>}
                         {!loadingMessages && !messageError && messages.length === 0 && <p className="messages-no-history">Hãy gửi lời chào để bắt đầu cuộc trò chuyện.</p>}
-                        {messages.map((message: ChatMessage) => <article key={message.id} data-message-id={message.id} data-unread={!message.isMine && !message.isRead ? "true" : "false"} className={`messages-bubble-row ${message.isMine ? "is-mine" : "is-theirs"}`}>
+                        {messages.map((message: ChatMessage) => message.messageType === "system" ? <article key={message.id} className="messages-call-activity"><span>{message.content}</span><time>{formatTime(message.createdAt)}</time></article> : <article key={message.id} data-message-id={message.id} data-unread={!message.isMine && !message.isRead ? "true" : "false"} className={`messages-bubble-row ${message.isMine ? "is-mine" : "is-theirs"}`}>
                             <Avatar name={message.sender?.name || "Người dùng"} src={message.sender?.avatar ?? null} />
                             <div className="messages-bubble-content"><small><strong>{message.sender?.name || "Người dùng"}</strong><time>{formatTime(message.createdAt)}</time></small><p>{message.content}</p>
                                 {message.delivery === "sending" && <span className="messages-delivery">Đang gửi…</span>}
@@ -136,5 +160,8 @@ export default function MessagesPage() {
             </section>
         </div>
         {currentUser && <span className="messages-sr-only" aria-live="polite">Đăng nhập với tài khoản {currentUser.userName || currentUser.email}</span>}
+        {calls.notice && <div className="call-toast" role="status">{calls.notice}</div>}
+        {calls.error && !calls.activeCall && <div className="call-toast is-error" role="alert"><span>{calls.error}</span><button type="button" onClick={calls.dismissError} aria-label="Đóng thông báo lỗi">×</button></div>}
+        {calls.activeCall && currentUser && <Suspense fallback={<div className="call-overlay-loading" role="status">Đang mở giao diện cuộc gọi…</div>}><CallOverlay session={calls.activeCall} userId={currentUser.id} busy={calls.busy} error={calls.error} online={online} cameraOffOnStart={incomingCameraOff && navigationCallState?.incomingCallId === calls.activeCall.call.id} onAccept={calls.accept} onDecline={calls.decline} onCancel={calls.cancel} onEnd={calls.end} onDismissError={calls.dismissError} /></Suspense>}
     </main>;
 }

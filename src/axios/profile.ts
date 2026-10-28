@@ -8,6 +8,6 @@ export async function uploadProfileImage(kind: ProfileImageKind, image: File) {
     return response.data;
 }
 
-export async function removeProfileAvatar() {
-    return (await api.delete<{ success: boolean; kind: "avatar"; url: null }>("/profile/images/avatar")).data;
+export async function removeProfileImage(kind: "avatar" | "cover") {
+    return (await api.delete<{ success: boolean; kind: "avatar" | "cover"; url: null }>(`/profile/images/${kind}`)).data;
 }
