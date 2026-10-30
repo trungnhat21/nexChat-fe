@@ -1,4 +1,4 @@
-import logo_png from "../../_metronic/assets/images/home/pulse-logo.png";
+import logo_png from "../../_metronic/assets/images/home/nexchat-logo.svg";
 import member_1_png from "../../_metronic/assets/images/register/member-1.png";
 import member_2_png from "../../_metronic/assets/images/register/member-2.png";
 import member_3_png from "../../_metronic/assets/images/register/member-3.png";

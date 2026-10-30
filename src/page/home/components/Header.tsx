@@ -5,8 +5,9 @@ import Input from "../../../component/UI/Input/Input";
 import { DesignIcon, DesignImage } from "./DesignAsset";
 import { focusComposer, useHeaderActions, useHome } from "../actions";
 import { useNotificationCenter } from "../notification-center-context";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
+import SearchSuggestions from "./SearchSuggestions";
 
 function notificationText(type: string, actorName: string) {
     if (type === "friend_request") return `${actorName} đã gửi lời mời kết bạn.`;
@@ -24,6 +25,8 @@ export default function Header() {
     const { notifications, unreadCount, unreadMessageCount, isOpen, openNotifications, closeNotifications, markRead } = useNotificationCenter();
     const { accountMenuOpen, setAccountMenuOpen, loggingOut, accountMenuRef, accountButtonRef, logoutButtonRef, openAccountMenu, handleLogout } = useHeaderActions();
     const notificationsRef = useRef<HTMLDivElement>(null);
+    const searchRef = useRef<HTMLDivElement>(null);
+    const [searchFocused, setSearchFocused] = useState(false);
     const navigate = useNavigate();
     useEffect(() => {
         function onPointerDown(event: PointerEvent) {
@@ -32,6 +35,13 @@ export default function Header() {
         document.addEventListener("pointerdown", onPointerDown);
         return () => document.removeEventListener("pointerdown", onPointerDown);
     }, [closeNotifications]);
+    useEffect(() => {
+        function onPointerDown(event: PointerEvent) {
+            if (event.target instanceof Node && !searchRef.current?.contains(event.target)) setSearchFocused(false);
+        }
+        document.addEventListener("pointerdown", onPointerDown);
+        return () => document.removeEventListener("pointerdown", onPointerDown);
+    }, []);
 
     async function openNotification(id: string, type: string, referenceId: string | null, actorId?: string) {
         try { await markRead(id); } catch { /* Keep navigation usable if marking the item read fails. */ }
@@ -39,12 +49,39 @@ export default function Header() {
         if (type === "new_post" && referenceId) navigate("/posts/" + referenceId);
         else if (actorId) navigate("/profile/" + actorId);
     }
+    function handleSearchKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+        if (event.key === "Escape") setSearchFocused(false);
+        if (event.key !== "Enter" || !search.trim()) return;
+        event.preventDefault();
+        const trimmed = search.trim();
+        const key = `nexchat:recent-searches:${user?.id ?? "guest"}`;
+        try {
+            const saved: unknown = JSON.parse(localStorage.getItem(key) ?? "[]");
+            const recent = Array.isArray(saved) ? saved.filter((item): item is string => typeof item === "string") : [];
+            localStorage.setItem(key, JSON.stringify([trimmed, ...recent.filter(item => item.toLocaleLowerCase("vi") !== trimmed.toLocaleLowerCase("vi"))].slice(0, 5)));
+        } catch { /* Keep search usable when browser storage is unavailable. */ }
+        setSearchFocused(false);
+        navigate(`/search?q=${encodeURIComponent(trimmed)}`);
+    }
     return <header className="home-header">
         <div className="home-header-start">
-            <Link to="/home" className="home-brand" aria-label="Pulse — Trang chủ"><DesignImage id="3352:1019" /><span>Pulse</span></Link>
-            <div className="home-search">
+            <Link to="/home" className="home-brand" aria-label="NexChat — Trang chủ"><DesignImage id="3352:1019" /><span>NexChat</span></Link>
+            <div className={`home-search ${searchFocused ? "is-suggestions-open" : ""}`} ref={searchRef}>
                 <DesignIcon id="3352:1027" />
-                <Input name="feedSearch" aria-label="Tìm kiếm bài viết" maxLength={200} placeholder="Tìm kiếm bạn bè, bài viết, hashtag..." value={search} onChange={event => setSearch(event.target.value)} inputClassName="home-search-field" compact />
+                <Input name="feedSearch" aria-label="Tìm kiếm bạn bè, bài viết, hashtag..." maxLength={200} placeholder="Tìm kiếm bạn bè, bài viết, hashtag..." value={search} onFocus={() => setSearchFocused(true)} onKeyDown={handleSearchKeyDown} onChange={event => { setSearch(event.target.value); setSearchFocused(true); }} inputClassName="home-search-field" compact />
+                {searchFocused && (
+                    <SearchSuggestions
+                        key={user?.id ?? "guest"}
+                        query={search}
+                        userId={user?.id ?? "guest"}
+                        onSelect={value => {
+                            setSearch(value);
+                            setSearchFocused(false);
+                            navigate(`/search?q=${encodeURIComponent(value)}`);
+                        }}
+                        onClose={() => setSearchFocused(false)}
+                    />
+                )}
             </div>
         </div>
         <nav className="home-top-nav" aria-label="Điều hướng chính">

@@ -3,7 +3,7 @@
     padding: 20px max(16px, calc((100vw - 1180px) / 2));
     color: #182033;
     background: #f7f8fd;
-    font-family: "Pulse Jakarta", Arial, sans-serif;
+    font-family: "NexChat Jakarta", Arial, sans-serif;
     font-size: 13px;
     *, *::before, *::after { box-sizing: border-box; }
     button, textarea { font: inherit; }
@@ -542,4 +542,129 @@
 @media (prefers-reduced-motion: reduce) {
   .incoming-call-pill i, .incoming-call-avatar-rings::before, .incoming-call-avatar-rings::after, .incoming-call-wave { animation: none; }
 }
+
+/* Messages Search Styling */
+.messages-search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin: 0 14px 12px;
+    background: #f1f3f9;
+    border-radius: 10px;
+    padding: 0 10px;
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+
+    &:focus-within {
+        background: #ffffff;
+        border-color: #4648d4;
+        box-shadow: 0 0 0 3px rgba(70, 72, 212, 0.1);
+    }
+
+    .messages-search-icon {
+        color: #8b8f9c;
+        flex-shrink: 0;
+        margin-right: 8px;
+    }
+
+    .messages-search-input {
+        width: 100%;
+        height: 36px;
+        border: none;
+        background: transparent;
+        font-size: 13px;
+        color: #1a2030;
+        outline: none;
+
+        &::placeholder {
+            color: #9297a5;
+        }
+    }
+
+    .messages-search-clear {
+        border: none;
+        background: transparent;
+        color: #8b8f9c;
+        font-size: 16px;
+        line-height: 1;
+        padding: 4px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+
+        &:hover {
+            color: #1a2030;
+            background: #e2e4ed;
+        }
+    }
+}
+
+.messages-chat-actions > .messages-chat-search-btn {
+    background: #f0f2fb;
+    color: #4648d4;
+
+    &:hover, &.is-active {
+        background: #e0e3ff;
+        color: #3b3dbf;
+    }
+}
+
+.messages-inchat-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    background: #f8fafc;
+    border-bottom: 1px solid #eceef4;
+
+    .messages-inchat-icon {
+        color: #64748b;
+        flex-shrink: 0;
+    }
+
+    .messages-inchat-input {
+        flex: 1;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 13px;
+        background: white;
+        outline: none;
+
+        &:focus {
+            border-color: #4648d4;
+            box-shadow: 0 0 0 2px rgba(70, 72, 212, 0.1);
+        }
+    }
+
+    .messages-inchat-results-count {
+        font-size: 12px;
+        color: #64748b;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .messages-inchat-close {
+        border: none;
+        background: transparent;
+        color: #64748b;
+        font-size: 14px;
+        padding: 4px 8px;
+        border-radius: 6px;
+
+        &:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+    }
+}
+
+.messages-bubble-row.is-matched {
+    .messages-bubble-content p {
+        background: #fef08a !important;
+        color: #854d0e !important;
+        box-shadow: 0 0 0 2px #facc15;
+    }
+}
+
 

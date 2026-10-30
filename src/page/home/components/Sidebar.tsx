@@ -4,8 +4,9 @@ import { Link, useLocation, useNavigate } from "react-router";
 import { DesignIcon } from "./DesignAsset";
 import { useHome } from "../actions";
 import { useNotificationCenter } from "../notification-center-context";
+import SearchFilterCard, { type FeedFilters } from "./SearchFilterCard";
 
-export default function Sidebar() {
+export default function Sidebar({ filters, onFiltersChange }: { filters?: FeedFilters; onFiltersChange?: (filters: FeedFilters) => void } = {}) {
     const { pathname } = useLocation();
     const navigate = useNavigate();
     const { openPanel, user } = useHome();
@@ -23,6 +24,7 @@ export default function Sidebar() {
                 return index === 0 || index === 4 ? <Link key={item.label} to={index === 0 ? "/home" : "/saved"} aria-current={pathname === (index === 0 ? "/home" : "/saved") ? "page" : undefined}>{content}</Link> : <button key={item.label} onClick={() => index === 2 ? openNotifications() : item.icon === "3352:522" ? navigate("/messages") : openPanel(item.label)}>{content}</button>;
             })}
         </nav>
+        {filters && onFiltersChange && <SearchFilterCard filters={filters} onChange={onFiltersChange} />}
         <section className="home-card home-shortcuts">
             <div className="home-widget-heading"><h2>LỐI TẮT NHANH</h2><button onClick={() => openPanel("Tùy chỉnh lối tắt")}>Tùy chỉnh</button></div>
             {shortcuts.map(([initials, name, members]) => <button className="home-shortcut" key={name} onClick={() => openPanel(name)}><span className={`home-group-icon home-group-${initials.toLowerCase()}`}>{initials}</span><span><strong>{name}</strong><small>{members}</small></span></button>)}

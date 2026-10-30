@@ -11,7 +11,7 @@ import asset16 from "../../_metronic/assets/images/home/author-quoc-nam.png";
 import asset17 from "../../_metronic/assets/images/home/friend-linh-san.png";
 import asset18 from "../../_metronic/assets/images/home/friend-hoang-bach.png";
 import asset19 from "../../_metronic/assets/images/home/friend-tuyet-mai.png";
-import asset23 from "../../_metronic/assets/images/home/pulse-logo.png";
+import asset23 from "../../_metronic/assets/images/home/nexchat-logo.svg";
 import asset24 from "../../_metronic/assets/images/home/profile.png";
 import asset25 from "../../_metronic/assets/images/home/icon-verified.svg";
 import asset26 from "../../_metronic/assets/images/home/icon-1.svg";
