@@ -1,10 +1,11 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef } from "react";
 import { Link } from "react-router";
 import { useLocation, useNavigate } from "react-router";
-import { Phone, Video } from "lucide-react";
+import { Phone, Video, Search } from "lucide-react";
 import type { ChatMessage } from "../../component/type/message";
 import { useMessagesActions } from "./actions";
 import { useCalls } from "./useCalls";
+import { messagesConfig } from "./config";
 import "./style.scss";
 
 const CallOverlay = lazy(() => import("./CallOverlay"));
@@ -21,9 +22,11 @@ export default function MessagesPage() {
     const location = useLocation();
     const navigate = useNavigate();
     const {
-        currentUser, conversations, friends, presence, typingUserId, selectedId, selectedConversation, messages, draft, updateDraft,
+        currentUser, conversations, presence, typingUserId, selectedId, selectedConversation, messages, draft, updateDraft,
         loading, listError, messageError, actionError, loadingMessages, loadingOlder,
         hasOlder, online, callSocket, openConversation, openFriend, loadOlderMessages, markVisibleMessages, send, retry, retryConversations,
+        searchQuery, setSearchQuery, debouncedSearch, filteredConversations, filteredFriends,
+        messageSearchQuery, setMessageSearchQuery, messageSearchOpen, setMessageSearchOpen, messageSearchResults,
     } = useMessagesActions();
     const navigationCallState = location.state as { incomingCameraOff?: boolean; incomingCallId?: string; startCall?: "audio" | "video" } | null;
     const incomingCameraOff = Boolean(navigationCallState?.incomingCameraOff);
@@ -97,25 +100,59 @@ export default function MessagesPage() {
     }
 
     return <main className="messages-page">
-        <header className="messages-topbar"><Link to="/home" className="messages-back">‹ <span>Pulse</span></Link><h1>Tin nhắn</h1><span className={`messages-connection ${online ? "is-online" : "is-offline"}`}>{online ? "Đang kết nối" : "Ngoại tuyến"}</span></header>
+        <header className="messages-topbar"><Link to="/home" className="messages-back">‹ <span>NexChat</span></Link><h1>{messagesConfig.title}</h1><span className={`messages-connection ${online ? "is-online" : "is-offline"}`}>{online ? "Đang kết nối" : "Ngoại tuyến"}</span></header>
         <div className="messages-layout">
             <aside className="messages-sidebar" aria-label="Các cuộc trò chuyện">
                 <div className="messages-sidebar-heading"><h2>Trò chuyện</h2><span>{conversations.length}</span></div>
+
+                {/* Sidebar Search Input */}
+                <div className="messages-search-wrap">
+                    <Search size={15} aria-hidden="true" className="messages-search-icon" />
+                    <input
+                        type="text"
+                        className="messages-search-input"
+                        placeholder={messagesConfig.searchPlaceholder}
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        aria-label="Tìm kiếm cuộc trò chuyện hoặc bạn bè"
+                    />
+                    {searchQuery && (
+                        <button
+                            type="button"
+                            className="messages-search-clear"
+                            onClick={() => setSearchQuery("")}
+                            aria-label="Xóa từ khóa tìm kiếm"
+                        >
+                            ×
+                        </button>
+                    )}
+                </div>
+
                 {loading && <p className="messages-hint" role="status">Đang tải cuộc trò chuyện…</p>}
                 {listError && <div className="messages-error" role="alert">{listError}<button onClick={() => void retryConversations()}>Tải lại</button></div>}
-                {!loading && !listError && conversations.length === 0 && <div className="messages-empty-list"><p>Chưa có cuộc trò chuyện nào.</p><Link to="/profile">Tìm người để nhắn tin</Link></div>}
+                {!loading && !listError && conversations.length === 0 && <div className="messages-empty-list"><p>{messagesConfig.emptyConversations}</p><Link to="/profile">Tìm người để nhắn tin</Link></div>}
+                
+                {!loading && !listError && debouncedSearch && filteredConversations.length === 0 && filteredFriends.length === 0 && (
+                    <p className="messages-hint" role="status">{messagesConfig.searchEmptyText}</p>
+                )}
+
                 <div className="messages-conversation-list">
-                    {conversations.map(conversation => <button type="button" key={conversation.id} className={`messages-conversation ${selectedId === conversation.id ? "is-active" : ""}`} onClick={() => void openConversation(conversation.id)}>
+                    {filteredConversations.map(conversation => <button type="button" key={conversation.id} className={`messages-conversation ${selectedId === conversation.id ? "is-active" : ""}`} onClick={() => void openConversation(conversation.id)}>
                         <Avatar name={conversation.participant.name} src={conversation.participant.avatar} online={presence[conversation.participant.id] ?? conversation.participant.online} />
                         <span className="messages-conversation-copy"><strong>{conversation.participant.name}</strong><small>{conversation.lastMessage?.content || "Bắt đầu cuộc trò chuyện"}</small></span>
                         <span className="messages-conversation-meta"><time>{conversation.lastMessage ? formatTime(conversation.lastMessage.createdAt) : ""}</time>{conversation.unreadCount > 0 && <i aria-label={`${conversation.unreadCount} tin chưa đọc`}>{conversation.unreadCount > 99 ? "99+" : conversation.unreadCount}</i>}</span>
                     </button>)}
                 </div>
+
                 {!loading && !listError && <>
-                    <div className="messages-sidebar-heading messages-friends-heading"><h2>Bạn bè</h2><span>{friends.length}</span></div>
-                    {friends.filter(friend => !conversations.some(conversation => conversation.participant.id === friend.id)).length === 0 && <p className="messages-hint">Bạn đã có cuộc trò chuyện với tất cả bạn bè.</p>}
+                    <div className="messages-sidebar-heading messages-friends-heading"><h2>Bạn bè</h2><span>{filteredFriends.length}</span></div>
+                    {filteredFriends.filter(friend => !conversations.some(conversation => conversation.participant.id === friend.id)).length === 0 && (
+                        <p className="messages-hint">
+                            {debouncedSearch ? "Không có bạn bè phù hợp." : messagesConfig.emptyFriends}
+                        </p>
+                    )}
                     <div className="messages-conversation-list">
-                        {friends.filter(friend => !conversations.some(conversation => conversation.participant.id === friend.id)).map(friend => <button type="button" key={friend.id} className="messages-conversation" onClick={() => void openFriend(friend)}>
+                        {filteredFriends.filter(friend => !conversations.some(conversation => conversation.participant.id === friend.id)).map(friend => <button type="button" key={friend.id} className="messages-conversation" onClick={() => void openFriend(friend)}>
                             <Avatar name={friend.name} src={friend.avatar} online={presence[friend.id]} />
                             <span className="messages-conversation-copy"><strong>{friend.name}</strong><small>{presence[friend.id] ? "Đang hoạt động" : "Bắt đầu cuộc trò chuyện"}</small></span>
                         </button>)}
@@ -127,8 +164,37 @@ export default function MessagesPage() {
                 {!selectedId && <div className="messages-chat-empty"><span>✉</span><h2>Chọn một cuộc trò chuyện</h2><p>Tin nhắn riêng tư của bạn sẽ xuất hiện tại đây.</p>{actionError && <p className="messages-error" role="alert">{actionError}</p>}</div>}
                 {selectedId && <>
                     <header className="messages-chat-heading">
-                        {selectedConversation ? <><Avatar name={selectedConversation.participant.name} src={selectedConversation.participant.avatar} online={presence[selectedConversation.participant.id] ?? selectedConversation.participant.online} /><span><strong>{selectedConversation.participant.name}</strong><small className={`messages-presence ${presence[selectedConversation.participant.id] ?? selectedConversation.participant.online ? "is-online" : ""}`}>{presence[selectedConversation.participant.id] ?? selectedConversation.participant.online ? "Đang hoạt động" : "Ngoại tuyến"}</small></span><div className="messages-chat-actions"><button type="button" aria-label="Gọi thoại" title="Gọi thoại" onClick={calls.startAudio} disabled={!online || calls.busy || Boolean(calls.activeCall)}><Phone size={21} strokeWidth={2.5} /></button><button type="button" aria-label="Gọi video" title="Gọi video" onClick={calls.startVideo} disabled={!online || calls.busy || Boolean(calls.activeCall)}><Video size={22} strokeWidth={2.5} /></button><Link to={`/profile/${selectedConversation.participant.id}`}>Trang cá nhân</Link></div></> : <span>Đang mở cuộc trò chuyện…</span>}
+                        {selectedConversation ? <><Avatar name={selectedConversation.participant.name} src={selectedConversation.participant.avatar} online={presence[selectedConversation.participant.id] ?? selectedConversation.participant.online} /><span><strong>{selectedConversation.participant.name}</strong><small className={`messages-presence ${presence[selectedConversation.participant.id] ?? selectedConversation.participant.online ? "is-online" : ""}`}>{presence[selectedConversation.participant.id] ?? selectedConversation.participant.online ? "Đang hoạt động" : "Ngoại tuyến"}</small></span><div className="messages-chat-actions"><button type="button" className={`messages-chat-search-btn ${messageSearchOpen ? "is-active" : ""}`} aria-label="Tìm kiếm trong cuộc trò chuyện" title="Tìm kiếm tin nhắn" onClick={() => setMessageSearchOpen(prev => !prev)}><Search size={18} strokeWidth={2.2} /></button><button type="button" aria-label="Gọi thoại" title="Gọi thoại" onClick={calls.startAudio} disabled={!online || calls.busy || Boolean(calls.activeCall)}><Phone size={21} strokeWidth={2.5} /></button><button type="button" aria-label="Gọi video" title="Gọi video" onClick={calls.startVideo} disabled={!online || calls.busy || Boolean(calls.activeCall)}><Video size={22} strokeWidth={2.5} /></button><Link to={`/profile/${selectedConversation.participant.id}`}>Trang cá nhân</Link></div></> : <span>Đang mở cuộc trò chuyện…</span>}
                     </header>
+                    {messageSearchOpen && (
+                        <div className="messages-inchat-search-bar">
+                            <Search size={15} className="messages-inchat-icon" />
+                            <input
+                                type="text"
+                                className="messages-inchat-input"
+                                placeholder={messagesConfig.inChatSearchPlaceholder}
+                                value={messageSearchQuery}
+                                onChange={e => setMessageSearchQuery(e.target.value)}
+                                autoFocus
+                            />
+                            {messageSearchQuery && (
+                                <span className="messages-inchat-results-count">
+                                    {messageSearchResults.length} kết quả
+                                </span>
+                            )}
+                            <button
+                                type="button"
+                                className="messages-inchat-close"
+                                onClick={() => {
+                                    setMessageSearchOpen(false);
+                                    setMessageSearchQuery("");
+                                }}
+                                aria-label="Đóng tìm kiếm"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                    )}
                     <div className="messages-history" ref={historyRef} onScroll={onHistoryScroll} aria-live="polite">
                         {loadingOlder && <p className="messages-hint">Đang tải tin nhắn cũ hơn…</p>}
                         {messageError && <p className="messages-error" role="alert">{messageError}<button onClick={() => hasOlder ? void loadOlderMessages() : void openConversation(selectedId)}>Thử lại</button></p>}
@@ -138,14 +204,17 @@ export default function MessagesPage() {
                         }}>Tải tin nhắn cũ hơn</button>}
                         {loadingMessages && <p className="messages-hint" role="status">Đang tải tin nhắn…</p>}
                         {!loadingMessages && !messageError && messages.length === 0 && <p className="messages-no-history">Hãy gửi lời chào để bắt đầu cuộc trò chuyện.</p>}
-                        {messages.map((message: ChatMessage) => message.messageType === "system" ? <article key={message.id} className="messages-call-activity"><span>{message.content}</span><time>{formatTime(message.createdAt)}</time></article> : <article key={message.id} data-message-id={message.id} data-unread={!message.isMine && !message.isRead ? "true" : "false"} className={`messages-bubble-row ${message.isMine ? "is-mine" : "is-theirs"}`}>
-                            <Avatar name={message.sender?.name || "Người dùng"} src={message.sender?.avatar ?? null} />
-                            <div className="messages-bubble-content"><small><strong>{message.sender?.name || "Người dùng"}</strong><time>{formatTime(message.createdAt)}</time></small><p>{message.content}</p>
-                                {message.delivery === "sending" && <span className="messages-delivery">Đang gửi…</span>}
-                                {message.delivery === "failed" && <span className="messages-delivery is-failed">Chưa gửi được. <button disabled={!online} onClick={() => retry(message)}>Thử gửi lại</button></span>}
-                                {message.isMine && !message.delivery && message.status && <span className="messages-delivery">{message.status === "read" ? "Đã xem" : message.status === "delivered" ? "Đã nhận" : "Đã gửi"}</span>}
-                            </div>
-                        </article>)}
+                        {messages.map((message: ChatMessage) => {
+                            const isMatched = messageSearchOpen && Boolean(messageSearchQuery.trim()) && messageSearchResults.some(m => m.id === message.id);
+                            return message.messageType === "system" ? <article key={message.id} className="messages-call-activity"><span>{message.content}</span><time>{formatTime(message.createdAt)}</time></article> : <article key={message.id} data-message-id={message.id} data-unread={!message.isMine && !message.isRead ? "true" : "false"} className={`messages-bubble-row ${message.isMine ? "is-mine" : "is-theirs"} ${isMatched ? "is-matched" : ""}`}>
+                                <Avatar name={message.sender?.name || "Người dùng"} src={message.sender?.avatar ?? null} />
+                                <div className="messages-bubble-content"><small><strong>{message.sender?.name || "Người dùng"}</strong><time>{formatTime(message.createdAt)}</time></small><p>{message.content}</p>
+                                    {message.delivery === "sending" && <span className="messages-delivery">Đang gửi…</span>}
+                                    {message.delivery === "failed" && <span className="messages-delivery is-failed">Chưa gửi được. <button disabled={!online} onClick={() => retry(message)}>Thử gửi lại</button></span>}
+                                    {message.isMine && !message.delivery && message.status && <span className="messages-delivery">{message.status === "read" ? "Đã xem" : message.status === "delivered" ? "Đã nhận" : "Đã gửi"}</span>}
+                                </div>
+                            </article>;
+                        })}
                     </div>
                     <div className={`messages-typing-indicator ${typingUserId ? "is-visible" : ""}`} aria-live="polite" aria-label={typingUserId ? `${selectedConversation?.participant.name ?? "Bạn bè"} đang nhập` : undefined}>
                         {typingUserId && <><span className="messages-typing-dots" aria-hidden="true"><i /><i /><i /></span><span>{selectedConversation?.participant.name ?? "Bạn bè"} đang nhập</span></>}

@@ -5,7 +5,7 @@
 @font-face { font-family: "Profile Manrope"; font-style: normal; font-weight: 600; font-display: swap; src: url("../../_metronic/assets/images/profile/manrope-600.ttf") format("truetype"); }
 @font-face { font-family: "Profile Manrope"; font-style: normal; font-weight: 700; font-display: swap; src: url("../../_metronic/assets/images/profile/manrope-700.ttf") format("truetype"); }
 
-.pulse-profile {
+.nexchat-profile {
     --profile-bg: #f8f9ff;
     --profile-primary: #0037b0;
     --profile-soft: #eff4ff;
@@ -181,7 +181,7 @@
     .profile-header-end { gap: 0; }
     .profile-header-end .profile-icon-button { width: 36px; }
     .profile-hero-actions { gap: 4px; }
-    .pulse-profile .profile-primary { padding-left: 10px; padding-right: 10px; }
+    .nexchat-profile .profile-primary { padding-left: 10px; padding-right: 10px; }
     .profile-role { flex-wrap: wrap; }
     .profile-role > span:first-child { max-width: 210px; }
     .profile-role strong { max-width: 180px; padding-right: 0; }
@@ -197,7 +197,7 @@
     .profile-poll-meta { flex-wrap: wrap; }
 }
 @media (prefers-reduced-motion: reduce) {
-    .pulse-profile *, .pulse-profile *::before, .pulse-profile *::after { transition: none !important; scroll-behavior: auto !important; }
+    .nexchat-profile *, .nexchat-profile *::before, .nexchat-profile *::after { transition: none !important; scroll-behavior: auto !important; }
 }
 
 .profile-image:not(.is-custom)[data-profile-asset="3360:518"] > img { height: 123.78%; top: -11.89%; }

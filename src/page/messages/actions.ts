@@ -1,5 +1,5 @@
 import { isAxiosError } from "axios";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router";
 import { createDirectConversation, listConversations, listMessages, sendDirectMessage } from "../../axios/messages";
 import { getCurrentUser } from "../../axios/auth";
@@ -8,6 +8,7 @@ import { getAccessToken } from "../../axios/index";
 import type { CurrentUser } from "../../component/type/auth";
 import type { ChatMessage, DirectConversation } from "../../component/type/message";
 import { io, type Socket } from "socket.io-client";
+import { useDebounce } from "../../utils/useDebounce";
 
 function readableError(error: unknown, fallback: string) {
     if (isAxiosError(error)) {
@@ -43,6 +44,16 @@ export function useMessagesActions() {
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [draft, setDraft] = useState("");
+
+    // Sidebar Conversation & Friend Search
+    const [searchQuery, setSearchQuery] = useState("");
+    const debouncedSearch = useDebounce(searchQuery, 300);
+
+    // In-chat Message Search
+    const [messageSearchQuery, setMessageSearchQuery] = useState("");
+    const [messageSearchOpen, setMessageSearchOpen] = useState(false);
+    const debouncedMessageSearch = useDebounce(messageSearchQuery, 250);
+
     const [loading, setLoading] = useState(true);
     const [listError, setListError] = useState("");
     const [messageError, setMessageError] = useState("");
@@ -409,9 +420,38 @@ export function useMessagesActions() {
     const visibleActionError = currentUser && recipientId === currentUser.id
         ? "Bạn không thể nhắn tin với chính mình."
         : actionError;
+
+    // Filter conversations and friends by debounced search
+    const normalizedSearch = debouncedSearch.trim().toLocaleLowerCase("vi");
+    const filteredConversations = useMemo(() => {
+        if (!normalizedSearch) return conversations;
+        return conversations.filter(conv =>
+            conv.participant.name.toLocaleLowerCase("vi").includes(normalizedSearch) ||
+            (conv.lastMessage?.content && conv.lastMessage.content.toLocaleLowerCase("vi").includes(normalizedSearch))
+        );
+    }, [conversations, normalizedSearch]);
+
+    const filteredFriends = useMemo(() => {
+        if (!normalizedSearch) return friends;
+        return friends.filter(friend =>
+            friend.name.toLocaleLowerCase("vi").includes(normalizedSearch)
+        );
+    }, [friends, normalizedSearch]);
+
+    // Filter in-chat messages by search query
+    const normalizedMsgSearch = debouncedMessageSearch.trim().toLocaleLowerCase("vi");
+    const messageSearchResults = useMemo(() => {
+        if (!messageSearchOpen || !normalizedMsgSearch) return [];
+        return messages.filter(msg =>
+            msg.content.toLocaleLowerCase("vi").includes(normalizedMsgSearch)
+        );
+    }, [messages, messageSearchOpen, normalizedMsgSearch]);
+
     return {
         currentUser, conversations, friends, presence, typingUserId, selectedId, selectedConversation, messages, draft, updateDraft, callSocket,
         loading, listError, messageError, actionError: visibleActionError, loadingMessages, loadingOlder,
         hasOlder, online, openConversation, openFriend, loadOlderMessages, markVisibleMessages, send, retry, retryConversations,
+        searchQuery, setSearchQuery, debouncedSearch, filteredConversations, filteredFriends,
+        messageSearchQuery, setMessageSearchQuery, messageSearchOpen, setMessageSearchOpen, messageSearchResults,
     };
 }

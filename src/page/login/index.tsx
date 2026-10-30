@@ -66,7 +66,7 @@ export default function LoginPage() {
                             <span>💗 3.4k lượt thả tim</span>
 
                             <span className="px-2 py-1 rounded-full bg-black/20">
-                                #KhamPhaPulse
+                                #KhamPhaNexChat
                             </span>
                         </div>
 
@@ -199,7 +199,7 @@ export default function LoginPage() {
                                 label="Đồng ý chính sách"
                             />
                             <div className="fs-11 lh-17 text-description">
-                                Bằng việc tiếp tục, bạn đồng ý với Điều khoản Dịch vụ và Chính sách Quyền riêng tư của Pulse.
+                                Bằng việc tiếp tục, bạn đồng ý với Điều khoản Dịch vụ và Chính sách Quyền riêng tư của NexChat.
                             </div>
                         </div>
 

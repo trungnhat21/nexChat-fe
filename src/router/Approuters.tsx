@@ -5,6 +5,7 @@ import ProfilePage from "../page/profile";
 import SavedPage from "../page/saved";
 import RegisterPage from "../page/register";
 import MessagesPage from "../page/messages";
+import SearchPage from "../page/search";
 
 export default function AppRouters(){
     return(
@@ -17,6 +18,7 @@ export default function AppRouters(){
             <Route path="/messages" element={<MessagesPage/>}/>
             <Route path="/profile" element={<ProfilePage/>}/>
             <Route path="/profile/:userId" element={<ProfilePage/>}/>
+            <Route path="/search" element={<SearchPage/>}/>
         </Routes>
     )
 }

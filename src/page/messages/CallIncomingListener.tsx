@@ -159,7 +159,7 @@ export default function CallIncomingListener() {
 
     return <div className="incoming-call-backdrop">
         <section className="incoming-call-card" role="dialog" aria-modal="true" aria-labelledby="incoming-call-name">
-            <div className="incoming-call-pill"><i /> PULSE {isVideo ? "VIDEO" : "AUDIO"} CALL</div>
+            <div className="incoming-call-pill"><i /> NEXCHAT {isVideo ? "VIDEO" : "AUDIO"} CALL</div>
             <div className="incoming-call-identity">
                 <div className="incoming-call-avatar-rings"><div className="incoming-call-avatar">{caller.avatar && failedAvatar !== caller.avatar ? <img src={caller.avatar} alt="" onError={() => setFailedAvatar(caller.avatar)} /> : <span>{initials(caller.name)}</span>}</div>{isVideo && <span className="incoming-call-video-badge" aria-hidden="true"><Video size={14} /></span>}</div>
                 <h2 id="incoming-call-name">{caller.name}</h2>

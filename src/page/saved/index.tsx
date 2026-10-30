@@ -13,7 +13,7 @@ export default function SavedPage() {
     const { layout, feed } = useSavedActions();
     const { user, search, setSearch, notice, setNotice } = layout;
     return <HomeContext.Provider value={{ user, search, setSearch, announce: setNotice, openPanel: setNotice }}>
-        <div className="pulse-home pulse-saved"><Header /><main className="home-grid"><Sidebar />
+        <div className="nexchat-home nexchat-saved"><Header /><main className="home-grid"><Sidebar />
             <div className="home-feed" id="home-feed"><section className="home-card saved-heading"><h1>{savedTitle}</h1><p>{savedDescription}</p></section>
                 {feed.loading && <section className="home-card home-empty" role="status">Đang tải bài đã lưu...</section>}
                 {feed.error && <section className="home-card home-feed-error" role="alert"><p>{feed.error}</p><button onClick={feed.reload}>Thử lại</button><Link to="/">Đăng nhập</Link></section>}

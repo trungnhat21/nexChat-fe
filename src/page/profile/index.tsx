@@ -16,7 +16,7 @@ export default function ProfilePage() {
     const visiblePosts = posts;
     const media = posts.flatMap(post => post.media);
 
-    return <div className="pulse-profile">
+    return <div className="nexchat-profile">
         <a className="profile-skip-link" href="#profile-posts">Chuyển đến nội dung</a>
         <header className="profile-header"><div className="profile-header-inner">
             <div className="profile-header-start"><Link className="profile-icon-button" to="/home" aria-label="Quay lại bảng tin"><ProfileIcon id="3360:870" /></Link><h2>Trang cá nhân</h2></div>
