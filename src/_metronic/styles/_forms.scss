@@ -1,0 +1,268 @@
+@use "./variable" as v;
+
+// ==========================================
+// Metronic Form Controls System
+// ==========================================
+
+// Form Label
+.form-label {
+  display: inline-block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: v.$color-text-main;
+  margin-bottom: 0.5rem;
+
+  &.required::after {
+    content: "*";
+    color: v.$color-danger;
+    margin-left: 0.25rem;
+  }
+}
+
+// Form Control (Input)
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  color: v.$color-text-main;
+  background-color: #FFFFFF;
+  background-clip: padding-box;
+  border: 1px solid v.$color-input-border;
+  border-radius: v.$border-radius;
+  box-shadow: none;
+  transition: v.$transition-base;
+  outline: none;
+
+  &::placeholder {
+    color: v.$color-text-muted;
+    opacity: 1;
+  }
+
+  &:focus {
+    color: v.$color-text-main;
+    background-color: #FFFFFF;
+    border-color: v.$color-input-focus-border;
+    box-shadow: v.$color-input-focus-shadow;
+  }
+
+  &:disabled,
+  &[readonly] {
+    background-color: v.$gray-200;
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  // Sizes
+  &.form-control-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    border-radius: v.$border-radius-sm;
+  }
+
+  &.form-control-lg {
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    border-radius: v.$border-radius-lg;
+  }
+
+  // ========================
+  // Solid Variant (Signature Metronic Look)
+  // ========================
+  &.form-control-solid {
+    background-color: v.$color-input-bg;
+    border-color: transparent;
+    color: v.$color-text-main;
+
+    &:focus {
+      background-color: #FFFFFF;
+      border-color: v.$color-input-focus-border;
+      box-shadow: v.$color-input-focus-shadow;
+    }
+  }
+
+  // Flush Variant
+  &.form-control-flush {
+    background: transparent;
+    border-color: transparent;
+    border-radius: 0;
+    padding-left: 0;
+    padding-right: 0;
+
+    &:focus {
+      box-shadow: none;
+      border-bottom-color: v.$color-primary;
+    }
+  }
+
+  // Transparent Variant
+  &.form-control-transparent {
+    background: transparent;
+    border-color: transparent;
+
+    &:focus {
+      box-shadow: none;
+      border-color: v.$color-input-border;
+    }
+  }
+}
+
+// Form Select
+.form-select {
+  display: block;
+  width: 100%;
+  padding: 0.625rem 2.25rem 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  color: v.$color-text-main;
+  background-color: #FFFFFF;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px 12px;
+  border: 1px solid v.$color-input-border;
+  border-radius: v.$border-radius;
+  transition: v.$transition-base;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+
+  &:focus {
+    border-color: v.$color-input-focus-border;
+    box-shadow: v.$color-input-focus-shadow;
+  }
+
+  &:disabled {
+    background-color: v.$gray-200;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  &.form-select-solid {
+    background-color: v.$color-input-bg;
+    border-color: transparent;
+
+    &:focus {
+      background-color: #FFFFFF;
+      border-color: v.$color-input-focus-border;
+      box-shadow: v.$color-input-focus-shadow;
+    }
+  }
+
+  &.form-select-sm {
+    padding: 0.375rem 2rem 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    border-radius: v.$border-radius-sm;
+  }
+
+  &.form-select-lg {
+    padding: 0.75rem 2.5rem 0.75rem 1.25rem;
+    font-size: 1rem;
+    border-radius: v.$border-radius-lg;
+  }
+}
+
+// ==========================================
+// Checkbox & Radio (.form-check)
+// ==========================================
+.form-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 1.5rem;
+  margin-bottom: 0.125rem;
+  cursor: pointer;
+
+  .form-check-input {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0;
+    vertical-align: top;
+    background-color: #FFFFFF;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    border: 1px solid v.$gray-400;
+    border-radius: 4px;
+    appearance: none;
+    cursor: pointer;
+    transition: v.$transition-base;
+    flex-shrink: 0;
+
+    &[type="radio"] {
+      border-radius: 50%;
+    }
+
+    &:checked {
+      background-color: v.$color-primary;
+      border-color: v.$color-primary;
+
+      &[type="checkbox"] {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+      }
+
+      &[type="radio"] {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23fff'/%3e%3c/svg%3e");
+      }
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+    }
+  }
+
+  .form-check-label {
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: v.$color-text-main;
+    user-select: none;
+  }
+
+  // Checkbox Solid Variant
+  &.form-check-solid {
+    .form-check-input {
+      background-color: v.$color-input-bg;
+      border-color: transparent;
+
+      &:checked {
+        background-color: v.$color-primary;
+        border-color: v.$color-primary;
+      }
+    }
+  }
+
+  &.form-check-sm {
+    .form-check-input {
+      width: 1rem;
+      height: 1rem;
+    }
+    .form-check-label {
+      font-size: 0.75rem;
+    }
+  }
+}
+
+// ==========================================
+// Switch Toggle (.form-switch)
+// ==========================================
+.form-check.form-switch {
+  .form-check-input {
+    width: 2.75rem;
+    height: 1.5rem;
+    background-color: v.$gray-300;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
+    background-position: left 0.15rem center;
+    border-radius: 2rem;
+    border: none;
+    transition: background-position 0.2s ease-in-out, background-color 0.2s ease-in-out;
+
+    &:checked {
+      background-color: v.$color-primary;
+      background-position: right 0.15rem center;
+    }
+  }
+}

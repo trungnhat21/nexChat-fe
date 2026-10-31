@@ -1,0 +1,189 @@
+@use "./variable" as v;
+
+// ==========================================
+// Metronic Modal & Drawer System
+// ==========================================
+
+// Modal Backdrop
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  background-color: rgba(17, 24, 39, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: modal-fade 0.2s ease-out;
+}
+
+// Modal Dialog
+.modal-dialog {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  background-color: #FFFFFF;
+  border-radius: v.$border-radius-xl;
+  box-shadow: v.$shadow-lg;
+  border: 1px solid v.$gray-200;
+  overflow: hidden;
+  animation: modal-scale 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.modal-sm {
+    max-width: 380px;
+  }
+
+  &.modal-lg {
+    max-width: 720px;
+  }
+
+  &.modal-xl {
+    max-width: 960px;
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid v.$gray-200;
+
+    .modal-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: v.$color-text-main;
+      margin: 0;
+    }
+
+    .btn-close {
+      background: transparent;
+      border: none;
+      color: v.$color-secondary;
+      padding: 0.25rem;
+      cursor: pointer;
+      border-radius: v.$border-radius-sm;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: v.$transition-base;
+
+      &:hover {
+        background-color: v.$gray-200;
+        color: v.$color-text-main;
+      }
+    }
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+    max-height: calc(85vh - 130px);
+    overflow-y: auto;
+  }
+
+  .modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid v.$gray-200;
+    background-color: v.$gray-100;
+  }
+}
+
+// ==========================================
+// Metronic Offcanvas Drawer
+// ==========================================
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1060;
+  background-color: rgba(17, 24, 39, 0.45);
+  backdrop-filter: blur(2px);
+  animation: modal-fade 0.2s ease-out;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 1065;
+  width: 100%;
+  max-width: 420px;
+  background-color: #FFFFFF;
+  box-shadow: v.$shadow-lg;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.drawer-end {
+    right: 0;
+    transform: translateX(100%);
+
+    &.drawer-on {
+      transform: translateX(0);
+    }
+  }
+
+  &.drawer-start {
+    left: 0;
+    transform: translateX(-100%);
+
+    &.drawer-on {
+      transform: translateX(0);
+    }
+  }
+
+  .drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid v.$gray-200;
+
+    .drawer-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: v.$color-text-main;
+      margin: 0;
+    }
+  }
+
+  .drawer-body {
+    flex: 1 1 auto;
+    padding: 1.5rem;
+    overflow-y: auto;
+  }
+
+  .drawer-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid v.$gray-200;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    background-color: v.$gray-100;
+  }
+}
+
+// Keyframe Animations
+@keyframes modal-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

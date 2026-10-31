@@ -1,25 +1,331 @@
 @use "./variable" as vars;
 
+// ==========================================
+// Metronic Standard Utility Classes
+// ==========================================
+
+// Legacy Helpers (Kept for compatibility)
 .text-description {
-    color: vars.$color-text-description;
+  color: vars.$color-text-description !important;
 }
 
 .bg-input {
-    background-color: vars.$color-input-bg;
+  background-color: vars.$color-input-bg !important;
 }
 
 .text-primary-custom {
-    color: vars.$color-primary;
+  color: vars.$color-primary !important;
 }
-//custom font size-> fs
-@for $i from 1 through 400 {
-    .fs-#{$i} {
-        font-size: #{$i}px;
-    }
+
+// Display & Flexbox
+.d-flex { display: flex !important; }
+.d-inline-flex { display: inline-flex !important; }
+.d-grid { display: grid !important; }
+.d-block { display: block !important; }
+.d-inline-block { display: inline-block !important; }
+.d-none { display: none !important; }
+
+// Position Utilities
+.position-static { position: static !important; }
+.position-relative { position: relative !important; }
+.position-absolute { position: absolute !important; }
+.position-fixed { position: fixed !important; }
+.position-sticky { position: sticky !important; }
+
+// Placement
+.top-0 { top: 0 !important; }
+.top-50 { top: 50% !important; }
+.top-100 { top: 100% !important; }
+
+.bottom-0 { bottom: 0 !important; }
+.bottom-50 { bottom: 50% !important; }
+.bottom-100 { bottom: 100% !important; }
+
+.start-0 { left: 0 !important; }
+.start-50 { left: 50% !important; }
+.start-100 { left: 100% !important; }
+
+.end-0 { right: 0 !important; }
+.end-50 { right: 50% !important; }
+.end-100 { right: 100% !important; }
+
+// Transforms
+.translate-middle { transform: translate(-50%, -50%) !important; }
+.translate-middle-x { transform: translateX(-50%) !important; }
+.translate-middle-y { transform: translateY(-50%) !important; }
+
+// Z-index
+.z-0 { z-index: 0 !important; }
+.z-1 { z-index: 1 !important; }
+.z-2 { z-index: 2 !important; }
+.z-3 { z-index: 1050 !important; }
+.z-n1 { z-index: -1 !important; }
+
+.flex-column { flex-direction: column !important; }
+.flex-row { flex-direction: row !important; }
+.flex-wrap { flex-wrap: wrap !important; }
+.flex-nowrap { flex-wrap: nowrap !important; }
+.flex-grow-1 { flex-grow: 1 !important; }
+.flex-shrink-0 { flex-shrink: 0 !important; }
+
+.align-items-start { align-items: flex-start !important; }
+.align-items-center { align-items: center !important; }
+.align-items-end { align-items: flex-end !important; }
+.align-items-stretch { align-items: stretch !important; }
+
+.justify-content-start { justify-content: flex-start !important; }
+.justify-content-center { justify-content: center !important; }
+.justify-content-end { justify-content: flex-end !important; }
+.justify-content-between { justify-content: space-between !important; }
+.justify-content-around { justify-content: space-around !important; }
+
+// Gap
+.gap-1 { gap: 0.25rem !important; }
+.gap-2 { gap: 0.5rem !important; }
+.gap-3 { gap: 0.75rem !important; }
+.gap-4 { gap: 1rem !important; }
+.gap-5 { gap: 1.25rem !important; }
+.gap-6 { gap: 1.5rem !important; }
+
+// Typography
+.fw-normal { font-weight: 400 !important; }
+.fw-medium { font-weight: 500 !important; }
+.fw-semibold { font-weight: 600 !important; }
+.fw-bold { font-weight: 700 !important; }
+.fw-bolder { font-weight: 800 !important; }
+
+.text-center { text-align: center !important; }
+.text-start { text-align: left !important; }
+.text-end { text-align: right !important; }
+.text-truncate {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
 }
-//custom line height -> lh
-@for $i from 1 through 400 {
-    .lh-#{$i} {
-        line-height: #{$i}px;
+
+// Colors
+.text-primary { color: vars.$color-primary !important; }
+.text-secondary { color: vars.$color-secondary !important; }
+.text-success { color: vars.$color-success !important; }
+.text-danger { color: vars.$color-danger !important; }
+.text-warning { color: vars.$color-warning !important; }
+.text-info { color: vars.$color-info !important; }
+.text-muted { color: vars.$color-text-muted !important; }
+.text-white { color: #ffffff !important; }
+
+.text-gray-400 { color: vars.$gray-400 !important; }
+.text-gray-500 { color: vars.$gray-500 !important; }
+.text-gray-600 { color: vars.$gray-600 !important; }
+.text-gray-700 { color: vars.$gray-700 !important; }
+.text-gray-800 { color: vars.$gray-800 !important; }
+.text-gray-900 { color: vars.$gray-900 !important; }
+
+// Backgrounds
+.bg-white { background-color: #ffffff !important; }
+.bg-light { background-color: vars.$color-light !important; }
+.bg-body { background-color: #faf8ff !important; }
+.bg-transparent { background-color: transparent !important; }
+
+.bg-light-primary { background-color: vars.$color-primary-light !important; }
+.bg-light-success { background-color: vars.$color-success-light !important; }
+.bg-light-danger { background-color: vars.$color-danger-light !important; }
+.bg-light-warning { background-color: vars.$color-warning-light !important; }
+.bg-light-info { background-color: vars.$color-info-light !important; }
+
+// Borders & Radii
+.border { border: 1px solid vars.$gray-300 !important; }
+.border-0 { border: 0 !important; }
+.border-top { border-top: 1px solid vars.$gray-200 !important; }
+.border-bottom { border-bottom: 1px solid vars.$gray-200 !important; }
+.border-dashed { border-style: dashed !important; }
+.border-gray-200 { border-color: vars.$gray-200 !important; }
+.border-gray-300 { border-color: vars.$gray-300 !important; }
+
+.rounded { border-radius: vars.$border-radius !important; }
+.rounded-sm { border-radius: vars.$border-radius-sm !important; }
+.rounded-1 { border-radius: 0.25rem !important; }
+.rounded-2 { border-radius: 0.5rem !important; }
+.rounded-3 { border-radius: 0.75rem !important; }
+.rounded-4 { border-radius: 1rem !important; }
+.rounded-lg { border-radius: vars.$border-radius-lg !important; }
+.rounded-xl { border-radius: vars.$border-radius-xl !important; }
+.rounded-circle { border-radius: 50% !important; }
+.rounded-pill { border-radius: vars.$border-radius-pill !important; }
+
+// Shadows
+.shadow-none { box-shadow: none !important; }
+.shadow-sm { box-shadow: vars.$shadow-sm !important; }
+.shadow-md { box-shadow: vars.$shadow-md !important; }
+.shadow-lg { box-shadow: vars.$shadow-lg !important; }
+
+// Sizing
+.w-100 { width: 100% !important; }
+.h-100 { height: 100% !important; }
+.min-w-0 { min-width: 0 !important; }
+.min-h-auto { min-height: auto !important; }
+.max-h-400px { max-height: 400px !important; }
+.min-w-160px { min-width: 160px !important; }
+.min-w-150px { min-width: 150px !important; }
+.w-8px { width: 8px !important; }
+.h-8px { height: 8px !important; }
+.w-6px { width: 6px !important; }
+.h-6px { height: 6px !important; }
+.w-36px { width: 36px !important; }
+.h-36px { height: 36px !important; }
+.overflow-y-auto { overflow-y: auto !important; }
+.cursor-pointer { cursor: pointer !important; }
+.overflow-hidden { overflow: hidden !important; }
+.user-select-none { user-select: none !important; }
+
+// Spacing Utilities
+.m-0 { margin: 0 !important; }
+.mb-1 { margin-bottom: 0.25rem !important; }
+.mb-2 { margin-bottom: 0.5rem !important; }
+.mb-3 { margin-bottom: 0.75rem !important; }
+.mb-4 { margin-bottom: 1rem !important; }
+.mb-5 { margin-bottom: 1.5rem !important; }
+
+.mt-1 { margin-top: 0.25rem !important; }
+.mt-2 { margin-top: 0.5rem !important; }
+.mt-3 { margin-top: 0.75rem !important; }
+.mt-4 { margin-top: 1rem !important; }
+.mt-5 { margin-top: 1.5rem !important; }
+
+.p-0 { padding: 0 !important; }
+.p-2 { padding: 0.5rem !important; }
+.p-3 { padding: 0.75rem !important; }
+.p-4 { padding: 1rem !important; }
+.p-5 { padding: 1.25rem !important; }
+.p-6 { padding: 1.5rem !important; }
+
+.px-2 { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
+.px-3 { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+.px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
+.px-6 { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
+
+.py-2 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+.py-3 { padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; }
+.py-4 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+
+// ==========================================
+// Metronic Nav Group (Pills / Segmented Tabs)
+// ==========================================
+.nav-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.375rem;
+  background-color: #FFFFFF;
+  border: 1px solid vars.$gray-300;
+  border-radius: vars.$border-radius-lg;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &.nav-group-pill {
+    border-radius: vars.$border-radius-pill;
+    background-color: vars.$color-input-bg;
+    border-color: transparent;
+  }
+
+  button, a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: vars.$border-radius;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: vars.$gray-600;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: vars.$transition-base;
+
+    &:hover {
+      color: vars.$color-text-main;
+      background-color: vars.$gray-200;
     }
+
+    &.is-active,
+    &[aria-current="page"],
+    &[aria-current="true"] {
+      background-color: vars.$color-primary;
+      color: #FFFFFF !important;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+
+      .tab-badge {
+        background-color: rgba(255, 255, 255, 0.25) !important;
+        color: #FFFFFF !important;
+      }
+    }
+
+    .tab-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.125rem 0.45rem;
+      border-radius: vars.$border-radius-pill;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      background-color: vars.$color-danger-light;
+      color: vars.$color-danger;
+      transition: vars.$transition-base;
+    }
+  }
+
+  &.nav-group-pill button,
+  &.nav-group-pill a {
+    border-radius: vars.$border-radius-pill;
+  }
+}
+
+// Skeleton Loading Shimmer
+.skeleton-shimmer {
+  border-radius: vars.$border-radius-lg;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.5s infinite;
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// Metronic 8 & Bootstrap Typography Scales (fs-1 to fs-9)
+.fs-1 { font-size: 2.25rem !important; }   // ~36px
+.fs-2 { font-size: 1.75rem !important; }   // ~28px
+.fs-3 { font-size: 1.5rem !important; }    // ~24px
+.fs-4 { font-size: 1.25rem !important; }   // ~20px
+.fs-5 { font-size: 1.125rem !important; }  // ~18px
+.fs-6 { font-size: 1rem !important; }      // ~15-16px
+.fs-7 { font-size: 0.875rem !important; }  // ~14px
+.fs-8 { font-size: 0.775rem !important; }  // ~12.5px
+.fs-9 { font-size: 0.7rem !important; }    // ~11px
+
+// Line Height Scales
+.lh-1 { line-height: 1 !important; }
+.lh-sm { line-height: 1.25 !important; }
+.lh-base { line-height: 1.5 !important; }
+.lh-lg { line-height: 2 !important; }
+
+// Pixel-based font sizes fs-10 through fs-100 (e.g. fs-11, fs-12, fs-13, fs-14, fs-15, fs-16, fs-18, fs-20, fs-24)
+@for $i from 10 through 100 {
+  .fs-#{$i} {
+    font-size: #{$i}px !important;
+  }
+}
+
+// Pixel-based line heights lh-10 through lh-100
+@for $i from 10 through 100 {
+  .lh-#{$i} {
+    line-height: #{$i}px !important;
+  }
 }

@@ -64,29 +64,30 @@ export default function SearchSuggestions({ query, userId, onSelect, onClose }: 
         : recent;
 
     return (
-        <section className="home-search-suggestions" role="dialog" aria-label="Gợi ý tìm kiếm">
+        <section className="card shadow-lg border-0 position-absolute start-0 end-0 top-100 mt-2 p-3 z-3 bg-white rounded-4" role="dialog" aria-label="Gợi ý tìm kiếm">
             {/* 1. Lịch sử tìm kiếm gần đây */}
             {matchingRecent.length > 0 && (
-                <div className="home-search-suggestion-section home-recent-searches">
-                    <div className="home-search-suggestion-heading">
-                        <h2>TÌM KIẾM GẦN ĐÂY</h2>
-                        <button type="button" onClick={() => clearRecent()}>
+                <div className="mb-2">
+                    <div className="d-flex align-items-center justify-content-between mb-2">
+                        <h2 className="fs-8 fw-bold text-gray-500 text-uppercase m-0">TÌM KIẾM GẦN ĐÂY</h2>
+                        <button type="button" className="btn btn-flush fs-8 text-primary text-hover-primary fw-medium" onClick={() => clearRecent()}>
                             Xóa tất cả
                         </button>
                     </div>
-                    <div className="home-recent-search-list">
+                    <div className="d-flex flex-wrap gap-1.5">
                         {matchingRecent.map(item => (
-                            <span className="home-recent-search" key={item}>
-                                <button type="button" onClick={() => handleNavigateSearch(item)}>
-                                    <Clock3 size={12} aria-hidden="true" />
-                                    {item}
+                            <span className="d-inline-flex align-items-center gap-1.5 bg-light px-2.5 py-1.5 rounded-pill" key={item}>
+                                <button type="button" className="btn btn-flush fs-7 text-gray-800 text-hover-primary d-flex align-items-center gap-1" onClick={() => handleNavigateSearch(item)}>
+                                    <Clock3 size={13} aria-hidden="true" className="text-muted" />
+                                    <span>{item}</span>
                                 </button>
                                 <button
                                     type="button"
+                                    className="btn btn-flush text-muted text-hover-danger p-0 d-flex align-items-center"
                                     aria-label={`Xóa tìm kiếm ${item}`}
                                     onClick={() => clearRecent(item)}
                                 >
-                                    <X size={12} aria-hidden="true" />
+                                    <X size={13} aria-hidden="true" />
                                 </button>
                             </span>
                         ))}
@@ -96,9 +97,9 @@ export default function SearchSuggestions({ query, userId, onSelect, onClose }: 
 
             {/* 2. Trạng thái khi chưa gõ từ khóa và chưa có lịch sử */}
             {!activeQuery && recent.length === 0 && (
-                <div className="home-search-empty-state">
-                    <Search size={22} aria-hidden="true" />
-                    <p className="home-search-suggestion-empty">
+                <div className="text-center py-4 text-muted">
+                    <Search size={24} aria-hidden="true" className="mb-2 text-gray-400" />
+                    <p className="fs-7 text-muted m-0">
                         Nhập từ khóa và bấm Enter để tìm kiếm bạn bè, bài viết, hashtag...
                     </p>
                 </div>
@@ -106,21 +107,18 @@ export default function SearchSuggestions({ query, userId, onSelect, onClose }: 
 
             {/* 3. Khi người dùng đã gõ từ khóa: Hiển thị nút bấm Enter để bắt đầu tìm kiếm (không tự động load khi gõ) */}
             {activeQuery && (
-                <div style={{ marginTop: matchingRecent.length > 0 ? "8px" : 0 }}>
+                <div className={matchingRecent.length > 0 ? "mt-2 pt-2 border-top border-gray-100" : ""}>
                     <button
                         type="button"
-                        className="home-search-all-results"
+                        className="btn btn-light-primary w-100 d-flex align-items-center justify-content-between p-2.5 rounded-2 fs-6 fw-semibold"
                         onClick={() => handleNavigateSearch(activeQuery)}
                     >
                         <span>
-                            Tìm kiếm <strong>“{activeQuery}”</strong>
+                            Tìm kiếm <strong className="text-primary">“{activeQuery}”</strong>
                         </span>
-                        <kbd>↵ Enter</kbd>
+                        <kbd className="badge badge-light-primary fs-7">↵ Enter</kbd>
                     </button>
-                    <p
-                        className="home-search-suggestion-empty"
-                        style={{ textAlign: "center", margin: "6px 0 2px", fontSize: "11px", color: "#64748b" }}
-                    >
+                    <p className="text-center mt-2 mb-0 fs-7 text-muted">
                         Nhấn phím <strong>Enter</strong> để tải kết quả tìm kiếm
                     </p>
                 </div>
@@ -128,3 +126,4 @@ export default function SearchSuggestions({ query, userId, onSelect, onClose }: 
         </section>
     );
 }
+

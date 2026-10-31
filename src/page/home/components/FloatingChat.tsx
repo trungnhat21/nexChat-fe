@@ -211,18 +211,40 @@ export default function FloatingChat({ friend, minimized, onMinimizedChange, onC
             </button>
             <button type="button" className="floating-chat-bubble-close" aria-label="Đóng cuộc trò chuyện" title="Đóng" onClick={event => { event.stopPropagation(); onClose(); }}><X size={13} /></button>
         </div> : <>
-        <header className="floating-chat-header">
-            <span className="floating-chat-avatar"><span className="floating-chat-avatar-image">{friend.avatar ? <img src={friend.avatar} alt="" /> : initials(friend.name)}</span><i /></span>
-            <span className="floating-chat-identity"><strong>{friend.name}</strong><small>{connected ? "Đang hoạt động" : "Đang kết nối lại…"}</small></span>
-            <div className="floating-chat-actions">
-                {!minimized && <><button type="button" title="Gọi thoại" aria-label="Gọi thoại" onClick={() => openCall("audio")}><Phone size={16} /></button><button type="button" title="Gọi video" aria-label="Gọi video" onClick={() => openCall("video")}><Video size={16} /></button><button type="button" title="Tùy chọn" aria-label="Tùy chọn"><MoreHorizontal size={17} /></button></>}
-                <button type="button" title="Thu nhỏ" aria-label="Thu nhỏ cửa sổ chat" onClick={() => onMinimizedChange(true)}><Minus size={16} /></button>
-                <button type="button" title="Đóng" aria-label="Đóng cửa sổ chat" onClick={onClose}><X size={17} /></button>
+        <header className="floating-chat-header d-flex align-items-center justify-content-between p-3 border-bottom border-gray-100 bg-white">
+            <div className="d-flex align-items-center gap-2.5 min-w-0">
+                <span className="floating-chat-avatar position-relative d-inline-flex flex-shrink-0">
+                    <span className="floating-chat-avatar-image">
+                        {friend.avatar ? (
+                            <img src={friend.avatar} alt="" className="w-32px h-32px rounded-circle object-fit-cover" />
+                        ) : (
+                            <span className="w-32px h-32px rounded-circle bg-light-primary text-primary d-flex align-items-center justify-content-center fw-bold fs-8">
+                                {initials(friend.name)}
+                            </span>
+                        )}
+                    </span>
+                    <span className={`position-absolute bottom-0 end-0 w-8px h-8px rounded-circle border border-2 border-white ${connected ? "bg-success" : "bg-warning"}`} />
+                </span>
+                <span className="d-flex flex-column min-w-0">
+                    <strong className="fs-7 text-gray-800 text-truncate fw-semibold">{friend.name}</strong>
+                    <small className="fs-9 text-muted">{connected ? "Đang hoạt động" : "Đang kết nối lại…"}</small>
+                </span>
+            </div>
+            <div className="d-flex align-items-center gap-1 flex-shrink-0">
+                {!minimized && (
+                    <>
+                        <button type="button" className="btn btn-sm btn-icon btn-flush text-gray-500 text-hover-primary" title="Gọi thoại" aria-label="Gọi thoại" onClick={() => openCall("audio")}><Phone size={15} /></button>
+                        <button type="button" className="btn btn-sm btn-icon btn-flush text-gray-500 text-hover-primary" title="Gọi video" aria-label="Gọi video" onClick={() => openCall("video")}><Video size={15} /></button>
+                        <button type="button" className="btn btn-sm btn-icon btn-flush text-gray-500 text-hover-primary" title="Tùy chọn" aria-label="Tùy chọn"><MoreHorizontal size={16} /></button>
+                    </>
+                )}
+                <button type="button" className="btn btn-sm btn-icon btn-flush text-gray-500 text-hover-primary" title="Thu nhỏ" aria-label="Thu nhỏ cửa sổ chat" onClick={() => onMinimizedChange(true)}><Minus size={15} /></button>
+                <button type="button" className="btn btn-sm btn-icon btn-flush text-gray-500 text-hover-danger" title="Đóng" aria-label="Đóng cửa sổ chat" onClick={onClose}><X size={16} /></button>
             </div>
         </header>
             <div className="floating-chat-history" ref={historyRef} aria-live="polite">
-                {loading && <p className="floating-chat-state" role="status">Đang tải tin nhắn…</p>}
-                {!loading && !error && messages.length === 0 && <p className="floating-chat-state">Hãy gửi lời chào để bắt đầu trò chuyện.</p>}
+                {loading && <p className="floating-chat-state text-muted fs-8 text-center py-4" role="status">Đang tải tin nhắn…</p>}
+                {!loading && !error && messages.length === 0 && <p className="floating-chat-state text-muted fs-8 text-center py-4">Hãy gửi lời chào để bắt đầu trò chuyện.</p>}
                 {!loading && messages.map(message => <article key={message.id} data-message-id={message.id} data-unread={!message.isMine && !message.isRead ? "true" : "false"} className={`floating-chat-row ${message.isMine ? "is-mine" : "is-theirs"}`}>
                     {!message.isMine && <span className="floating-chat-message-avatar">{friend.avatar ? <img src={friend.avatar} alt="" /> : initials(friend.name)}</span>}
                     <div className="floating-chat-message-content">
@@ -230,13 +252,13 @@ export default function FloatingChat({ friend, minimized, onMinimizedChange, onC
                         <span className="floating-chat-message-meta"><time>{formatTime(message.createdAt)}</time>{message.delivery === "sending" && " · Đang gửi"}{message.delivery === "failed" && <button type="button" onClick={() => void retryMessage(message)}> · Thử lại</button>}{message.isMine && !message.delivery && message.status === "read" && " · Đã xem"}</span>
                     </div>
                 </article>)}
-                {typing && <p className="floating-chat-typing"><i /><i /><i /> {friend.name} đang nhập…</p>}
+                {typing && <p className="floating-chat-typing fs-8 text-muted"><i /><i /><i /> {friend.name} đang nhập…</p>}
                 <div className="floating-chat-bottom" />
             </div>
-            <form className="floating-chat-composer" onSubmit={event => void submit(event)}>
-                {error && <p role="alert">{error}</p>}
-                <textarea value={draft} onChange={event => updateDraft(event.target.value)} onKeyDown={event => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); event.currentTarget.form?.requestSubmit(); } }} placeholder="Nhập tin nhắn…" aria-label="Nhập tin nhắn" maxLength={4000} rows={1} disabled={!conversationId || loading} />
-                <button type="submit" aria-label="Gửi tin nhắn" disabled={!draft.trim() || sending || !conversationId}><Send size={17} /></button>
+            <form className="p-2.5 border-top border-gray-100 d-flex align-items-center gap-2 bg-white" onSubmit={event => void submit(event)}>
+                {error && <p role="alert" className="text-danger fs-8 m-0">{error}</p>}
+                <textarea className="form-control form-control-solid border-0 fs-7 py-2 px-3 flex-grow-1" value={draft} onChange={event => updateDraft(event.target.value)} onKeyDown={event => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); event.currentTarget.form?.requestSubmit(); } }} placeholder="Nhập tin nhắn…" aria-label="Nhập tin nhắn" maxLength={4000} rows={1} disabled={!conversationId || loading} />
+                <button type="submit" className="btn btn-sm btn-icon btn-primary flex-shrink-0" aria-label="Gửi tin nhắn" disabled={!draft.trim() || sending || !conversationId}><Send size={15} /></button>
             </form>
         </>}
     </section>;

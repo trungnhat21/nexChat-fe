@@ -1,0 +1,361 @@
+@use "./variable" as v;
+
+// ==========================================
+// Metronic Buttons System
+// ==========================================
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding: 0.625rem 1.125rem;
+  border-radius: v.$border-radius;
+  border: 1px solid transparent;
+  transition: v.$transition-base;
+  cursor: pointer;
+  outline: none !important;
+  user-select: none;
+  white-space: nowrap;
+  text-decoration: none;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25);
+  }
+
+  &:disabled,
+  &.disabled {
+    opacity: 0.6;
+    cursor: not-allowed !important;
+    pointer-events: none;
+  }
+
+  // Sizes
+  &.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    border-radius: v.$border-radius-sm;
+  }
+
+  &.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    border-radius: v.$border-radius-lg;
+  }
+
+  // Icon Button (Equal width & height)
+  &.btn-icon {
+    padding: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+
+    &.btn-sm {
+      width: 2rem;
+      height: 2rem;
+    }
+
+    &.btn-lg {
+      width: 3rem;
+      height: 3rem;
+    }
+
+    &.btn-circle {
+      border-radius: v.$border-radius-pill;
+    }
+  }
+
+  // Flush Button (Clean, no padding/border)
+  &.btn-flush {
+    background: transparent;
+    border-color: transparent;
+    padding: 0;
+
+    &:hover {
+      background: transparent;
+      border-color: transparent;
+    }
+  }
+
+  // ========================
+  // Solid Variants
+  // ========================
+  &.btn-primary {
+    background-color: v.$color-primary;
+    border-color: v.$color-primary;
+    color: v.$color-primary-inverse;
+
+    &:hover:not(:disabled) {
+      background-color: v.$color-primary-hover;
+      border-color: v.$color-primary-hover;
+      color: v.$color-primary-inverse;
+    }
+
+    &:active:not(:disabled) {
+      background-color: v.$color-primary-active;
+      border-color: v.$color-primary-active;
+    }
+  }
+
+  &.btn-secondary {
+    background-color: v.$color-secondary-light;
+    border-color: v.$color-secondary-light;
+    color: v.$color-secondary;
+
+    &:hover:not(:disabled) {
+      background-color: v.$gray-300;
+      color: v.$color-text-main;
+    }
+  }
+
+  &.btn-success {
+    background-color: v.$color-success;
+    border-color: v.$color-success;
+    color: v.$color-success-inverse;
+
+    &:hover:not(:disabled) {
+      background-color: v.$color-success-hover;
+      border-color: v.$color-success-hover;
+    }
+  }
+
+  &.btn-danger {
+    background-color: v.$color-danger;
+    border-color: v.$color-danger;
+    color: v.$color-danger-inverse;
+
+    &:hover:not(:disabled) {
+      background-color: v.$color-danger-hover;
+      border-color: v.$color-danger-hover;
+    }
+  }
+
+  &.btn-warning {
+    background-color: v.$color-warning;
+    border-color: v.$color-warning;
+    color: v.$color-warning-inverse;
+
+    &:hover:not(:disabled) {
+      background-color: v.$color-warning-hover;
+      border-color: v.$color-warning-hover;
+    }
+  }
+
+  &.btn-info {
+    background-color: v.$color-info;
+    border-color: v.$color-info;
+    color: v.$color-info-inverse;
+
+    &:hover:not(:disabled) {
+      background-color: v.$color-info-hover;
+      border-color: v.$color-info-hover;
+    }
+  }
+
+  &.btn-dark {
+    background-color: v.$color-dark;
+    border-color: v.$color-dark;
+    color: v.$color-dark-inverse;
+
+    &:hover:not(:disabled) {
+      background-color: v.$color-dark-hover;
+      border-color: v.$color-dark-hover;
+    }
+  }
+
+  &.btn-light {
+    background-color: v.$color-light;
+    border-color: v.$gray-200;
+    color: v.$color-text-main;
+
+    &:hover:not(:disabled) {
+      background-color: v.$gray-200;
+      border-color: v.$gray-300;
+      color: v.$color-text-main;
+    }
+  }
+
+  // ========================
+  // Metronic Light Variants (Signature Metronic Look)
+  // ========================
+  &.btn-light-primary {
+    background-color: v.$color-primary-light;
+    border-color: transparent;
+    color: v.$color-primary;
+
+    &:hover:not(:disabled) {
+      background-color: v.$color-primary;
+      border-color: v.$color-primary;
+      color: v.$color-primary-inverse;
+    }
+  }
+
+  &.btn-light-success {
+    background-color: v.$color-success-light;
+    border-color: transparent;
+    color: v.$color-success;
+
+    &:hover:not(:disabled) {
+      background-color: v.$color-success;
+      border-color: v.$color-success;
+      color: v.$color-success-inverse;
+    }
+  }
+
+  &.btn-light-danger {
+    background-color: v.$color-danger-light;
+    border-color: transparent;
+    color: v.$color-danger;
+
+    &:hover:not(:disabled) {
+      background-color: v.$color-danger;
+      border-color: v.$color-danger;
+      color: v.$color-danger-inverse;
+    }
+  }
+
+  &.btn-light-warning {
+    background-color: v.$color-warning-light;
+    border-color: transparent;
+    color: v.$color-warning;
+
+    &:hover:not(:disabled) {
+      background-color: v.$color-warning;
+      border-color: v.$color-warning;
+      color: v.$color-warning-inverse;
+    }
+  }
+
+  &.btn-light-info {
+    background-color: v.$color-info-light;
+    border-color: transparent;
+    color: v.$color-info;
+
+    &:hover:not(:disabled) {
+      background-color: v.$color-info;
+      border-color: v.$color-info;
+      color: v.$color-info-inverse;
+    }
+  }
+
+  // ========================
+  // Outline Variants
+  // ========================
+  &.btn-outline {
+    background-color: transparent;
+    border-color: v.$gray-300;
+    color: v.$color-text-main;
+
+    &:hover:not(:disabled) {
+      background-color: v.$gray-100;
+      border-color: v.$gray-400;
+    }
+
+    &.btn-outline-dashed {
+      border-style: dashed;
+    }
+  }
+
+  &.btn-outline-primary {
+    background-color: transparent;
+    border-color: v.$color-primary;
+    color: v.$color-primary;
+
+    &:hover:not(:disabled) {
+      background-color: v.$color-primary;
+      color: v.$color-primary-inverse;
+    }
+
+    &.btn-outline-dashed {
+      border-style: dashed;
+    }
+  }
+
+  &.btn-outline-danger {
+    background-color: transparent;
+    border-color: v.$color-danger;
+    color: v.$color-danger;
+
+    &:hover:not(:disabled) {
+      background-color: v.$color-danger;
+      color: v.$color-danger-inverse;
+    }
+  }
+
+  &.btn-outline-success {
+    background-color: transparent;
+    border-color: v.$color-success;
+    color: v.$color-success;
+
+    &:hover:not(:disabled) {
+      background-color: v.$color-success;
+      color: v.$color-success-inverse;
+    }
+  }
+
+  // Active hover states
+  &.btn-active-light-primary:hover:not(:disabled) {
+    background-color: v.$color-primary-light;
+    color: v.$color-primary;
+  }
+}
+
+// ==========================================
+// Metronic Indicator Loading State
+// ==========================================
+.indicator-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: opacity 0.2s ease;
+}
+
+.indicator-progress {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+[data-kt-indicator="on"] {
+  position: relative;
+  pointer-events: none;
+
+  .indicator-label {
+    display: none !important;
+  }
+
+  .indicator-progress {
+    display: inline-flex !important;
+  }
+}
+
+// Micro spinner
+.spinner-border {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  vertical-align: -0.125em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spinner-border 0.75s linear infinite;
+
+  &.spinner-border-sm {
+    width: 0.875rem;
+    height: 0.875rem;
+    border-width: 1.5px;
+  }
+}
+
+@keyframes spinner-border {
+  to {
+    transform: rotate(360deg);
+  }
+}

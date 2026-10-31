@@ -7,7 +7,7 @@ import preview_login from "../../_metronic/assets/images/preview_login.svg";
 import { KTIcon } from "../../_metronic/helpers/components/KTIcon";
 
 import { useLoginActions } from "./actions";
-import "./style.scss";
+
 
 export default function LoginPage() {
     const { formik, showPassword, setShowPassword } = useLoginActions();
@@ -15,7 +15,7 @@ export default function LoginPage() {
         //items-center : can giữa theo chiều dọc
         // justify-center: can giữa theo chiều ngang
         // flex: đặt nó nằm trên 1 hàng
-        <div className="login-page">
+        <div className="min-h-screen d-flex align-items-center justify-content-center bg-light p-4">
             <div className="flex w-[900px] min-h-[500px] rounded-2xl overflow-hidden shadow-2xl">
 
                 {/* left */}
