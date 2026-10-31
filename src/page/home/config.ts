@@ -127,7 +127,7 @@ export const suggestedFriends = [
 
 export const navigationLinks = [
         { label: "Bảng tin", icon: "3352:499", badge: "" },
-        { label: "Khám phá", icon: "3352:506", badge: "Hot" },
+        { label: "Bạn bè", icon: "users", badge: "" },
         { label: "Thông báo", icon: "3352:514", badge: "3" },
         { label: "Tin nhắn", icon: "3352:522", badge: "" },
         { label: "Đã lưu", icon: "3352:530", badge: "" },

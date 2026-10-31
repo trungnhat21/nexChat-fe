@@ -1,8 +1,9 @@
 import { useContext, useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { isAxiosError } from "axios";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams, useSearchParams } from "react-router";
 import { getCurrentUser, logout } from "../../axios/auth";
-import { createPost, deletePost, getPost, listPosts, listSavedPosts, setPostLike, updatePost } from "../../axios/posts";
+import { createPost, deletePost, getPost, listPosts, listSavedPosts, setPostLike, updatePost, type ListPostsParams } from "../../axios/posts";
+import type { FeedFilters } from "./components/SearchFilterCard";
 import { acceptFriendRequest, cancelFriendRequest, followUser, getFriendSuggestions, rejectFriendRequest, sendFriendRequest, unfollowUser, unfriend } from "../../axios/friends";
 import type { SuggestedUser } from "../../component/type/relationship";
 import { confirmDelete } from "../../utils/swal";
@@ -11,10 +12,14 @@ import type { CurrentUser } from "../../component/type/auth";
 import type { ComposerProps, FeedPost, NewPostMedia, PostCardProps, PostDraft, PostPrivacy, PostStateChange, UploadProgress } from "../../component/type/post";
 
 export function useHome() { return useContext(HomeContext); }
-export function focusComposer() {
+export function focusComposer(navigate?: (to: string) => void) {
     const field = document.getElementById("home-compose");
-    field?.scrollIntoView({ behavior: "smooth", block: "center" });
-    field?.focus({ preventScroll: true });
+    if (field) {
+        field.scrollIntoView({ behavior: "smooth", block: "center" });
+        field.focus({ preventScroll: true });
+    } else if (navigate) {
+        navigate("/home?compose=true");
+    }
 }
 export function postError(error: unknown) {
     if (isAxiosError(error)) {
@@ -31,6 +36,21 @@ export function useHomeLayoutActions() {
     const [panel, setPanel] = useState("");
     const [user, setUser] = useState<CurrentUser | null>(null);
     const dialogRef = useRef<HTMLDialogElement>(null);
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    useEffect(() => {
+        if (searchParams.get("compose") === "true") {
+            const timer = window.setTimeout(() => {
+                focusComposer();
+                setSearchParams(prev => {
+                    const next = new URLSearchParams(prev);
+                    next.delete("compose");
+                    return next;
+                }, { replace: true });
+            }, 250);
+            return () => window.clearTimeout(timer);
+        }
+    }, [searchParams, setSearchParams]);
     useEffect(() => {
         let active = true;
         void getCurrentUser().then(response => { if (active) setUser(response.data.currentUser); }).catch(() => {});
@@ -47,7 +67,7 @@ export function useHomeLayoutActions() {
     }, [panel]);
     return { search, setSearch, notice, setNotice, panel, setPanel, dialogRef, user };
 }
-export function useHomeFeedActions(search: string, savedOnly = false) {
+export function useHomeFeedActions(search: string, savedOnly = false, filters?: FeedFilters) {
     const { postId } = useParams<{ postId: string }>();
     const [posts, setPosts] = useState<FeedPost[]>([]);
     const [loading, setLoading] = useState(true);
@@ -57,26 +77,31 @@ export function useHomeFeedActions(search: string, savedOnly = false) {
     const [revision, setRevision] = useState(0);
     const generation = useRef(0);
     const query = search.trim();
+    const sortParam = filters?.sort === "newest" ? "latest" : filters?.sort;
+    const periodParam = filters?.period === "day" ? "24h" : filters?.period;
+    const mediaOnlyParam = filters?.mediaOnly;
     useEffect(() => {
         let active = true;
         generation.current++;
         const controller = new AbortController();
         const timer = window.setTimeout(() => {
-            setLoading(true); setError("");
-            void (postId ? getPost(postId, controller.signal).then(result => ({ posts: [result.post], nextCursor: null })) : savedOnly ? listSavedPosts(query, undefined, controller.signal) : listPosts(query, undefined, controller.signal)).then(result => {
+            setLoading(true); setError(""); setPosts([]); setNextCursor(null);
+            const params: ListPostsParams = { search: query, sort: sortParam, period: periodParam, mediaOnly: mediaOnlyParam };
+            void (postId ? getPost(postId, controller.signal).then(result => ({ posts: [result.post], nextCursor: null })) : savedOnly ? listSavedPosts(params, undefined, controller.signal) : listPosts(params, undefined, controller.signal)).then(result => {
                 if (active) { setPosts(result.posts); setNextCursor(result.nextCursor); }
             }).catch(error => { if (active) setError(postError(error)); })
                 .finally(() => { if (active) setLoading(false); });
         }, query ? 250 : 0);
         return () => { active = false; window.clearTimeout(timer); controller.abort(); };
-    }, [query, revision, postId, savedOnly]);
+    }, [query, revision, postId, savedOnly, sortParam, periodParam, mediaOnlyParam]);
 
     async function loadMore() {
         if (!nextCursor || loadingMore) return;
         const version = generation.current;
         setLoadingMore(true); setError("");
         try {
-            const result = await (savedOnly ? listSavedPosts(query, nextCursor) : listPosts(query, nextCursor));
+            const params: ListPostsParams = { search: query, cursor: nextCursor, sort: sortParam, period: periodParam, mediaOnly: mediaOnlyParam };
+            const result = await (savedOnly ? listSavedPosts(params) : listPosts(params));
             if (version === generation.current) {
                 setPosts(previous => [...previous, ...result.posts.filter(post => !previous.some(existing => existing.id === post.id))]);
                 setNextCursor(result.nextCursor);
@@ -105,8 +130,8 @@ export function useHomeFeedActions(search: string, savedOnly = false) {
         await deletePost(id);
         setPosts(previous => previous.filter(post => post.id !== id));
     }
-    const normalized = query.toLocaleLowerCase("vi");
-    const visiblePosts = posts.filter(post => (post.author.name + " " + post.content).toLocaleLowerCase("vi").includes(normalized));
+
+    const visiblePosts = posts;
     return { changePostState, likePost, query, visiblePosts, addPost, editPost, removePost, loading, loadingMore, error, nextCursor, loadMore, reload: () => setRevision(previous => previous + 1) };
 }
 export function useComposerActions({ onPost, post }: ComposerProps) {

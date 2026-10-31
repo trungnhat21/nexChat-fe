@@ -31,11 +31,11 @@ export function useSearchActions() {
     // URL Search Filter synchronization
     const urlSort = searchParams.get("sort");
     const initialSort: FeedFilters["sort"] =
-        urlSort === "latest" || urlSort === "newest" ? "newest" : "relevance";
+        urlSort === "latest" || urlSort === "newest" ? "latest" : "relevance";
     const urlPeriod = searchParams.get("period");
     const initialPeriod: FeedFilters["period"] =
         urlPeriod === "24h" || urlPeriod === "day"
-            ? "day"
+            ? "24h"
             : urlPeriod === "week" || urlPeriod === "month"
               ? urlPeriod
               : "all";
@@ -140,7 +140,7 @@ export function useSearchActions() {
         setLoadMoreError("");
 
         const filterParams: SearchFilterParams = {
-            sort: filters.sort === "newest" ? "latest" : "relevance",
+            sort: filters.sort === "newest" || filters.sort === "latest" ? "latest" : "relevance",
             period: filters.period === "day" ? "24h" : filters.period,
             mediaOnly: activeTab === "media" ? true : filters.mediaOnly,
         };

@@ -1,2 +1,2 @@
 export type RelationshipState = { friendStatus: "none" | "outgoing" | "incoming" | "friends" | "blocked"; requestId: string | null; following: boolean; followers: number; followingCount: number; friends: number };
-export type SuggestedUser = { id: string; name: string; avatar: string | null; friendStatus: RelationshipState["friendStatus"]; requestId: string | null; following: boolean };
+export type SuggestedUser = { id: string; name: string; username?: string | null; avatar: string | null; friendStatus: RelationshipState["friendStatus"]; requestId: string | null; following: boolean };
