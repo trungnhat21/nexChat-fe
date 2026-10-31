@@ -6,6 +6,7 @@ import SavedPage from "../page/saved";
 import RegisterPage from "../page/register";
 import MessagesPage from "../page/messages";
 import SearchPage from "../page/search";
+import FriendsPage from "../page/friends";
 
 export default function AppRouters(){
     return(
@@ -15,6 +16,7 @@ export default function AppRouters(){
             <Route path="/home" element={<HomePage/>}/>
             <Route path="/posts/:postId" element={<HomePage/>}/>
             <Route path="/saved" element={<SavedPage/>}/>
+            <Route path="/friends" element={<FriendsPage/>}/>
             <Route path="/messages" element={<MessagesPage/>}/>
             <Route path="/profile" element={<ProfilePage/>}/>
             <Route path="/profile/:userId" element={<ProfilePage/>}/>

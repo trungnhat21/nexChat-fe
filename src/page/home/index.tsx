@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useParams, useSearchParams } from "react-router";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import Discovery from "./components/Discovery";
@@ -13,27 +12,64 @@ import "./style.scss";
 
 export default function HomePage() {
     const { postId } = useParams<{ postId: string }>();
-    const [filters, setFilters] = useState<FeedFilters>({ sort: "relevance", period: "all", mediaOnly: false });
-    const [now] = useState(() => Date.now());
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const urlSort = searchParams.get("sort");
+    const initialSort: FeedFilters["sort"] =
+        urlSort === "relevance" ? "relevance" : "latest";
+    const urlPeriod = searchParams.get("period");
+    const initialPeriod: FeedFilters["period"] =
+        urlPeriod === "24h" || urlPeriod === "day"
+            ? "24h"
+            : urlPeriod === "week" || urlPeriod === "month"
+              ? urlPeriod
+              : "all";
+    const initialMediaOnly = searchParams.get("mediaOnly") === "true";
+
+    const filters: FeedFilters = {
+        sort: initialSort,
+        period: initialPeriod,
+        mediaOnly: initialMediaOnly,
+    };
+
+    const handleFiltersChange = (newFilters: FeedFilters) => {
+        setSearchParams(prev => {
+            const next = new URLSearchParams(prev);
+            if (newFilters.sort && newFilters.sort !== "latest") {
+                next.set("sort", newFilters.sort);
+            } else {
+                next.delete("sort");
+            }
+            if (newFilters.period && newFilters.period !== "all") {
+                next.set("period", newFilters.period);
+            } else {
+                next.delete("period");
+            }
+            if (newFilters.mediaOnly) {
+                next.set("mediaOnly", "true");
+            } else {
+                next.delete("mediaOnly");
+            }
+            return next;
+        }, { replace: true });
+    };
+
     const { search, setSearch, notice, setNotice, panel, setPanel, dialogRef, user } = useHomeLayoutActions();
-    const { changePostState, likePost, visiblePosts, addPost, editPost, removePost, loading, loadingMore, error, nextCursor, loadMore, reload } = useHomeFeedActions("");
-    const cutoff = filters.period === "day" ? now - 24 * 60 * 60 * 1000 : filters.period === "week" ? now - 7 * 24 * 60 * 60 * 1000 : filters.period === "month" ? now - 30 * 24 * 60 * 60 * 1000 : 0;
-    const filteredPosts = visiblePosts.filter(post => (!filters.mediaOnly || post.media.length > 0) && (!cutoff || new Date(post.createdAt).getTime() >= cutoff));
-    if (filters.sort === "newest") filteredPosts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    const { changePostState, likePost, visiblePosts, addPost, editPost, removePost, loading, loadingMore, error, nextCursor, loadMore, reload } = useHomeFeedActions("", false, filters);
 
     return <HomeContext.Provider value={{ user, search, setSearch, announce: setNotice, openPanel: setPanel }}>
         <div className="nexchat-home">
             <a className="home-skip-link" href="#home-feed">Chuyển đến bảng tin</a>
             <Header />
             <main className="home-grid">
-                <Sidebar filters={filters} onFiltersChange={setFilters} />
+                <Sidebar filters={filters} onFiltersChange={handleFiltersChange} />
                 <div className="home-feed" id="home-feed" tabIndex={-1}>
                     {!postId && <><Stories /><Composer onPost={addPost} /></>}
                     {loading && <section className="home-card home-empty" role="status">Đang tải bài viết...</section>}
                     {error && <section className="home-card home-feed-error" role="alert"><p>{error}</p><button onClick={reload}>Thử lại</button><Link to="/">Đăng nhập</Link></section>}
-                    {!loading && filteredPosts.map(post => <PostCard key={post.id} post={post} onStateChange={changePostState} onLike={likePost} onUpdate={editPost} onDelete={removePost} onReload={reload} />)}
+                    {!loading && visiblePosts.map(post => <PostCard key={post.id} post={post} onStateChange={changePostState} onLike={likePost} onUpdate={editPost} onDelete={removePost} onReload={reload} />)}
                     {!loading && nextCursor && <button className="home-load-more" disabled={loadingMore} onClick={loadMore}>{loadingMore ? "Đang tải..." : "Xem thêm bài viết"}</button>}
-                    {!loading && !error && filteredPosts.length === 0 && <section className="home-card home-empty"><h2>Chưa tìm thấy bài viết</h2><p>Hãy chia sẻ bài viết đầu tiên của bạn.</p></section>}
+                    {!loading && !error && visiblePosts.length === 0 && <section className="home-card home-empty"><h2>Chưa tìm thấy bài viết</h2><p>Hãy chia sẻ bài viết đầu tiên của bạn.</p></section>}
                 </div>
                 <Discovery />
             </main>

@@ -1,12 +1,11 @@
 import UserAvatar from "./UserAvatar";
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import Button from "../../../component/UI/Button/Button";
 import Input from "../../../component/UI/Input/Input";
 import { DesignIcon, DesignImage } from "./DesignAsset";
 import { focusComposer, useHeaderActions, useHome } from "../actions";
 import { useNotificationCenter } from "../notification-center-context";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router";
 import SearchSuggestions from "./SearchSuggestions";
 
 function notificationText(type: string, actorName: string) {
@@ -28,6 +27,7 @@ export default function Header() {
     const searchRef = useRef<HTMLDivElement>(null);
     const [searchFocused, setSearchFocused] = useState(false);
     const navigate = useNavigate();
+    const { pathname } = useLocation();
     useEffect(() => {
         function onPointerDown(event: PointerEvent) {
             if (event.target instanceof Node && !notificationsRef.current?.contains(event.target)) closeNotifications();
@@ -85,11 +85,12 @@ export default function Header() {
             </div>
         </div>
         <nav className="home-top-nav" aria-label="Điều hướng chính">
-            <Link to="/home" aria-current="page">Bảng tin</Link>
-            {["Khám phá", "Video", "Nhóm"].map(label => <button key={label} onClick={() => openPanel(label)}>{label}</button>)}
+            <Link to="/home" aria-current={pathname === "/home" ? "page" : undefined}>Bảng tin</Link>
+            <Link to="/friends" aria-current={pathname === "/friends" ? "page" : undefined}>Bạn bè</Link>
+            {["Video", "Nhóm"].map(label => <button key={label} onClick={() => openPanel(label)}>{label}</button>)}
         </nav>
         <div className="home-header-end">
-            <Button className="home-primary home-create-button" onClick={focusComposer}><DesignIcon id="3352:1039" />Đăng bài</Button>
+            <Button className="home-primary home-create-button" onClick={() => focusComposer(navigate)}><DesignIcon id="3352:1039" />Đăng bài</Button>
             <button className="home-icon-button" aria-label={`Tin nhắn, ${unreadMessageCount} chưa đọc`} onClick={() => navigate("/messages")}><DesignIcon id="3352:1045" />{unreadMessageCount > 0 && <span className="home-badge">{unreadMessageCount > 99 ? "99+" : unreadMessageCount}</span>}</button>
             <div className="home-notification-wrap" ref={notificationsRef}>
                 <button className="home-icon-button" aria-label={`Thông báo, ${unreadCount} chưa đọc`} aria-haspopup="dialog" aria-expanded={isOpen} onClick={() => isOpen ? closeNotifications() : openNotifications()}><DesignIcon id="3352:1050" />{unreadCount > 0 && <span className="home-badge">{unreadCount > 99 ? "99+" : unreadCount}</span>}</button>

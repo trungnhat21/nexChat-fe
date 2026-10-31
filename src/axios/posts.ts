@@ -1,8 +1,42 @@
 import api from "./index";
 import type { CommentPage, CommentResult, SavedResult, PostPrivacy, PostDraft, PostLikeResult, PostPage, PostResult, UploadProgress } from "../component/type/post";
 
-export async function listPosts(search = "", cursor?: string, signal?: AbortSignal, authorId?: string) {
-    const response = await api.get<PostPage>("/posts", { params: { search, cursor, authorId }, signal });
+export type PostSort = "relevance" | "latest" | "newest";
+export type PostPeriod = "all" | "24h" | "day" | "week" | "month";
+
+export interface ListPostsParams {
+    search?: string;
+    cursor?: string;
+    authorId?: string;
+    sort?: PostSort;
+    period?: PostPeriod;
+    mediaOnly?: boolean;
+}
+
+export async function listPosts(
+    searchOrParams: string | ListPostsParams = "",
+    cursor?: string,
+    signal?: AbortSignal,
+    authorId?: string
+) {
+    let params: Record<string, unknown> = {};
+    if (typeof searchOrParams === "object" && searchOrParams !== null) {
+        params = {
+            search: searchOrParams.search || undefined,
+            cursor: searchOrParams.cursor || undefined,
+            authorId: searchOrParams.authorId || undefined,
+            sort: searchOrParams.sort || undefined,
+            period: searchOrParams.period && searchOrParams.period !== "all" ? searchOrParams.period : undefined,
+            mediaOnly: searchOrParams.mediaOnly ? true : undefined,
+        };
+    } else {
+        params = {
+            search: searchOrParams || undefined,
+            cursor: cursor || undefined,
+            authorId: authorId || undefined,
+        };
+    }
+    const response = await api.get<PostPage>("/posts", { params, signal });
     return response.data;
 }
 function postForm(draft: PostDraft) {
@@ -33,8 +67,27 @@ export async function setPostLike(id: string, liked: boolean) {
 export async function getPost(id: string, signal?: AbortSignal) {
     return (await api.get<PostResult>("/posts/" + id, { signal })).data;
 }
-export async function listSavedPosts(search = "", cursor?: string, signal?: AbortSignal) {
-    return (await api.get<PostPage>("/posts/saved", { params: { search, cursor }, signal })).data;
+export async function listSavedPosts(
+    searchOrParams: string | ListPostsParams = "",
+    cursor?: string,
+    signal?: AbortSignal
+) {
+    let params: Record<string, unknown> = {};
+    if (typeof searchOrParams === "object" && searchOrParams !== null) {
+        params = {
+            search: searchOrParams.search || undefined,
+            cursor: searchOrParams.cursor || undefined,
+            sort: searchOrParams.sort || undefined,
+            period: searchOrParams.period && searchOrParams.period !== "all" ? searchOrParams.period : undefined,
+            mediaOnly: searchOrParams.mediaOnly ? true : undefined,
+        };
+    } else {
+        params = {
+            search: searchOrParams || undefined,
+            cursor: cursor || undefined,
+        };
+    }
+    return (await api.get<PostPage>("/posts/saved", { params, signal })).data;
 }
 export async function setPostSaved(id: string, saved: boolean) {
     const response = saved ? await api.put<SavedResult>("/posts/" + id + "/save") : await api.delete<SavedResult>("/posts/" + id + "/save");
