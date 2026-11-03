@@ -28,6 +28,7 @@ export default function Header() {
     const [searchFocused, setSearchFocused] = useState(false);
     const navigate = useNavigate();
     const { pathname } = useLocation();
+
     useEffect(() => {
         function onPointerDown(event: PointerEvent) {
             if (event.target instanceof Node && !notificationsRef.current?.contains(event.target)) closeNotifications();
@@ -35,6 +36,7 @@ export default function Header() {
         document.addEventListener("pointerdown", onPointerDown);
         return () => document.removeEventListener("pointerdown", onPointerDown);
     }, [closeNotifications]);
+
     useEffect(() => {
         function onPointerDown(event: PointerEvent) {
             if (event.target instanceof Node && !searchRef.current?.contains(event.target)) setSearchFocused(false);
@@ -49,6 +51,7 @@ export default function Header() {
         if (type === "new_post" && referenceId) navigate("/posts/" + referenceId);
         else if (actorId) navigate("/profile/" + actorId);
     }
+
     function handleSearchKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
         if (event.key === "Escape") setSearchFocused(false);
         if (event.key !== "Enter" || !search.trim()) return;
@@ -63,6 +66,7 @@ export default function Header() {
         setSearchFocused(false);
         navigate(`/search?q=${encodeURIComponent(trimmed)}`);
     }
+
     return (
         <header className="home-header">
             <div className="home-header-start">
@@ -108,11 +112,12 @@ export default function Header() {
                 <Link to="/friends" aria-current={pathname === "/friends" ? "page" : undefined}>
                     Bạn bè
                 </Link>
-                {["Video", "Nhóm"].map(label => (
-                    <button key={label} type="button" onClick={() => openPanel(label)}>
-                        {label}
-                    </button>
-                ))}
+                <Link to="/groups" aria-current={pathname === "/groups" ? "page" : undefined}>
+                    Nhóm
+                </Link>
+                <button type="button" onClick={() => openPanel("Video")}>
+                    Video
+                </button>
             </nav>
 
             <div className="home-header-end d-flex align-items-center gap-2">
@@ -220,5 +225,4 @@ export default function Header() {
             </div>
         </header>
     );
-
 }

@@ -5,10 +5,12 @@ export type FeedPost = {
     canEdit: boolean; author: { id: string; name: string; handle: string | null; avatar: string | null };
     liked: boolean; likes: number; saved: boolean; comments: number; media: PostMedia[];
     isRepost: boolean; original: FeedPost | null;
+    groupId?: string | null;
+    approvalStatus?: "PUBLISHED" | "PENDING_APPROVAL" | "REJECTED";
 };
 export type PostLikeResult = { success: boolean; id: string; liked: boolean; likes: number };
 export type LikePostAction = (id: string, liked: boolean) => Promise<void>;
-export type PostDraft = { content: string; privacy: PostPrivacy; files: File[]; keepMediaIds: string[] };
+export type PostDraft = { content: string; privacy: PostPrivacy; files: File[]; keepMediaIds: string[]; groupId?: string };
 export type ProfileAuthor = { id: string; name: string; handle: string | null; avatar: string | null; cover?: string | null; bio: string | null; createdAt: string };
 export type PostPage = { success: boolean; posts: FeedPost[]; nextCursor: string | null; total?: number; author?: ProfileAuthor };
 export type PostResult = { success: boolean; post: FeedPost };
