@@ -218,7 +218,13 @@ export default function Stories() {
     return <>
         <section className="home-stories" aria-label="Tin của bạn bè" ref={scrollRef} onScroll={onStoriesScroll}>
             <button className="home-story home-story-create" onClick={() => { setFormError(""); setCreateOpen(true); }}>
-                <span className="home-story-create-avatar">{user?.avatar && !accountAvatarFailed ? <img src={user.avatar} alt="" onError={() => setAccountAvatarFailed(true)} /> : initials(currentUserName)}</span>
+                <span className="home-story-create-avatar">
+                    {user?.avatar && !accountAvatarFailed ? (
+                        <img src={user.avatar} alt="" onError={() => setAccountAvatarFailed(true)} />
+                    ) : (
+                        <span className="home-story-create-fallback">{initials(currentUserName)}</span>
+                    )}
+                </span>
                 <span className="home-story-add"><DesignIcon id="3352:588" /></span>
                 <strong>Tạo tin</strong>
             </button>
@@ -234,21 +240,41 @@ export default function Stories() {
             {loading && <span className="home-story-loading" role="status">Đang tải tin…</span>}
         </section>
 
-        {createOpen && <div className="story-create-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget && !uploading) setCreateOpen(false); }}>
-            <form className="story-create-dialog" role="dialog" aria-modal="true" aria-labelledby="story-create-title" onSubmit={event => void submitStory(event)}>
-                <header><h2 id="story-create-title">Tạo tin</h2><button type="button" aria-label="Đóng" disabled={uploading} onClick={() => setCreateOpen(false)}>×</button></header>
-                <label className="story-file-picker">{previewUrl && file ? file.type.startsWith("video/") ? <video src={previewUrl} controls /> : <img src={previewUrl} alt="Xem trước tin" /> : <span>Chọn ảnh hoặc video (tối đa 25 MB)</span>}
-                    <input type="file" accept="image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm" onChange={selectFile} disabled={uploading} />
-                </label>
-                <label className="story-caption-label">Chú thích <textarea value={caption} onChange={event => setCaption(event.target.value)} maxLength={500} rows={3} disabled={uploading} placeholder="Thêm vài dòng cho tin của bạn…" /></label>
-                <label className="story-visibility-label">Ai có thể xem?
-                    <select value={visibility} onChange={event => setVisibility(event.target.value as StoryVisibility)} disabled={uploading}>{visibilityOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select>
-                </label>
-                {uploading && <div className="story-upload-progress"><progress value={uploadProgress} max={100} /><span>{uploadProgress < 99 ? `Đang tải lên ${uploadProgress}%` : "Đang lưu tin…"}</span></div>}
-                {formError && <p role="alert" className="story-error">{formError}</p>}
-                <footer><button type="button" disabled={uploading} onClick={() => setCreateOpen(false)}>Hủy</button><button className="home-primary" type="submit" disabled={uploading || !file}>{uploading ? "Đang đăng…" : "Đăng tin"}</button></footer>
-            </form>
-        </div>}
+        {createOpen && (
+            <div className="story-create-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget && !uploading) setCreateOpen(false); }}>
+                <form className="card shadow-lg border-0 p-5 bg-white rounded-3 story-create-dialog" style={{ maxWidth: "480px", width: "100%" }} role="dialog" aria-modal="true" aria-labelledby="story-create-title" onSubmit={event => void submitStory(event)}>
+                    <div className="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom border-gray-100">
+                        <h2 className="fs-5 fw-bold text-gray-800 m-0" id="story-create-title">Tạo tin</h2>
+                        <button type="button" className="btn btn-sm btn-icon btn-light" aria-label="Đóng" disabled={uploading} onClick={() => setCreateOpen(false)}>×</button>
+                    </div>
+                    <label className="story-file-picker mb-3">
+                        {previewUrl && file ? file.type.startsWith("video/") ? <video src={previewUrl} controls /> : <img src={previewUrl} alt="Xem trước tin" /> : <span>Chọn ảnh hoặc video (tối đa 25 MB)</span>}
+                        <input type="file" accept="image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm" onChange={selectFile} disabled={uploading} />
+                    </label>
+                    <label className="d-flex flex-column gap-1 mb-3 fs-7 fw-semibold text-gray-700">
+                        <span>Chú thích</span>
+                        <textarea className="form-control form-control-solid fs-7 p-3" value={caption} onChange={event => setCaption(event.target.value)} maxLength={500} rows={3} disabled={uploading} placeholder="Thêm vài dòng cho tin của bạn…" />
+                    </label>
+                    <label className="d-flex flex-column gap-1 mb-3 fs-7 fw-semibold text-gray-700">
+                        <span>Ai có thể xem?</span>
+                        <select className="form-select form-select-solid fs-7" value={visibility} onChange={event => setVisibility(event.target.value as StoryVisibility)} disabled={uploading}>
+                            {visibilityOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                        </select>
+                    </label>
+                    {uploading && (
+                        <div className="card bg-light p-3 border-0 d-flex flex-column gap-2 mb-3">
+                            <progress value={uploadProgress} max={100} className="w-100" />
+                            <span className="fs-8 text-muted">{uploadProgress < 99 ? `Đang tải lên ${uploadProgress}%` : "Đang lưu tin…"}</span>
+                        </div>
+                    )}
+                    {formError && <p role="alert" className="card p-3 border-dashed border-danger text-danger fs-8 mb-3">{formError}</p>}
+                    <div className="d-flex align-items-center justify-content-end gap-2 mt-4 pt-2 border-top border-gray-100">
+                        <button type="button" className="btn btn-sm btn-light px-4" disabled={uploading} onClick={() => setCreateOpen(false)}>Hủy</button>
+                        <button className="btn btn-sm btn-primary px-4 fw-semibold" type="submit" disabled={uploading || !file}>{uploading ? "Đang đăng…" : "Đăng tin"}</button>
+                    </div>
+                </form>
+            </div>
+        )}
 
         {activeStory && <div className="story-viewer-backdrop" role="dialog" aria-modal="true" aria-label={`Tin của ${ownerName}`} onMouseDown={event => { if (event.target === event.currentTarget) setActiveStory(null); }} onKeyDown={event => {
             if (event.key === "Escape") setActiveStory(null);

@@ -6,7 +6,6 @@ import { HomeContext } from "../home/config";
 import { useFriendsActions } from "./actions";
 import { friendsTabs, friendsPageConfig } from "./config";
 import "../home/style.scss";
-import "./style.scss";
 
 export default function FriendsPage() {
     const {
@@ -55,13 +54,13 @@ export default function FriendsPage() {
 
                     <div className="home-feed" id="home-feed" tabIndex={-1}>
                         {/* Page Heading */}
-                        <section className="home-card saved-heading">
-                            <h1>{friendsPageConfig.title}</h1>
-                            <p>{friendsPageConfig.subtitle}</p>
+                        <section className="card p-6 mb-4">
+                            <h1 className="fs-24 fw-bold mb-2 text-gray-900">{friendsPageConfig.title}</h1>
+                            <p className="text-gray-600 m-0 fs-14">{friendsPageConfig.subtitle}</p>
                         </section>
 
                         {/* Top Navigation Tabs */}
-                        <nav className="friends-tabs" aria-label="Bộ lọc bạn bè">
+                        <nav className="nav-group nav-group-pill nav-group-justified w-100 mb-4" aria-label="Bộ lọc bạn bè">
                             {friendsTabs.map(tab => {
                                 const count =
                                     tab.id === "requests"
@@ -88,10 +87,11 @@ export default function FriendsPage() {
                         </nav>
 
                         {/* Quick In-Tab Search Bar */}
-                        <div className="friends-search-bar">
-                            <Search size={16} />
+                        <div className="d-flex align-items-center gap-2 mb-4 bg-white px-4 py-2 border rounded-lg shadow-sm">
+                            <Search size={16} className="text-gray-400 flex-shrink-0" />
                             <input
                                 type="text"
+                                className="form-control form-control-flush p-0 border-0 flex-grow-1 fs-14"
                                 placeholder={
                                     activeTab === "requests"
                                         ? "Lọc theo tên hoặc @username người gửi..."
@@ -105,7 +105,7 @@ export default function FriendsPage() {
                             {localFilter && (
                                 <button
                                     type="button"
-                                    className="clear-search"
+                                    className="btn btn-flush text-gray-400"
                                     onClick={() => setLocalFilter("")}
                                     aria-label="Xóa bộ lọc"
                                 >
@@ -116,27 +116,25 @@ export default function FriendsPage() {
 
                         {/* Loading Skeletons */}
                         {loading && (
-                            <section className="friends-section-card">
-                                <div className="friend-skeleton-list">
-                                    <div className="friend-skeleton-card" />
-                                    <div className="friend-skeleton-card" />
-                                    <div className="friend-skeleton-card" />
+                            <section className="card p-5 mb-4 shadow-sm">
+                                <div className="d-flex flex-column gap-3">
+                                    <div className="skeleton-shimmer" style={{ height: 70 }} />
+                                    <div className="skeleton-shimmer" style={{ height: 70 }} />
+                                    <div className="skeleton-shimmer" style={{ height: 70 }} />
                                 </div>
                             </section>
                         )}
 
                         {/* Tab 1: Received Friend Requests */}
                         {!loading && activeTab === "requests" && (
-                            <section className="friends-section-card">
-                                <h2>
-                                    <span>
-                                        <UserCheck size={16} />
-                                        Lời mời kết bạn ({requests.length})
-                                    </span>
+                            <section className="card p-5 mb-4 shadow-sm">
+                                <h2 className="fs-15 fw-bold text-gray-800 mb-4 d-flex align-items-center gap-2">
+                                    <UserCheck size={16} className="text-primary" />
+                                    Lời mời kết bạn ({requests.length})
                                 </h2>
 
                                 {requests.length > 0 ? (
-                                    <div className="friends-list">
+                                    <div className="d-flex flex-column gap-3">
                                         {requests.map(req => {
                                             const requester = req.requester;
                                             const displayName =
@@ -146,14 +144,15 @@ export default function FriendsPage() {
                                             const isBusy = busyIds.has(req.id);
 
                                             return (
-                                                <div key={req.id} className="friend-card">
+                                                <div key={req.id} className="d-flex align-items-center gap-3 p-3 rounded-lg border bg-light">
                                                     <span
-                                                        className="friend-avatar"
+                                                        className="rounded-circle overflow-hidden flex-shrink-0 cursor-pointer d-grid place-items-center bg-gray-200 fw-bold fs-14 text-gray-700"
+                                                        style={{ width: 44, height: 44 }}
                                                         onClick={() => handleNavigateProfile(requester.id)}
                                                         title={`Xem hồ sơ của ${displayName}`}
                                                     >
                                                         {requester.avatar ? (
-                                                            <img src={requester.avatar} alt={displayName} />
+                                                            <img src={requester.avatar} alt={displayName} className="w-100 h-100 object-cover" />
                                                         ) : (
                                                             <span>
                                                                 {displayName
@@ -167,23 +166,24 @@ export default function FriendsPage() {
                                                         )}
                                                     </span>
 
-                                                    <div className="friend-info">
+                                                    <div className="flex-grow-1 min-w-0">
                                                         <strong
+                                                            className="d-block fs-14 fw-semibold text-gray-900 text-truncate cursor-pointer"
                                                             onClick={() => handleNavigateProfile(requester.id)}
                                                             title={`Xem hồ sơ của ${displayName}`}
                                                         >
                                                             {displayName}
                                                         </strong>
-                                                        <small>
+                                                        <small className="d-block fs-12 text-gray-500 text-truncate">
                                                             {requester.user_name ? `@${requester.user_name} • ` : ""}
                                                             Đã gửi cho bạn một lời mời kết bạn
                                                         </small>
                                                     </div>
 
-                                                    <div className="friend-actions">
+                                                    <div className="d-flex align-items-center gap-2 ms-auto flex-shrink-0">
                                                         <button
                                                             type="button"
-                                                            className="btn-primary"
+                                                            className="btn btn-sm btn-primary"
                                                             disabled={isBusy}
                                                             onClick={() => handleAcceptRequest(req)}
                                                         >
@@ -192,7 +192,7 @@ export default function FriendsPage() {
                                                         </button>
                                                         <button
                                                             type="button"
-                                                            className="btn-secondary"
+                                                            className="btn btn-sm btn-light-secondary"
                                                             disabled={isBusy}
                                                             onClick={() => handleRejectRequest(req)}
                                                         >
@@ -205,10 +205,10 @@ export default function FriendsPage() {
                                         })}
                                     </div>
                                 ) : (
-                                    <div className="friends-empty-state">
-                                        <UserCheck size={36} />
-                                        <h3>{friendsPageConfig.emptyStates.requests.title}</h3>
-                                        <p>{friendsPageConfig.emptyStates.requests.desc}</p>
+                                    <div className="text-center py-10 d-flex flex-column align-items-center gap-2 text-gray-500">
+                                        <UserCheck size={36} className="text-gray-400 mb-1" />
+                                        <h3 className="fs-16 fw-bold text-gray-800 m-0">{friendsPageConfig.emptyStates.requests.title}</h3>
+                                        <p className="fs-13 text-gray-500 m-0 max-w-sm">{friendsPageConfig.emptyStates.requests.desc}</p>
                                     </div>
                                 )}
                             </section>
@@ -216,28 +216,27 @@ export default function FriendsPage() {
 
                         {/* Tab 2: Friend Suggestions */}
                         {!loading && activeTab === "suggestions" && (
-                            <section className="friends-section-card">
-                                <h2>
-                                    <span>
-                                        <UserPlus size={16} />
-                                        Gợi ý kết bạn ({suggestions.length})
-                                    </span>
+                            <section className="card p-5 mb-4 shadow-sm">
+                                <h2 className="fs-15 fw-bold text-gray-800 mb-4 d-flex align-items-center gap-2">
+                                    <UserPlus size={16} className="text-primary" />
+                                    Gợi ý kết bạn ({suggestions.length})
                                 </h2>
 
                                 {suggestions.length > 0 ? (
-                                    <div className="friends-list">
+                                    <div className="d-flex flex-column gap-3">
                                         {suggestions.map(person => {
                                             const isBusy = busyIds.has(person.id);
 
                                             return (
-                                                <div key={person.id} className="friend-card">
+                                                <div key={person.id} className="d-flex align-items-center gap-3 p-3 rounded-lg border bg-light">
                                                     <span
-                                                        className="friend-avatar"
+                                                        className="rounded-circle overflow-hidden flex-shrink-0 cursor-pointer d-grid place-items-center bg-gray-200 fw-bold fs-14 text-gray-700"
+                                                        style={{ width: 44, height: 44 }}
                                                         onClick={() => handleNavigateProfile(person.id)}
                                                         title={`Xem hồ sơ của ${person.name}`}
                                                     >
                                                         {person.avatar ? (
-                                                            <img src={person.avatar} alt={person.name} />
+                                                            <img src={person.avatar} alt={person.name} className="w-100 h-100 object-cover" />
                                                         ) : (
                                                             <span>
                                                                 {person.name
@@ -251,14 +250,15 @@ export default function FriendsPage() {
                                                         )}
                                                     </span>
 
-                                                    <div className="friend-info">
+                                                    <div className="flex-grow-1 min-w-0">
                                                         <strong
+                                                            className="d-block fs-14 fw-semibold text-gray-900 text-truncate cursor-pointer"
                                                             onClick={() => handleNavigateProfile(person.id)}
                                                             title={`Xem hồ sơ của ${person.name}`}
                                                         >
                                                             {person.name}
                                                         </strong>
-                                                        <small>
+                                                        <small className="d-block fs-12 text-gray-500 text-truncate">
                                                             {person.username ? `@${person.username} • ` : ""}
                                                             {person.friendStatus === "outgoing"
                                                                 ? "Đã gửi lời mời"
@@ -268,11 +268,11 @@ export default function FriendsPage() {
                                                         </small>
                                                     </div>
 
-                                                    <div className="friend-actions">
+                                                    <div className="d-flex align-items-center gap-2 ms-auto flex-shrink-0">
                                                         {person.friendStatus === "none" && (
                                                             <button
                                                                 type="button"
-                                                                className="btn-primary"
+                                                                className="btn btn-sm btn-primary"
                                                                 disabled={isBusy}
                                                                 onClick={() => handleSendRequest(person)}
                                                             >
@@ -284,7 +284,7 @@ export default function FriendsPage() {
                                                         {person.friendStatus === "outgoing" && (
                                                             <button
                                                                 type="button"
-                                                                className="btn-secondary"
+                                                                className="btn btn-sm btn-light-secondary"
                                                                 disabled={isBusy}
                                                                 onClick={() => handleCancelRequest(person)}
                                                             >
@@ -295,7 +295,7 @@ export default function FriendsPage() {
 
                                                         <button
                                                             type="button"
-                                                            className={person.following ? "btn-following" : "btn-secondary"}
+                                                            className={person.following ? "btn btn-sm btn-light-primary" : "btn btn-sm btn-light-secondary"}
                                                             disabled={isBusy}
                                                             onClick={() => handleToggleFollow(person)}
                                                         >
@@ -306,7 +306,7 @@ export default function FriendsPage() {
 
                                                         <button
                                                             type="button"
-                                                            className="btn-secondary"
+                                                            className="btn btn-sm btn-light-secondary"
                                                             onClick={() => handleRemoveSuggestion(person.id)}
                                                             title={friendsPageConfig.labels.removeSuggestion}
                                                         >
@@ -319,10 +319,10 @@ export default function FriendsPage() {
                                         })}
                                     </div>
                                 ) : (
-                                    <div className="friends-empty-state">
-                                        <Users size={36} />
-                                        <h3>{friendsPageConfig.emptyStates.suggestions.title}</h3>
-                                        <p>{friendsPageConfig.emptyStates.suggestions.desc}</p>
+                                    <div className="text-center py-10 d-flex flex-column align-items-center gap-2 text-gray-500">
+                                        <Users size={36} className="text-gray-400 mb-1" />
+                                        <h3 className="fs-16 fw-bold text-gray-800 m-0">{friendsPageConfig.emptyStates.suggestions.title}</h3>
+                                        <p className="fs-13 text-gray-500 m-0 max-w-sm">{friendsPageConfig.emptyStates.suggestions.desc}</p>
                                     </div>
                                 )}
                             </section>
@@ -330,28 +330,27 @@ export default function FriendsPage() {
 
                         {/* Tab 3: All Friends */}
                         {!loading && activeTab === "all" && (
-                            <section className="friends-section-card">
-                                <h2>
-                                    <span>
-                                        <Users size={16} />
-                                        Tất cả bạn bè ({friends.length})
-                                    </span>
+                            <section className="card p-5 mb-4 shadow-sm">
+                                <h2 className="fs-15 fw-bold text-gray-800 mb-4 d-flex align-items-center gap-2">
+                                    <Users size={16} className="text-primary" />
+                                    Tất cả bạn bè ({friends.length})
                                 </h2>
 
                                 {friends.length > 0 ? (
-                                    <div className="friends-list">
+                                    <div className="d-flex flex-column gap-3">
                                         {friends.map(friend => {
                                             const isBusy = busyIds.has(friend.id);
 
                                             return (
-                                                <div key={friend.id} className="friend-card">
+                                                <div key={friend.id} className="d-flex align-items-center gap-3 p-3 rounded-lg border bg-light">
                                                     <span
-                                                        className="friend-avatar"
+                                                        className="rounded-circle overflow-hidden flex-shrink-0 cursor-pointer d-grid place-items-center bg-gray-200 fw-bold fs-14 text-gray-700"
+                                                        style={{ width: 44, height: 44 }}
                                                         onClick={() => handleNavigateProfile(friend.id)}
                                                         title={`Xem hồ sơ của ${friend.name}`}
                                                     >
                                                         {friend.avatar ? (
-                                                            <img src={friend.avatar} alt={friend.name} />
+                                                            <img src={friend.avatar} alt={friend.name} className="w-100 h-100 object-cover" />
                                                         ) : (
                                                             <span>
                                                                 {friend.name
@@ -365,23 +364,24 @@ export default function FriendsPage() {
                                                         )}
                                                     </span>
 
-                                                    <div className="friend-info">
+                                                    <div className="flex-grow-1 min-w-0">
                                                         <strong
+                                                            className="d-block fs-14 fw-semibold text-gray-900 text-truncate cursor-pointer"
                                                             onClick={() => handleNavigateProfile(friend.id)}
                                                             title={`Xem hồ sơ của ${friend.name}`}
                                                         >
                                                             {friend.name}
                                                         </strong>
-                                                        <small>
+                                                        <small className="d-block fs-12 text-gray-500 text-truncate">
                                                             {friend.username ? `@${friend.username} • ` : ""}
                                                             {friendsPageConfig.labels.friendStatus}
                                                         </small>
                                                     </div>
 
-                                                    <div className="friend-actions">
+                                                    <div className="d-flex align-items-center gap-2 ms-auto flex-shrink-0">
                                                         <button
                                                             type="button"
-                                                            className="btn-message"
+                                                            className="btn btn-sm btn-light-primary"
                                                             onClick={() => handleMessage(friend.id)}
                                                         >
                                                             <MessageSquare size={13} />
@@ -389,7 +389,7 @@ export default function FriendsPage() {
                                                         </button>
                                                         <button
                                                             type="button"
-                                                            className="btn-danger-outline"
+                                                            className="btn btn-sm btn-light-danger"
                                                             disabled={isBusy}
                                                             onClick={() => handleUnfriend(friend)}
                                                         >
@@ -402,10 +402,10 @@ export default function FriendsPage() {
                                         })}
                                     </div>
                                 ) : (
-                                    <div className="friends-empty-state">
-                                        <Users size={36} />
-                                        <h3>{friendsPageConfig.emptyStates.all.title}</h3>
-                                        <p>{friendsPageConfig.emptyStates.all.desc}</p>
+                                    <div className="text-center py-10 d-flex flex-column align-items-center gap-2 text-gray-500">
+                                        <Users size={36} className="text-gray-400 mb-1" />
+                                        <h3 className="fs-16 fw-bold text-gray-800 m-0">{friendsPageConfig.emptyStates.all.title}</h3>
+                                        <p className="fs-13 text-gray-500 m-0 max-w-sm">{friendsPageConfig.emptyStates.all.desc}</p>
                                     </div>
                                 )}
                             </section>

@@ -5,11 +5,11 @@ import type { registerAssets } from "../../page/register/config";
 export type RegisterFormValues = RegisterPayload & {
     phone: string;
     confirmPassword: string;
-    interests: string[];
+    enable2FA: boolean;
     consent: boolean;
 };
 export type RegisterAssetName = keyof typeof registerAssets;
-export type RegisterFieldName = Exclude<keyof RegisterFormValues, "interests" | "consent">;
+export type RegisterFieldName = Exclude<keyof RegisterFormValues, "enable2FA" | "consent">;
 export type RegisterFieldProps = {
     formik: FormikProps<RegisterFormValues>;
     name: RegisterFieldName;

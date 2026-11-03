@@ -1,0 +1,116 @@
+@use "./variable" as v;
+
+// ==========================================
+// Metronic Card System
+// ==========================================
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  word-wrap: break-word;
+  background-color: v.$card-bg;
+  background-clip: border-box;
+  border: 1px solid v.$card-border-color;
+  border-radius: v.$card-border-radius;
+  box-shadow: v.$shadow-sm;
+  transition: v.$transition-base;
+
+  // Modifiers
+  &.card-bordered {
+    border: 1px solid v.$gray-300;
+  }
+
+  &.card-dashed {
+    border: 1px dashed v.$gray-300;
+  }
+
+  &.card-shadow {
+    box-shadow: v.$shadow-md;
+  }
+
+  &.card-flush {
+    border: none;
+    box-shadow: none;
+
+    > .card-header {
+      border-bottom: none;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    > .card-body {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    > .card-footer {
+      border-top: none;
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+
+  // Header
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    min-height: v.$card-header-min-height;
+    padding: 0.75rem 1.5rem;
+    background-color: transparent;
+    border-bottom: 1px solid v.$gray-200;
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: v.$color-text-main;
+
+      h1, h2, h3, h4, h5, h6 {
+        margin: 0;
+        font-size: inherit;
+        font-weight: inherit;
+        color: inherit;
+      }
+
+      .card-subtitle {
+        font-size: 0.8125rem;
+        font-weight: 400;
+        color: v.$color-text-muted;
+      }
+    }
+
+    .card-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+  }
+
+  // Body
+  .card-body {
+    flex: 1 1 auto;
+    padding: 1.5rem;
+
+    &.card-scroll {
+      overflow-y: auto;
+    }
+  }
+
+  // Footer
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    background-color: transparent;
+    border-top: 1px solid v.$gray-200;
+  }
+}

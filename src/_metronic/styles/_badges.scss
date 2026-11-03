@@ -1,0 +1,134 @@
+@use "./variable" as v;
+
+// ==========================================
+// Metronic Badge System
+// ==========================================
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: v.$border-radius-sm;
+
+  // Shapes
+  &.badge-circle {
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    border-radius: 50%;
+  }
+
+  &.badge-square {
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    border-radius: v.$border-radius-sm;
+  }
+
+  // Sizes
+  &.badge-sm {
+    padding: 0.2rem 0.45rem;
+    font-size: 0.6875rem;
+
+    &.badge-circle,
+    &.badge-square {
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+  }
+
+  &.badge-lg {
+    padding: 0.5rem 0.85rem;
+    font-size: 0.875rem;
+
+    &.badge-circle,
+    &.badge-square {
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+
+  // ========================
+  // Solid Badges
+  // ========================
+  &.badge-primary {
+    background-color: v.$color-primary;
+    color: v.$color-primary-inverse;
+  }
+
+  &.badge-secondary {
+    background-color: v.$gray-300;
+    color: v.$color-text-main;
+  }
+
+  &.badge-success {
+    background-color: v.$color-success;
+    color: v.$color-success-inverse;
+  }
+
+  &.badge-danger {
+    background-color: v.$color-danger;
+    color: v.$color-danger-inverse;
+  }
+
+  &.badge-warning {
+    background-color: v.$color-warning;
+    color: v.$color-warning-inverse;
+  }
+
+  &.badge-info {
+    background-color: v.$color-info;
+    color: v.$color-info-inverse;
+  }
+
+  &.badge-dark {
+    background-color: v.$color-dark;
+    color: v.$color-dark-inverse;
+  }
+
+  // ========================
+  // Light Badges (Metronic Signature)
+  // ========================
+  &.badge-light-primary {
+    background-color: v.$color-primary-light;
+    color: v.$color-primary;
+  }
+
+  &.badge-light-secondary {
+    background-color: v.$gray-200;
+    color: v.$color-secondary;
+  }
+
+  &.badge-light-success {
+    background-color: v.$color-success-light;
+    color: v.$color-success;
+  }
+
+  &.badge-light-danger {
+    background-color: v.$color-danger-light;
+    color: v.$color-danger;
+  }
+
+  &.badge-light-warning {
+    background-color: v.$color-warning-light;
+    color: v.$color-warning;
+  }
+
+  &.badge-light-info {
+    background-color: v.$color-info-light;
+    color: v.$color-info;
+  }
+
+  &.badge-light-dark {
+    background-color: v.$gray-200;
+    color: v.$color-dark;
+  }
+}

@@ -1,222 +1,247 @@
+import { useState } from "react";
 import { Link } from "react-router";
-import Input from "../../component/UI/Input/Input";
-import Button from "../../component/UI/Button/Button";
+import {
+    ShieldCheck,
+    Mail,
+    Lock,
+    Eye,
+    EyeOff,
+    ArrowRight,
+    Heart,
+    Users,
+    Activity,
+} from "lucide-react";
+
 import googleIcon from "../../_metronic/assets/images/google_icon.svg";
 import appleIcon from "../../_metronic/assets/images/apple_icon.svg";
 import preview_login from "../../_metronic/assets/images/preview_login.svg";
-import { KTIcon } from "../../_metronic/helpers/components/KTIcon";
+import nexchatLogo from "../../_metronic/assets/images/home/nexchat-logo.svg";
+import avatar1 from "../../_metronic/assets/images/home/avatar-ha-my.png";
+import avatar2 from "../../_metronic/assets/images/home/avatar-phuong-thao.png";
+import avatar3 from "../../_metronic/assets/images/home/avatar-quang-huy.png";
 
 import { useLoginActions } from "./actions";
 import "./style.scss";
 
 export default function LoginPage() {
     const { formik, showPassword, setShowPassword } = useLoginActions();
-    return (
-        //items-center : can giữa theo chiều dọc
-        // justify-center: can giữa theo chiều ngang
-        // flex: đặt nó nằm trên 1 hàng
-        <div className="login-page">
-            <div className="flex w-[900px] min-h-[500px] rounded-2xl overflow-hidden shadow-2xl">
+    const [rememberMe, setRememberMe] = useState(true);
 
-                {/* left */}
-                <div className="w-1/2 overflow-hidden">
-                    {/* logo */}
-                    <div className="flex items-center gap-3">
-                        <div>
-                            logo
+    return (
+        <main className="login-page">
+            <div className="login-container">
+                {/* Cột trái: Giới thiệu thương hiệu & Tương tác cộng đồng NexChat */}
+                <section className="login-hero" aria-label="Giới thiệu thương hiệu NexChat">
+                    <div className="ambient-glow-1" aria-hidden="true" />
+                    <div className="ambient-glow-2" aria-hidden="true" />
+
+                    <div className="login-hero-header">
+                        <div className="login-brand-row">
+                            <div className="login-logo-box">
+                                <img src={nexchatLogo} alt="NexChat Logo" />
+                            </div>
+                            <span className="login-brand-name">NexChat</span>
+                            <span className="login-brand-badge">MẠNG XÃ HỘI 3.0</span>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <span className="text-xl font-bold">
-                                Nex
-                            </span>
-                            <span className="px-3 py-1 rounded-full bg-white/15 text-sm">
-                                MẠNG XÃ HỘI 3.0
-                            </span>
-                        </div>
-                    </div>
-                    {/* title +description */}
-                    <div className="mt-8">
-                        <h2 className="text-3xl font-bold leading-tight">
+
+                        <h2 className="login-hero-title">
                             Chào mừng bạn trở lại với
-                            <span className="block text-cyan-300">
-                                Nex
-                            </span>
+                            <span>NexChat</span>
                         </h2>
 
-                        <p className="mt-3 text-sm leading-6 text-white/80">
-                            Nền tảng kết nối nhịp đập thế hệ mới.
-                            Khám phá những làn sóng xu hướng,
-                            chia sẻ khoảnh khắc chân thực và chạm tới cộng đồng.
+                        <p className="login-hero-desc">
+                            Nền tảng kết nối nhịp đập thế hệ mới. Khám phá những làn sóng
+                            xu hướng, chia sẻ khoảnh khắc chân thực và chạm tới cộng đồng
+                            đam mê cùng tần số.
                         </p>
                     </div>
-                    {/* 3. Main social card */}
-                    <div className="mt-6 ml-10 rounded-2xl bg-black/10 p-3">
 
-                        {/* image / preview */}
-                        <div className="h-[100px] rounded-xl bg-white/20">
-                            <img
-                                src={preview_login}
-                                alt="Preview"
-                                className="w-full h-full object-cover"
-                            />
-                        </div>
-
-                        {/* reaction */}
-                        <div className="mt-3 flex justify-between items-center text-sm">
-                            <span>💗 3.4k lượt thả tim</span>
-
-                            <span className="px-2 py-1 rounded-full bg-black/20">
-                                #KhamPhaNexChat
-                            </span>
-                        </div>
-
-                        {/* people bar */}
-                        <div className="mt-3 flex items-center gap-2 rounded-xl bg-white/10 p-3">
-                            <div className="flex">
-                                <div className="w-7 h-7 rounded-full bg-white"></div>
-                                <div className="-ml-2 w-7 h-7 rounded-full bg-white"></div>
+                    {/* Visual Minh họa Tương tác Sinh động */}
+                    <div className="login-showcase-card">
+                        <div className="login-showcase-image-wrap">
+                            <img src={preview_login} alt="Xem trước bản tin NexChat" />
+                            <div className="login-showcase-overlay" />
+                            <div className="login-showcase-footer">
+                                <span className="login-likes">
+                                    <Heart size={14} /> 3.4k lượt thả tim
+                                </span>
+                                <span className="login-hashtag">#KhamPhaNexChat</span>
                             </div>
+                        </div>
 
-                            <p className="text-xs ">
-                                Minh Anh và 148 người khác vừa tham gia phòng âm thanh
-                            </p>
+                        <div className="login-activity-stream">
+                            <div className="login-avatar-stack">
+                                <img src={avatar1} alt="Người dùng 1" />
+                                <img src={avatar2} alt="Người dùng 2" />
+                                <img src={avatar3} alt="Người dùng 3" />
+                            </div>
+                            <p>Minh Anh và 148 người khác vừa tham gia phòng âm thanh "GenZ Indie Beat"</p>
+                            <span className="login-active-dot" title="Đang diễn ra" />
                         </div>
                     </div>
 
-                    {/* 4. Stats */}
-                    <div className="grid grid-cols-2 gap-4 mt-6">
-
-                        <div className="rounded-2xl bg-white/10 p-4">
-                            <div className="text-2xl font-bold">
-                                +500K
+                    {/* Thống kê cộng đồng nổi bật */}
+                    <div className="login-stats-row">
+                        <div className="login-stat-card">
+                            <div className="login-stat-top">
+                                <Users size={18} className="text-[#ACEDFF]" />
+                                <strong>+500K</strong>
                             </div>
-
-                            <div className="text-xs text-white/70 mt-1">
-                                NGƯỜI DÙNG NĂNG ĐỘNG
-                            </div>
+                            <span>NGƯỜI DÙNG NĂNG ĐỘNG</span>
                         </div>
 
-                        <div className="rounded-2xl bg-white/10 p-4">
-                            <div className="text-2xl font-bold">
-                                +2M
+                        <div className="login-stat-card">
+                            <div className="login-stat-top">
+                                <Activity size={18} className="text-[#FFB2B7]" />
+                                <strong>+2M</strong>
                             </div>
-
-                            <div className="text-xs text-white/70 mt-1">
-                                KẾT NỐI MỖI NGÀY
-                            </div>
+                            <span>KẾT NỐI MỖI NGÀY</span>
                         </div>
-
                     </div>
-                </div>
+                </section>
 
-                {/* right */}
-                <div className="w-1/2 bg-white p-8">
-                    <h1 className="fs-32 lh-40 text-black font-bold">
+                {/* Cột phải: Form Đăng Nhập */}
+                <section className="login-form-col" aria-labelledby="login-title">
+                    <div className="login-security-badge">
+                        <ShieldCheck size={14} />
+                        <span>Xác thực bảo mật đa tầng</span>
+                    </div>
+
+                    <h1 id="login-title" className="login-form-title">
                         Đăng nhập tài khoản
                     </h1>
-                    <p className="text-sm whitespace-nowrap text-description">Tiếp tục kết nối tương tác và chia sẻ khoảnh khắc cùng bạn bè</p>
+                    <p className="login-form-desc">
+                        Tiếp tục kết nối, tương tác và sẻ chia khoảnh khắc cùng bạn bè.
+                    </p>
 
-                    <div className="flex mt-4 gap-3">
-                        <Button
-                            className="w-1/2 border border-gray-300 rounded-4xl py-3 flex items-center justify-center fs-14 cursor-pointer bg-input"
-
-                        >
-                            <img src={googleIcon} alt="Google" className="w-4 h-4 relative -left-2" />
-                            Google
-                        </Button>
-
-                        <Button
-                            className="w-1/2 border border-gray-300 rounded-4xl flex items-center justify-center fs-14 cursor-pointer bg-input"
-                        >
-                            <img src={appleIcon} alt="Apple" className="w-4 h-4 relative -left-2" />
-                            Apple ID
-                        </Button>
+                    {/* Đăng nhập 1 chạm mạng xã hội */}
+                    <div className="login-social-buttons">
+                        <button type="button" className="btn btn-light-primary btn-flex rounded-pill w-100 py-3 fs-7 fw-semibold">
+                            <img src={googleIcon} alt="Google" className="w-18px h-18px me-2" />
+                            <span>Google</span>
+                        </button>
+                        <button type="button" className="btn btn-light-primary btn-flex rounded-pill w-100 py-3 fs-7 fw-semibold">
+                            <img src={appleIcon} alt="Apple ID" className="w-18px h-18px me-2" />
+                            <span>Apple ID</span>
+                        </button>
                     </div>
 
+                    {/* Divider */}
+                    <div className="separator separator-content my-6">
+                        <span className="text-gray-500 fs-8 fw-semibold px-3 text-uppercase">HOẶC ĐĂNG NHẬP VỚI EMAIL</span>
+                    </div>
 
-                    <form onSubmit={formik.handleSubmit}>
-
-                        <div className="mt-6">
-                            <Input
-                                name="email"
-                                label="Email hoặc số điện thoại"
-                                placeholder="email@example.com"
-                                type="email"
-                                icon="user"
-                                value={formik.values.email}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                            />
-                            {formik.touched.email && formik.errors.email && (
-                                <div className="text-red-500 fs-12 mt-1">
-                                    {formik.errors.email}
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="mt-3">
-
-                            <Input
-                                name="password"
-                                label="Mật khẩu"
-                                lableRight={
-                                    <a href="/forgot-password"
-                                        className="text-blue-500 fs-14"
-                                    >
-                                        Quên mật khẩu ?
-                                    </a>
-                                }
-                                placeholder="Nhập mật khẩu của bạn"
-                                type={showPassword ? "text" : "password"}
-                                icon="lock"
-                                value={formik.values.password}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                rightIcon={
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        className="cursor-pointer"
-                                    >
-                                        <KTIcon
-                                            iconName={showPassword ? "eye-slash" : "eye"}
-                                            className="fs-20"
-                                        />
-                                    </button>
-                                }
-
-                            />
-                            {formik.touched.password && formik.errors.password && (
-                                <div className="text-red-500 fs-12 mt-1">
-                                    {formik.errors.password}
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="pt-3 ">
-                            <Input
-                                type="checkbox"
-                                label="Đồng ý chính sách"
-                            />
-                            <div className="fs-11 lh-17 text-description">
-                                Bằng việc tiếp tục, bạn đồng ý với Điều khoản Dịch vụ và Chính sách Quyền riêng tư của NexChat.
+                    {/* Form Fields */}
+                    <form onSubmit={formik.handleSubmit} noValidate>
+                        {/* Email / Số điện thoại */}
+                        <div className="mb-4">
+                            <div className="d-flex align-items-center justify-content-between mb-2">
+                                <label htmlFor="login-email" className="form-label fs-7 fw-semibold text-gray-800 mb-0">Email hoặc Số điện thoại</label>
                             </div>
+                            <div className="position-relative d-flex align-items-center">
+                                <Mail size={18} className="position-absolute start-0 ms-4 text-gray-500 z-1 pointer-events-none" />
+                                <input
+                                    id="login-email"
+                                    name="email"
+                                    type="email"
+                                    autoComplete="username"
+                                    placeholder="name@example.com"
+                                    className="form-control form-control-solid ps-12 rounded-3 h-48px fs-7"
+                                    value={formik.values.email}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    disabled={formik.isSubmitting}
+                                />
+                            </div>
+                            {formik.touched.email && formik.errors.email && (
+                                <p className="text-danger fs-7 mt-1" role="alert">
+                                    {formik.errors.email}
+                                </p>
+                            )}
                         </div>
 
-                        <Button
-                            className="mt-6 w-full bg-blue-500 text-white p-3 rounded-lg cursor-pointer"
+                        {/* Mật khẩu */}
+                        <div className="mb-4">
+                            <div className="d-flex align-items-center justify-content-between mb-2">
+                                <label htmlFor="login-password" className="form-label fs-7 fw-semibold text-gray-800 mb-0">Mật khẩu</label>
+                                <Link to="/forgot-password" className="link-primary fs-7 fw-semibold">
+                                    Quên mật khẩu?
+                                </Link>
+                            </div>
+                            <div className="position-relative d-flex align-items-center">
+                                <Lock size={18} className="position-absolute start-0 ms-4 text-gray-500 z-1 pointer-events-none" />
+                                <input
+                                    id="login-password"
+                                    name="password"
+                                    type={showPassword ? "text" : "password"}
+                                    autoComplete="current-password"
+                                    placeholder="Nhập mật khẩu của bạn"
+                                    className="form-control form-control-solid ps-12 pe-12 rounded-3 h-48px fs-7"
+                                    value={formik.values.password}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    disabled={formik.isSubmitting}
+                                />
+                                <button
+                                    type="button"
+                                    className="btn btn-sm btn-icon btn-flush position-absolute end-0 me-3 text-gray-500"
+                                    aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                                    onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
+                            </div>
+                            {formik.touched.password && formik.errors.password && (
+                                <p className="text-danger fs-7 mt-1" role="alert">
+                                    {formik.errors.password}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Nhớ đăng nhập */}
+                        <label className="form-check form-check-custom form-check-solid mb-5 cursor-pointer">
+                            <input
+                                className="form-check-input"
+                                type="checkbox"
+                                name="rememberMe"
+                                checked={rememberMe}
+                                onChange={e => setRememberMe(e.target.checked)}
+                            />
+                            <span className="form-check-label fs-7 text-gray-700 user-select-none">Ghi nhớ đăng nhập trong 30 ngày</span>
+                        </label>
+
+                        {/* Nút Đăng nhập Chính */}
+                        <button
                             type="submit"
-                            loadding={formik.isSubmitting}
+                            className="btn btn-primary w-100 rounded-pill h-48px mb-5 fs-6 fw-bold"
+                            disabled={formik.isSubmitting}
+                            data-kt-indicator={formik.isSubmitting ? "on" : "off"}
                         >
-                            Đăng nhập
-                        </Button>
+                            <span className="indicator-label">
+                                <span>Đăng nhập ngay</span>
+                                <ArrowRight size={18} className="ms-2" />
+                            </span>
+                            <span className="indicator-progress">
+                                <span className="spinner-border spinner-border-sm align-middle me-2"></span>
+                                <span>Đang đăng nhập...</span>
+                            </span>
+                        </button>
                     </form>
 
-                    <div className="text-center pt-3 fs-15">
-                        Chưa có tài khoản Nex? <Link className="fs-14 text-blue-500 font-bold" to="/register">Đăng ký miễn phí ngay</Link>
-                    </div>
-                </div>
+                    {/* Chân trang Form */}
+                    <p className="text-center text-gray-600 fs-7 mt-4 mb-3">
+                        Chưa có tài khoản NexChat?{" "}
+                        <Link to="/register" className="link-primary fw-bold">Đăng ký miễn phí ngay</Link>
+                    </p>
+
+                    {/* Thông tin bổ sung & chính sách */}
+                    <p className="text-center text-gray-500 fs-8 lh-base m-0">
+                        Bằng việc tiếp tục, bạn đồng ý với{" "}
+                        <Link to="/terms" className="link-primary">Điều khoản Dịch vụ</Link> và{" "}
+                        <Link to="/privacy" className="link-primary">Chính sách Quyền riêng tư</Link> của NexChat.
+                    </p>
+                </section>
             </div>
-        </div >
-    )
+        </main>
+    );
 }

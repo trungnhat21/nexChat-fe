@@ -11,6 +11,14 @@ export type RegisterPayload = {
     userName: string;
 };
 
+export type SocialLoginPayload = {
+    provider: "google" | "apple" | string;
+    email: string;
+    firstName?: string;
+    lastName?: string;
+    avatar?: string;
+};
+
 export type RegisterResponse = {
     success: boolean;
     message: string;

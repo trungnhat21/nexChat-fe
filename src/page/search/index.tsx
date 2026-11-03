@@ -15,7 +15,6 @@ import {
     friendStatusLabels,
 } from "./config";
 import "../home/style.scss";
-import "./style.scss";
 
 export default function SearchPage() {
     const {
@@ -67,12 +66,12 @@ export default function SearchPage() {
 
                     <div className="home-feed" id="home-feed" tabIndex={-1}>
                         {/* Heading Card */}
-                        <section className="home-card saved-heading">
-                            <h1>{searchTitle}</h1>
-                            <p>
+                        <section className="card p-6 mb-4">
+                            <h1 className="fs-24 fw-bold mb-2 text-gray-900">{searchTitle}</h1>
+                            <p className="text-gray-600 m-0 fs-14">
                                 {query ? (
                                     <>
-                                        Hiển thị kết quả cho từ khóa <strong>“{query}”</strong>
+                                        Hiển thị kết quả cho từ khóa <strong className="text-primary">“{query}”</strong>
                                     </>
                                 ) : (
                                     searchDefaultHint
@@ -82,7 +81,7 @@ export default function SearchPage() {
 
                         {/* Search Category Tabs */}
                         {query && (
-                            <nav className="search-tabs" aria-label="Bộ lọc tìm kiếm">
+                            <nav className="nav-group nav-group-pill w-100 mb-4" aria-label="Bộ lọc tìm kiếm">
                                 {searchTabs.map(tab => (
                                     <button
                                         key={tab.id}
@@ -95,7 +94,7 @@ export default function SearchPage() {
                                         {tab.id === "posts" && <FileText size={14} />}
                                         {tab.id === "hashtags" && <Hash size={14} />}
                                         {tab.id === "media" && <Image size={14} />}
-                                        {tab.label}
+                                        <span>{tab.label}</span>
                                     </button>
                                 ))}
                             </nav>
@@ -103,54 +102,57 @@ export default function SearchPage() {
 
                         {/* Loading State */}
                         {loading && (
-                            <section className="home-card home-empty" role="status">
+                            <section className="card p-6 text-center text-gray-500 mb-4" role="status">
                                 Đang tải kết quả tìm kiếm...
                             </section>
                         )}
 
                         {/* Error State */}
                         {error && !loading && (
-                            <section className="home-card home-feed-error" role="alert">
-                                <p>{error}</p>
+                            <section className="card p-6 border-dashed border-danger mb-4 text-center" role="alert">
+                                <p className="text-danger fw-semibold m-0">{error}</p>
                             </section>
                         )}
 
                         {/* Empty State */}
                         {!loading && !error && query && !hasAnyResults && (
-                            <section className="home-card home-empty">
-                                <Search size={32} aria-hidden="true" style={{ color: "#94a3b8", margin: "0 auto 12px" }} />
-                                <h2>{searchEmptyTitle}</h2>
-                                <p>{searchEmptyDesc}</p>
-                                <Link to="/home">Về bảng tin</Link>
+                            <section className="card p-8 text-center mb-4">
+                                <Search size={36} aria-hidden="true" className="text-gray-400 mx-auto mb-3" />
+                                <h2 className="fs-18 fw-bold text-gray-800 mb-2">{searchEmptyTitle}</h2>
+                                <p className="text-gray-500 fs-14 mb-4">{searchEmptyDesc}</p>
+                                <div>
+                                    <Link to="/home" className="btn btn-primary btn-sm">Về bảng tin</Link>
+                                </div>
                             </section>
                         )}
 
                         {/* Tab Content: ALL or PEOPLE */}
                         {!loading && people.length > 0 && (activeTab === "all" || activeTab === "people") && (
-                            <section className="search-section-card">
-                                <h2>
-                                    <span>
-                                        <User size={16} style={{ display: "inline", verticalAlign: "-2px", marginRight: 6 }} />
+                            <section className="card p-5 mb-4 shadow-sm">
+                                <div className="d-flex align-items-center justify-content-between mb-4">
+                                    <h2 className="fs-15 fw-bold text-gray-800 m-0 d-flex align-items-center gap-2">
+                                        <User size={16} className="text-primary" />
                                         Mọi người ({people.length})
-                                    </span>
+                                    </h2>
                                     {activeTab === "all" && (
                                         <button
                                             type="button"
-                                            style={{ color: "#2563eb", fontSize: "12px", background: "none" }}
+                                            className="btn btn-flush fs-12 text-primary fw-semibold"
                                             onClick={() => setActiveTab("people")}
                                         >
                                             Xem tất cả →
                                         </button>
                                     )}
-                                </h2>
+                                </div>
 
-                                <div className={`search-people-grid ${activeTab === "people" ? "is-full-list" : ""}`}>
+                                <div className={`d-flex flex-column gap-3`}>
                                     {people.map(person => {
                                         const isBusy = busyUserIds.has(person.id);
                                         return (
-                                            <div key={person.id} className="search-person-card">
+                                            <div key={person.id} className="d-flex align-items-center gap-3 p-3 rounded-lg border bg-light">
                                                 <span
-                                                    className="search-person-avatar"
+                                                    className="rounded-circle overflow-hidden flex-shrink-0 cursor-pointer d-grid place-items-center bg-gray-200 fw-bold fs-14 text-gray-700"
+                                                    style={{ width: 44, height: 44 }}
                                                     onClick={() => handleNavigateProfile(person.id)}
                                                     role="button"
                                                     tabIndex={0}
@@ -158,7 +160,7 @@ export default function SearchPage() {
                                                     aria-label={`Xem hồ sơ của ${person.name}`}
                                                 >
                                                     {person.avatar ? (
-                                                        <img src={person.avatar} alt={person.name} />
+                                                        <img src={person.avatar} alt={person.name} className="w-100 h-100 object-cover" />
                                                     ) : (
                                                         <span>
                                                             {person.name
@@ -172,65 +174,66 @@ export default function SearchPage() {
                                                     )}
                                                 </span>
 
-                                                <div className="search-person-info">
+                                                <div className="flex-grow-1 min-w-0">
                                                     <strong
+                                                        className="d-block fs-14 fw-semibold text-gray-900 text-truncate cursor-pointer"
                                                         onClick={() => handleNavigateProfile(person.id)}
                                                         title={`Xem hồ sơ của ${person.name}`}
                                                     >
                                                         {person.name}
                                                     </strong>
-                                                    <small>
+                                                    <small className="d-block fs-12 text-gray-500 text-truncate">
                                                         {person.username ? `@${person.username} • ` : ""}
                                                         {friendStatusLabels[person.friendStatus]}
                                                     </small>
                                                     {person.bio && (
-                                                        <p className="search-person-bio">{person.bio}</p>
+                                                        <p className="fs-12 text-gray-600 m-0 mt-1 text-truncate">{person.bio}</p>
                                                     )}
                                                 </div>
 
-                                                <div className="search-person-actions">
+                                                <div className="d-flex align-items-center gap-2 ms-auto flex-shrink-0">
                                                     {/* Friend Action Button */}
                                                     {person.friendStatus === "none" && (
                                                         <button
                                                             type="button"
-                                                            className="btn-friend"
+                                                            className="btn btn-sm btn-primary"
                                                             disabled={isBusy}
                                                             onClick={() => performFriendAction(person, "request")}
                                                         >
-                                                            <UserPlus size={13} style={{ display: "inline", verticalAlign: "-2px", marginRight: 4 }} />
+                                                            <UserPlus size={13} />
                                                             Kết bạn
                                                         </button>
                                                     )}
                                                     {person.friendStatus === "outgoing" && (
                                                         <button
                                                             type="button"
-                                                            className="btn-friend is-outgoing"
+                                                            className="btn btn-sm btn-light-secondary"
                                                             disabled={isBusy}
                                                             onClick={() => performFriendAction(person, "cancel")}
                                                         >
-                                                            <Clock size={13} style={{ display: "inline", verticalAlign: "-2px", marginRight: 4 }} />
+                                                            <Clock size={13} />
                                                             Hủy lời mời
                                                         </button>
                                                     )}
                                                     {person.friendStatus === "incoming" && (
                                                         <button
                                                             type="button"
-                                                            className="btn-friend is-incoming"
+                                                            className="btn btn-sm btn-primary"
                                                             disabled={isBusy}
                                                             onClick={() => performFriendAction(person, "accept")}
                                                         >
-                                                            <UserCheck size={13} style={{ display: "inline", verticalAlign: "-2px", marginRight: 4 }} />
+                                                            <UserCheck size={13} />
                                                             Chấp nhận
                                                         </button>
                                                     )}
                                                     {person.friendStatus === "friends" && (
                                                         <button
                                                             type="button"
-                                                            className="btn-friend is-friends"
+                                                            className="btn btn-sm btn-light-danger"
                                                             disabled={isBusy}
                                                             onClick={() => performFriendAction(person, "unfriend")}
                                                         >
-                                                            <UserX size={13} style={{ display: "inline", verticalAlign: "-2px", marginRight: 4 }} />
+                                                            <UserX size={13} />
                                                             Hủy kết bạn
                                                         </button>
                                                     )}
@@ -238,7 +241,7 @@ export default function SearchPage() {
                                                     {/* Follow Action Button */}
                                                     <button
                                                         type="button"
-                                                        className={`btn-follow ${person.following ? "is-following" : ""}`}
+                                                        className={person.following ? "btn btn-sm btn-light-primary" : "btn btn-sm btn-light-secondary"}
                                                         disabled={isBusy}
                                                         onClick={() => performFollowAction(person)}
                                                     >
@@ -253,7 +256,7 @@ export default function SearchPage() {
                                 {activeTab === "people" && hasNextCursor && (
                                     <button
                                         type="button"
-                                        className="search-load-more"
+                                        className="btn btn-light-primary w-100 py-3 rounded-lg fw-bold mt-3"
                                         disabled={loadingMore}
                                         onClick={loadMore}
                                     >
@@ -265,26 +268,26 @@ export default function SearchPage() {
 
                         {/* Tab Content: ALL or HASHTAGS */}
                         {!loading && hashtags.length > 0 && (activeTab === "all" || activeTab === "hashtags") && (
-                            <section className="search-section-card">
-                                <h2>
-                                    <span>
-                                        <Hash size={16} style={{ display: "inline", verticalAlign: "-2px", marginRight: 6 }} />
-                                        Hashtags &amp; Chủ đề ({hashtags.length})
-                                    </span>
+                            <section className="card p-5 mb-4 shadow-sm">
+                                <h2 className="fs-15 fw-bold text-gray-800 mb-4 d-flex align-items-center gap-2">
+                                    <Hash size={16} className="text-primary" />
+                                    Hashtags &amp; Chủ đề ({hashtags.length})
                                 </h2>
-                                <div className="search-hashtags-grid">
+                                <div className="d-grid gap-2" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))" }}>
                                     {hashtags.map(item => (
                                         <div
                                             key={item.tag}
-                                            className="search-hashtag-card"
+                                            className="d-flex align-items-center gap-3 p-3 rounded-lg border bg-light cursor-pointer"
                                             onClick={() => handleSelectHashtag(item.tag)}
                                             role="button"
                                             tabIndex={0}
                                         >
-                                            <div className="search-hashtag-icon">#</div>
-                                            <div className="search-hashtag-info">
-                                                <strong>{item.tag}</strong>
-                                                <small>{item.postsCount} bài viết</small>
+                                            <div className="badge badge-circle badge-light-primary fw-bold fs-14" style={{ width: 36, height: 36 }}>
+                                                #
+                                            </div>
+                                            <div className="min-w-0 flex-grow-1">
+                                                <strong className="d-block fs-13 text-gray-900 text-truncate">{item.tag}</strong>
+                                                <small className="d-block fs-12 text-gray-500">{item.postsCount} bài viết</small>
                                             </div>
                                         </div>
                                     ))}
@@ -294,20 +297,10 @@ export default function SearchPage() {
 
                         {/* Tab Content: ALL, POSTS or MEDIA */}
                         {!loading && posts.length > 0 && (activeTab === "all" || activeTab === "posts" || activeTab === "media") && (
-                            <div className="search-posts-container">
+                            <div className="d-flex flex-column gap-4">
                                 {activeTab === "all" && (
-                                    <div
-                                        style={{
-                                            marginBottom: 12,
-                                            fontWeight: 700,
-                                            fontSize: 15,
-                                            color: "#0f172a",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: 6,
-                                        }}
-                                    >
-                                        <FileText size={16} />
+                                    <div className="fs-15 fw-bold text-gray-900 d-flex align-items-center gap-2">
+                                        <FileText size={16} className="text-primary" />
                                         Bài viết liên quan ({posts.length})
                                     </div>
                                 )}
@@ -326,7 +319,7 @@ export default function SearchPage() {
                                 {hasNextCursor && (activeTab === "posts" || activeTab === "media") && (
                                     <button
                                         type="button"
-                                        className="search-load-more"
+                                        className="btn btn-light-primary w-100 py-3 rounded-lg fw-bold"
                                         disabled={loadingMore}
                                         onClick={loadMore}
                                     >
@@ -337,9 +330,9 @@ export default function SearchPage() {
                         )}
 
                         {/* Loading More & Errors */}
-                        {loadingMore && <p className="search-loading-more">Đang tải thêm...</p>}
+                        {loadingMore && <p className="text-center text-gray-500 py-2 fs-13">Đang tải thêm...</p>}
                         {loadMoreError && (
-                            <p className="home-feed-error" role="alert">
+                            <p className="card p-3 border-dashed border-danger text-danger text-center fs-13" role="alert">
                                 {loadMoreError}
                             </p>
                         )}

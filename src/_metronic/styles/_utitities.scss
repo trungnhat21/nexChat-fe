@@ -1,25 +1,600 @@
 @use "./variable" as vars;
 
+// ==========================================
+// Metronic Standard Utility Classes
+// ==========================================
+
+// Legacy Helpers (Kept for compatibility)
 .text-description {
-    color: vars.$color-text-description;
+  color: vars.$color-text-description !important;
 }
 
 .bg-input {
-    background-color: vars.$color-input-bg;
+  background-color: vars.$color-input-bg !important;
 }
 
 .text-primary-custom {
-    color: vars.$color-primary;
+  color: vars.$color-primary !important;
 }
-//custom font size-> fs
-@for $i from 1 through 400 {
-    .fs-#{$i} {
-        font-size: #{$i}px;
-    }
+
+// Display & Flexbox
+.d-flex { display: flex !important; }
+.d-inline-flex { display: inline-flex !important; }
+.d-grid { display: grid !important; }
+.d-block { display: block !important; }
+.d-inline-block { display: inline-block !important; }
+.d-none { display: none !important; }
+
+// Position Utilities
+.position-static { position: static !important; }
+.position-relative { position: relative !important; }
+.position-absolute { position: absolute !important; }
+.position-fixed { position: fixed !important; }
+.position-sticky { position: sticky !important; }
+
+// Placement
+.top-0 { top: 0 !important; }
+.top-50 { top: 50% !important; }
+.top-100 { top: 100% !important; }
+
+.bottom-0 { bottom: 0 !important; }
+.bottom-50 { bottom: 50% !important; }
+.bottom-100 { bottom: 100% !important; }
+
+.start-0 { left: 0 !important; }
+.start-50 { left: 50% !important; }
+.start-100 { left: 100% !important; }
+
+.end-0 { right: 0 !important; }
+.end-50 { right: 50% !important; }
+.end-100 { right: 100% !important; }
+
+// Transforms
+.translate-middle { transform: translate(-50%, -50%) !important; }
+.translate-middle-x { transform: translateX(-50%) !important; }
+.translate-middle-y { transform: translateY(-50%) !important; }
+
+// Z-index
+.z-0 { z-index: 0 !important; }
+.z-1 { z-index: 1 !important; }
+.z-2 { z-index: 2 !important; }
+.z-3 { z-index: 1050 !important; }
+.z-n1 { z-index: -1 !important; }
+
+.flex-column { flex-direction: column !important; }
+.flex-row { flex-direction: row !important; }
+.flex-wrap { flex-wrap: wrap !important; }
+.flex-nowrap { flex-wrap: nowrap !important; }
+.flex-grow-1 { flex-grow: 1 !important; }
+.flex-shrink-0 { flex-shrink: 0 !important; }
+
+.align-items-start { align-items: flex-start !important; }
+.align-items-center { align-items: center !important; }
+.align-items-end { align-items: flex-end !important; }
+.align-items-stretch { align-items: stretch !important; }
+
+.justify-content-start { justify-content: flex-start !important; }
+.justify-content-center { justify-content: center !important; }
+.justify-content-end { justify-content: flex-end !important; }
+.justify-content-between { justify-content: space-between !important; }
+.justify-content-around { justify-content: space-around !important; }
+
+// Gap
+.gap-1 { gap: 0.25rem !important; }
+.gap-2 { gap: 0.5rem !important; }
+.gap-3 { gap: 0.75rem !important; }
+.gap-4 { gap: 1rem !important; }
+.gap-5 { gap: 1.25rem !important; }
+.gap-6 { gap: 1.5rem !important; }
+
+// Typography
+.fw-normal { font-weight: 400 !important; }
+.fw-medium { font-weight: 500 !important; }
+.fw-semibold { font-weight: 600 !important; }
+.fw-bold { font-weight: 700 !important; }
+.fw-bolder { font-weight: 800 !important; }
+
+.text-center { text-align: center !important; }
+.text-start { text-align: left !important; }
+.text-end { text-align: right !important; }
+.text-truncate {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
 }
-//custom line height -> lh
-@for $i from 1 through 400 {
-    .lh-#{$i} {
-        line-height: #{$i}px;
+
+// Colors
+.text-primary { color: vars.$color-primary !important; }
+.text-secondary { color: vars.$color-secondary !important; }
+.text-success { color: vars.$color-success !important; }
+.text-danger { color: vars.$color-danger !important; }
+.text-warning { color: vars.$color-warning !important; }
+.text-info { color: vars.$color-info !important; }
+.text-muted { color: vars.$color-text-muted !important; }
+.text-white { color: #ffffff !important; }
+
+.text-gray-400 { color: vars.$gray-400 !important; }
+.text-gray-500 { color: vars.$gray-500 !important; }
+.text-gray-600 { color: vars.$gray-600 !important; }
+.text-gray-700 { color: vars.$gray-700 !important; }
+.text-gray-800 { color: vars.$gray-800 !important; }
+.text-gray-900 { color: vars.$gray-900 !important; }
+
+// Backgrounds
+.bg-white { background-color: #ffffff !important; }
+.bg-light { background-color: vars.$color-light !important; }
+.bg-body { background-color: #faf8ff !important; }
+.bg-transparent { background-color: transparent !important; }
+
+.bg-primary { background-color: vars.$color-primary !important; }
+.bg-secondary { background-color: vars.$color-secondary !important; }
+.bg-success { background-color: vars.$color-success !important; }
+.bg-danger { background-color: vars.$color-danger !important; }
+.bg-warning { background-color: vars.$color-warning !important; }
+.bg-info { background-color: vars.$color-info !important; }
+.bg-dark { background-color: vars.$color-dark !important; }
+
+.bg-light-primary { background-color: vars.$color-primary-light !important; }
+.bg-light-success { background-color: vars.$color-success-light !important; }
+.bg-light-danger { background-color: vars.$color-danger-light !important; }
+.bg-light-warning { background-color: vars.$color-warning-light !important; }
+.bg-light-info { background-color: vars.$color-info-light !important; }
+
+// Borders & Radii
+.border { border: 1px solid vars.$gray-300 !important; }
+.border-0 { border: 0 !important; }
+.border-1 { border-width: 1px !important; }
+.border-2 { border-width: 2px !important; }
+.border-3 { border-width: 3px !important; }
+.border-top { border-top: 1px solid vars.$gray-200 !important; }
+.border-bottom { border-bottom: 1px solid vars.$gray-200 !important; }
+.border-dashed { border-style: dashed !important; }
+.border-white { border-color: #ffffff !important; }
+.border-primary { border-color: vars.$color-primary !important; }
+.border-success { border-color: vars.$color-success !important; }
+.border-danger { border-color: vars.$color-danger !important; }
+.border-gray-200 { border-color: vars.$gray-200 !important; }
+.border-gray-300 { border-color: vars.$gray-300 !important; }
+
+.rounded { border-radius: vars.$border-radius !important; }
+.rounded-sm { border-radius: vars.$border-radius-sm !important; }
+.rounded-1 { border-radius: 0.25rem !important; }
+.rounded-2 { border-radius: 0.5rem !important; }
+.rounded-3 { border-radius: 0.75rem !important; }
+.rounded-4 { border-radius: 1rem !important; }
+.rounded-lg { border-radius: vars.$border-radius-lg !important; }
+.rounded-xl { border-radius: vars.$border-radius-xl !important; }
+.rounded-circle { border-radius: 50% !important; }
+.rounded-pill { border-radius: vars.$border-radius-pill !important; }
+
+// Shadows
+.shadow-none { box-shadow: none !important; }
+.shadow-sm { box-shadow: vars.$shadow-sm !important; }
+.shadow-md { box-shadow: vars.$shadow-md !important; }
+.shadow-lg { box-shadow: vars.$shadow-lg !important; }
+
+// Sizing
+.w-100 { width: 100% !important; }
+.h-100 { height: 100% !important; }
+.min-w-0 { min-width: 0 !important; }
+.min-h-auto { min-height: auto !important; }
+.max-h-400px { max-height: 400px !important; }
+.min-w-160px { min-width: 160px !important; }
+.min-w-150px { min-width: 150px !important; }
+.w-6px { width: 6px !important; }
+.h-6px { height: 6px !important; }
+.w-8px { width: 8px !important; }
+.h-8px { height: 8px !important; }
+.w-10px { width: 10px !important; }
+.h-10px { height: 10px !important; }
+.w-12px { width: 12px !important; }
+.h-12px { height: 12px !important; }
+.w-14px { width: 14px !important; }
+.h-14px { height: 14px !important; }
+.w-16px { width: 16px !important; }
+.h-16px { height: 16px !important; }
+.w-18px { width: 18px !important; }
+.h-18px { height: 18px !important; }
+.w-20px { width: 20px !important; }
+.h-20px { height: 20px !important; }
+.w-24px { width: 24px !important; }
+.h-24px { height: 24px !important; }
+.w-32px { width: 32px !important; }
+.h-32px { height: 32px !important; }
+.w-36px { width: 36px !important; }
+.h-36px { height: 36px !important; }
+.w-40px { width: 40px !important; }
+.h-40px { height: 40px !important; }
+.w-48px { width: 48px !important; }
+.h-48px { height: 48px !important; }
+.overflow-y-auto { overflow-y: auto !important; }
+.cursor-pointer { cursor: pointer !important; }
+.overflow-hidden { overflow: hidden !important; }
+.user-select-none { user-select: none !important; }
+.pointer-events-none { pointer-events: none !important; }
+.max-w-75 { max-width: 75% !important; }
+.max-w-500px { max-width: 500px !important; }
+.resize-none { resize: none !important; }
+.text-break { word-break: break-word !important; overflow-wrap: break-word !important; }
+
+// Metronic Grid & Columns
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: calc(-1 * var(--bs-gutter-y, 0px));
+  margin-right: calc(-0.5 * var(--bs-gutter-x, 1rem));
+  margin-left: calc(-0.5 * var(--bs-gutter-x, 1rem));
+
+  > * {
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 100%;
+    padding-right: calc(var(--bs-gutter-x, 1rem) * 0.5);
+    padding-left: calc(var(--bs-gutter-x, 1rem) * 0.5);
+    margin-top: var(--bs-gutter-y, 0px);
+  }
+}
+
+.col { flex: 1 0 0%; }
+.col-auto { flex: 0 0 auto; width: auto; }
+.col-1 { flex: 0 0 auto; width: 8.33333333%; }
+.col-2 { flex: 0 0 auto; width: 16.66666667%; }
+.col-3 { flex: 0 0 auto; width: 25%; }
+.col-4 { flex: 0 0 auto; width: 33.33333333%; }
+.col-5 { flex: 0 0 auto; width: 41.66666667%; }
+.col-6 { flex: 0 0 auto; width: 50%; }
+.col-7 { flex: 0 0 auto; width: 58.33333333%; }
+.col-8 { flex: 0 0 auto; width: 66.66666667%; }
+.col-9 { flex: 0 0 auto; width: 75%; }
+.col-10 { flex: 0 0 auto; width: 83.33333333%; }
+.col-11 { flex: 0 0 auto; width: 91.66666667%; }
+.col-12 { flex: 0 0 auto; width: 100%; }
+
+.g-1 { --bs-gutter-x: 0.25rem; --bs-gutter-y: 0.25rem; }
+.g-2 { --bs-gutter-x: 0.5rem; --bs-gutter-y: 0.5rem; }
+.g-3 { --bs-gutter-x: 0.75rem; --bs-gutter-y: 0.75rem; }
+.g-4 { --bs-gutter-x: 1rem; --bs-gutter-y: 1rem; }
+.g-5 { --bs-gutter-x: 1.5rem; --bs-gutter-y: 1.5rem; }
+.g-6 { --bs-gutter-x: 2rem; --bs-gutter-y: 2rem; }
+
+// Spacing Utilities
+.m-0 { margin: 0 !important; }
+.mb-0 { margin-bottom: 0 !important; }
+.mb-1 { margin-bottom: 0.25rem !important; }
+.mb-2 { margin-bottom: 0.5rem !important; }
+.mb-3 { margin-bottom: 0.75rem !important; }
+.mb-4 { margin-bottom: 1rem !important; }
+.mb-5 { margin-bottom: 1.5rem !important; }
+.mb-6 { margin-bottom: 2rem !important; }
+
+.mt-0 { margin-top: 0 !important; }
+.mt-1 { margin-top: 0.25rem !important; }
+.mt-2 { margin-top: 0.5rem !important; }
+.mt-3 { margin-top: 0.75rem !important; }
+.mt-4 { margin-top: 1rem !important; }
+.mt-5 { margin-top: 1.5rem !important; }
+.mt-6 { margin-top: 2rem !important; }
+
+.me-1 { margin-right: 0.25rem !important; }
+.me-2 { margin-right: 0.5rem !important; }
+.me-3 { margin-right: 0.75rem !important; }
+.me-4 { margin-right: 1rem !important; }
+.me-5 { margin-right: 1.5rem !important; }
+
+.ms-1 { margin-left: 0.25rem !important; }
+.ms-2 { margin-left: 0.5rem !important; }
+.ms-3 { margin-left: 0.75rem !important; }
+.ms-4 { margin-left: 1rem !important; }
+.ms-5 { margin-left: 1.5rem !important; }
+
+.p-0 { padding: 0 !important; }
+.p-1 { padding: 0.25rem !important; }
+.p-2 { padding: 0.5rem !important; }
+.p-3 { padding: 0.75rem !important; }
+.p-4 { padding: 1rem !important; }
+.p-5 { padding: 1.25rem !important; }
+.p-6 { padding: 1.5rem !important; }
+
+.px-0 { padding-left: 0 !important; padding-right: 0 !important; }
+.px-1 { padding-left: 0.25rem !important; padding-right: 0.25rem !important; }
+.px-2 { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
+.px-3 { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+.px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
+.px-5 { padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
+.px-6 { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
+
+.py-0 { padding-top: 0 !important; padding-bottom: 0 !important; }
+.py-1 { padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
+.py-2 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+.py-3 { padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; }
+.py-4 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+.py-5 { padding-top: 1.25rem !important; padding-bottom: 1.25rem !important; }
+.py-6 { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
+
+.ps-1 { padding-left: 0.25rem !important; }
+.ps-2 { padding-left: 0.5rem !important; }
+.ps-3 { padding-left: 0.75rem !important; }
+.ps-4 { padding-left: 1rem !important; }
+.ps-5 { padding-left: 1.25rem !important; }
+.ps-6 { padding-left: 1.5rem !important; }
+.ps-10 { padding-left: 2.5rem !important; }
+.ps-12 { padding-left: 3rem !important; }
+
+.pe-1 { padding-right: 0.25rem !important; }
+.pe-2 { padding-right: 0.5rem !important; }
+.pe-3 { padding-right: 0.75rem !important; }
+.pe-4 { padding-right: 1rem !important; }
+.pe-5 { padding-right: 1.25rem !important; }
+.pe-6 { padding-right: 1.5rem !important; }
+.pe-10 { padding-right: 2.5rem !important; }
+.pe-12 { padding-right: 3rem !important; }
+
+// Metronic Separator
+.separator {
+  display: block;
+  height: 0;
+  width: 100%;
+  border-bottom: 1px solid vars.$gray-200;
+  margin: 1rem 0;
+
+  &.separator-dashed {
+    border-bottom-style: dashed !important;
+  }
+
+  &.separator-content {
+    display: flex;
+    align-items: center;
+    border-bottom: 0;
+    text-align: center;
+    white-space: nowrap;
+
+    &::before,
+    &::after {
+      content: " ";
+      flex: 1 1 0%;
+      border-bottom: 1px solid vars.$gray-200;
     }
+
+    &.separator-dashed::before,
+    &.separator-dashed::after {
+      border-bottom-style: dashed !important;
+    }
+  }
+}
+
+// Metronic Bullet
+.bullet {
+  display: inline-block;
+  background-color: vars.$gray-400;
+  border-radius: 6px;
+  width: 8px;
+  height: 4px;
+  flex-shrink: 0;
+
+  &.bullet-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50% !important;
+  }
+}
+
+// Metronic Scrollable Body
+.scroll-y {
+  overflow-y: auto !important;
+}
+
+// Hover states & Link
+.bg-hover-light:hover {
+  background-color: vars.$color-light !important;
+}
+
+.link-primary {
+  color: vars.$color-primary !important;
+  text-decoration: none;
+  font-weight: 600;
+  transition: vars.$transition-base;
+
+  &:hover {
+    color: vars.$color-primary-hover !important;
+    text-decoration: underline;
+  }
+}
+
+.btn-flex {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+// ==========================================
+// Metronic Nav Group (Pills / Segmented Tabs)
+// ==========================================
+.nav-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.375rem;
+  background-color: #FFFFFF;
+  border: 1px solid vars.$gray-300;
+  border-radius: vars.$border-radius-lg;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &.nav-group-pill {
+    border-radius: vars.$border-radius-pill;
+    background-color: vars.$color-input-bg;
+    border-color: transparent;
+  }
+
+  &.nav-group-justified,
+  &.nav-justified {
+    display: flex;
+    width: 100%;
+
+    button, a {
+      flex: 1 1 0%;
+      min-width: 0;
+      text-align: center;
+      justify-content: center;
+    }
+  }
+
+  button, a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: vars.$border-radius;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: vars.$gray-600;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: vars.$transition-base;
+
+    &:hover {
+      color: vars.$color-text-main;
+      background-color: vars.$gray-200;
+    }
+
+    &.is-active,
+    &[aria-current="page"],
+    &[aria-current="true"] {
+      background-color: vars.$color-primary;
+      color: #FFFFFF !important;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+
+      .tab-badge {
+        background-color: rgba(255, 255, 255, 0.25) !important;
+        color: #FFFFFF !important;
+      }
+    }
+
+    .tab-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.125rem 0.45rem;
+      border-radius: vars.$border-radius-pill;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      background-color: vars.$color-danger-light;
+      color: vars.$color-danger;
+      transition: vars.$transition-base;
+    }
+  }
+
+  &.nav-group-pill button,
+  &.nav-group-pill a {
+    border-radius: vars.$border-radius-pill;
+  }
+}
+
+// Skeleton Loading Shimmer
+.skeleton-shimmer {
+  border-radius: vars.$border-radius-lg;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.5s infinite;
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// Metronic 8 & Bootstrap Typography Scales (fs-1 to fs-9)
+.fs-1 { font-size: 2.25rem !important; }   // ~36px
+.fs-2 { font-size: 1.75rem !important; }   // ~28px
+.fs-3 { font-size: 1.5rem !important; }    // ~24px
+.fs-4 { font-size: 1.25rem !important; }   // ~20px
+.fs-5 { font-size: 1.125rem !important; }  // ~18px
+.fs-6 { font-size: 1rem !important; }      // ~15-16px
+.fs-7 { font-size: 0.875rem !important; }  // ~14px
+.fs-8 { font-size: 0.775rem !important; }  // ~12.5px
+.fs-9 { font-size: 0.7rem !important; }    // ~11px
+
+// Line Height Scales
+.lh-1 { line-height: 1 !important; }
+.lh-sm { line-height: 1.25 !important; }
+.lh-base { line-height: 1.5 !important; }
+.lh-lg { line-height: 2 !important; }
+
+// Pixel-based font sizes fs-10 through fs-100 (e.g. fs-11, fs-12, fs-13, fs-14, fs-15, fs-16, fs-18, fs-20, fs-24)
+@for $i from 10 through 100 {
+  .fs-#{$i} {
+    font-size: #{$i}px !important;
+  }
+}
+
+// Pixel-based line heights lh-10 through lh-100
+@for $i from 10 through 100 {
+  .lh-#{$i} {
+    line-height: #{$i}px !important;
+  }
+}
+// ==========================================
+// Metronic 8 Nav Line Tabs & Additional Helpers
+// ==========================================
+.ms-auto { margin-left: auto !important; }
+.me-auto { margin-right: auto !important; }
+
+.text-hover-primary:hover {
+  color: vars.$color-primary !important;
+}
+
+.nav.nav-line-tabs {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid vars.$gray-200;
+  gap: 0.5rem;
+
+  .nav-item {
+    margin-bottom: -1px;
+  }
+
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    color: vars.$gray-600;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.15s ease, border-color 0.15s ease;
+
+    &:hover:not(.active) {
+      color: vars.$color-primary;
+    }
+
+    &.active,
+    &[aria-current="page"] {
+      color: vars.$color-primary !important;
+      border-bottom-color: vars.$color-primary !important;
+    }
+  }
+
+  &.nav-line-tabs-2x {
+    border-bottom-width: 2px;
+    .nav-link {
+      border-bottom-width: 2px;
+    }
+  }
+
+  &.border-transparent {
+    border-color: transparent !important;
+  }
 }

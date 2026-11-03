@@ -1,6 +1,87 @@
-$color-input-bg: #F2F3FF;
+// ==========================================
+// Metronic Design Tokens & Variables for nexChat
+// ==========================================
+
+// Core Brand Colors
 $color-primary: #4F46E5;
+$color-primary-hover: #4338CA;
+$color-primary-active: #3730A3;
+$color-primary-light: #EEF2FF;
+$color-primary-inverse: #FFFFFF;
+
+$color-secondary: #6B7280;
+$color-secondary-hover: #4B5563;
+$color-secondary-light: #F3F4F6;
+$color-secondary-inverse: #FFFFFF;
+
+$color-success: #10B981;
+$color-success-hover: #059669;
+$color-success-light: #ECFDF5;
+$color-success-inverse: #FFFFFF;
+
+$color-danger: #EF4444;
+$color-danger-hover: #DC2626;
+$color-danger-light: #FEF2F2;
+$color-danger-inverse: #FFFFFF;
+
+$color-warning: #F59E0B;
+$color-warning-hover: #D97706;
+$color-warning-light: #FFFBEB;
+$color-warning-inverse: #FFFFFF;
+
+$color-info: #8B5CF6;
+$color-info-hover: #7C3AED;
+$color-info-light: #F5F3FF;
+$color-info-inverse: #FFFFFF;
+
+$color-dark: #111827;
+$color-dark-hover: #030712;
+$color-dark-light: #F3F4F6;
+$color-dark-inverse: #FFFFFF;
+
+$color-light: #F9FAFB;
+$color-light-hover: #F3F4F6;
+$color-light-inverse: #374151;
+
+// Text Colors
 $color-text-main: #111827;
 $color-text-secondary: #6B7280;
 $color-text-description: #464554;
+$color-text-muted: #9CA3AF;
 $color-white: #FFFFFF;
+
+// Neutral Gray Scale
+$gray-100: #F9FAFB;
+$gray-200: #F3F4F6;
+$gray-300: #E5E7EB;
+$gray-400: #9CA3AF;
+$gray-500: #6B7280;
+$gray-600: #4B5563;
+$gray-700: #374151;
+$gray-800: #1F2937;
+$gray-900: #111827;
+
+// Form & Input
+$color-input-bg: #F2F3FF;
+$color-input-border: #E5E7EB;
+$color-input-focus-border: #4F46E5;
+$color-input-focus-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+
+// Card & Surfaces
+$card-bg: #FFFFFF;
+$card-border-color: #E5E7EB;
+$card-border-radius: 12px;
+$card-header-min-height: 56px;
+
+// Shadows & Radii
+$border-radius-sm: 6px;
+$border-radius: 8px;
+$border-radius-lg: 12px;
+$border-radius-xl: 16px;
+$border-radius-pill: 9999px;
+
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+$transition-base: all 0.2s ease-in-out;
