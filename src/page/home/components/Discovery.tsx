@@ -118,7 +118,7 @@ export default function Discovery() {
                                         {friend.name.trim().split(/\s+/).slice(-2).map(part => part[0]).join("").toUpperCase()}
                                     </span>
                                 )}
-                                <span className="position-absolute bottom-0 end-0 w-8px h-8px bg-success border border-2 border-white rounded-circle" />
+                                <span className="position-absolute bottom-0 end-0 w-10px h-10px bg-success border border-2 border-white rounded-circle" />
                             </span>
                             <span className="fs-6 fw-medium text-truncate">{friend.name}</span>
                         </Link>

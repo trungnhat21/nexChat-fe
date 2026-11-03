@@ -60,7 +60,7 @@ export default function FriendsPage() {
                         </section>
 
                         {/* Top Navigation Tabs */}
-                        <nav className="nav-group nav-group-pill w-100 mb-4" aria-label="Bộ lọc bạn bè">
+                        <nav className="nav-group nav-group-pill nav-group-justified w-100 mb-4" aria-label="Bộ lọc bạn bè">
                             {friendsTabs.map(tab => {
                                 const count =
                                     tab.id === "requests"

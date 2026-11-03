@@ -218,7 +218,13 @@ export default function Stories() {
     return <>
         <section className="home-stories" aria-label="Tin của bạn bè" ref={scrollRef} onScroll={onStoriesScroll}>
             <button className="home-story home-story-create" onClick={() => { setFormError(""); setCreateOpen(true); }}>
-                <span className="home-story-create-avatar">{user?.avatar && !accountAvatarFailed ? <img src={user.avatar} alt="" onError={() => setAccountAvatarFailed(true)} /> : initials(currentUserName)}</span>
+                <span className="home-story-create-avatar">
+                    {user?.avatar && !accountAvatarFailed ? (
+                        <img src={user.avatar} alt="" onError={() => setAccountAvatarFailed(true)} />
+                    ) : (
+                        <span className="home-story-create-fallback">{initials(currentUserName)}</span>
+                    )}
+                </span>
                 <span className="home-story-add"><DesignIcon id="3352:588" /></span>
                 <strong>Tạo tin</strong>
             </button>

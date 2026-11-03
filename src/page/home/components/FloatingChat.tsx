@@ -223,7 +223,7 @@ export default function FloatingChat({ friend, minimized, onMinimizedChange, onC
                             </span>
                         )}
                     </span>
-                    <span className={`position-absolute bottom-0 end-0 w-8px h-8px rounded-circle border border-2 border-white ${connected ? "bg-success" : "bg-warning"}`} />
+                    <span className={`position-absolute bottom-0 end-0 w-10px h-10px rounded-circle border border-2 border-white ${connected ? "bg-success" : "bg-warning"}`} />
                 </span>
                 <span className="d-flex flex-column min-w-0">
                     <strong className="fs-7 text-gray-800 text-truncate fw-semibold">{friend.name}</strong>

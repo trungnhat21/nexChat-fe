@@ -50,22 +50,20 @@ export const registerAssets = {
     "arrow": arrow_svg,
 } as const;
 
-export const interests = [
-    { id: "technology", label: "Technology" },
-    { id: "photography", label: "Nhiếp ảnh" },
-    { id: "design", label: "Thiết kế" },
-    { id: "music", label: "Âm nhạc" },
-    { id: "food", label: "Ẩm thực" },
-    { id: "sport", label: "Thể thao" },
-    { id: "travel", label: "Du lịch" },
-    { id: "cinema", label: "Điện ảnh" },
-] as const;
-
 export const initialValues: RegisterFormValues = {
-    lastName: "", firstName: "", userName: "", email: "", phone: "",
-    password: "", confirmPassword: "", interests: ["technology", "photography", "design"], consent: false,
+    lastName: "",
+    firstName: "",
+    userName: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+    enable2FA: false,
+    consent: false,
 };
+
 export const handlePattern = /^[a-zA-Z0-9_]{3,30}$/;
+
 export const validationSchema = Yup.object({
     lastName: Yup.string().trim().max(100, "Tối đa 100 ký tự").required("Vui lòng nhập họ và chữ đệm"),
     firstName: Yup.string().trim().max(100, "Tối đa 100 ký tự").required("Vui lòng nhập tên"),
@@ -74,7 +72,8 @@ export const validationSchema = Yup.object({
     phone: Yup.string().test("phone", "Số điện thoại không hợp lệ", value => !value || /^\+?\d{9,15}$/.test(value.replace(/[\s().-]/g, ""))),
     password: Yup.string().min(8, "Mật khẩu cần ít nhất 8 ký tự").max(64, "Mật khẩu tối đa 64 ký tự").required("Vui lòng nhập mật khẩu"),
     confirmPassword: Yup.string().oneOf([Yup.ref("password")], "Mật khẩu xác nhận không khớp").required("Vui lòng xác nhận mật khẩu"),
-    interests: Yup.array().of(Yup.string().oneOf(interests.map(item => item.id))).min(3, "Vui lòng chọn ít nhất 3 sở thích"),
+    enable2FA: Yup.boolean(),
     consent: Yup.boolean().oneOf([true], "Bạn cần đồng ý điều khoản để đăng ký"),
 });
+
 export const strengthLabels = ["Chưa nhập mật khẩu", "Yếu (Weak)", "Trung bình (Medium)", "Mạnh (Strong)"];
