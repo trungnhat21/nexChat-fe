@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { io, type Socket } from "socket.io-client";
 import { getAccessToken } from "../../axios/index";
+import { SOCKET_URL } from "../../config/env";
 import { listNotifications, markAllNotificationsRead, markNotificationRead } from "../../axios/notifications";
 import type { AppNotification } from "../../component/type/notification";
 import { getAcceptedFriends, type AcceptedFriend } from "../../axios/friends";
@@ -97,8 +98,7 @@ export function NotificationCenterProvider({ userId, children }: { userId?: stri
             void refreshUnreadMessages().catch(() => undefined);
             const token = getAccessToken();
             if (!token || disposed) return;
-            const socketUrl = import.meta.env.VITE_API_BASE_URL || window.location.origin;
-            const socket = io(socketUrl, { auth: { token }, withCredentials: true, reconnection: true });
+            const socket = io(SOCKET_URL, { auth: { token }, withCredentials: true, reconnection: true });
             socketRef.current = socket;
             setRealtimeSocket(socket);
             socket.on("connect", () => {

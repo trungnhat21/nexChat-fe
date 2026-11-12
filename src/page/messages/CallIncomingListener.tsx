@@ -5,6 +5,7 @@ import { AudioLines, Clock3, MessageSquareText, PhoneCall, PhoneOff, Video } fro
 import { getCurrentUser } from "../../axios/auth";
 import { acceptCall, declineCall, listActiveCalls, type ActiveCall } from "../../axios/calls";
 import { getAccessToken } from "../../axios/index";
+import { SOCKET_URL } from "../../config/env";
 
 function initials(name: string) {
     return name.trim().split(/\s+/).slice(-2).map(part => part[0]).join("").toUpperCase() || "?";
@@ -73,8 +74,7 @@ export default function CallIncomingListener() {
         if (!userId) return;
         const token = getAccessToken();
         if (!token) return;
-        const socketUrl = import.meta.env.VITE_API_BASE_URL || window.location.origin;
-        const socket = io(socketUrl, { auth: { token }, withCredentials: true, reconnection: true });
+        const socket = io(SOCKET_URL, { auth: { token }, withCredentials: true, reconnection: true });
         const onConnect = () => { void syncIncoming(); };
         const onIncoming = (event: { callId?: string; calleeId?: string }) => {
             if (event?.callId && event.calleeId === userId) void syncIncoming(event.callId);

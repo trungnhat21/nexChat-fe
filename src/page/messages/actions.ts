@@ -5,6 +5,7 @@ import { createDirectConversation, listConversations, listMessages, sendDirectMe
 import { getCurrentUser } from "../../axios/auth";
 import { getAcceptedFriends, type AcceptedFriend } from "../../axios/friends";
 import { getAccessToken } from "../../axios/index";
+import { SOCKET_URL } from "../../config/env";
 import type { CurrentUser } from "../../component/type/auth";
 import type { ChatMessage, DirectConversation } from "../../component/type/message";
 import { io, type Socket } from "socket.io-client";
@@ -310,8 +311,7 @@ export function useMessagesActions() {
 
                 const token = getAccessToken();
                 if (token) {
-                    const socketUrl = import.meta.env.VITE_API_BASE_URL || window.location.origin;
-                    const socket = io(socketUrl, { auth: { token }, withCredentials: true, reconnection: true });
+                    const socket = io(SOCKET_URL, { auth: { token }, withCredentials: true, reconnection: true });
                     socketRef.current = socket;
                     setCallSocket(socket);
                     socket.on("connect", () => {
