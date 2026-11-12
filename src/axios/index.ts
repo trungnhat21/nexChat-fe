@@ -1,7 +1,8 @@
 import axios, { type InternalAxiosRequestConfig } from "axios";
 import type { AuthSession } from "../component/type/auth";
+import { API_BASE_URL } from "../config/env";
 
-const api = axios.create({ baseURL: "/api", withCredentials: true, headers: { "Content-Type": "application/json" } });
+const api = axios.create({ baseURL: API_BASE_URL, withCredentials: true, headers: { "Content-Type": "application/json" } });
 let accessToken: string | null = null;
 let refreshRequest: Promise<string> | null = null;
 
@@ -10,7 +11,7 @@ export function getAccessToken() { return accessToken; }
 function isProtected(url = "") { return !/^\/?auth\/(login|register|refresh|logout)$/.test(url); }
 async function refreshSession(): Promise<string> {
     if (!refreshRequest) {
-        refreshRequest = axios.post<AuthSession>("/api/auth/refresh", undefined, { withCredentials: true })
+        refreshRequest = axios.post<AuthSession>(`${API_BASE_URL}/auth/refresh`, undefined, { withCredentials: true })
             .then(response => {
                 if (!response.data.accessToken) throw new Error("Session expired");
                 accessToken = response.data.accessToken;
