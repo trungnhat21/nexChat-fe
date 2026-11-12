@@ -8,12 +8,8 @@ import {
     EyeOff,
     ArrowRight,
     Heart,
-    Users,
-    Activity,
 } from "lucide-react";
 
-import googleIcon from "../../_metronic/assets/images/google_icon.svg";
-import appleIcon from "../../_metronic/assets/images/apple_icon.svg";
 import preview_login from "../../_metronic/assets/images/preview_login.svg";
 import nexchatLogo from "../../_metronic/assets/images/home/nexchat-logo.svg";
 import avatar1 from "../../_metronic/assets/images/home/avatar-ha-my.png";
@@ -79,25 +75,6 @@ export default function LoginPage() {
                             <span className="login-active-dot" title="Đang diễn ra" />
                         </div>
                     </div>
-
-                    {/* Thống kê cộng đồng nổi bật */}
-                    <div className="login-stats-row">
-                        <div className="login-stat-card">
-                            <div className="login-stat-top">
-                                <Users size={18} className="text-[#ACEDFF]" />
-                                <strong>+500K</strong>
-                            </div>
-                            <span>NGƯỜI DÙNG NĂNG ĐỘNG</span>
-                        </div>
-
-                        <div className="login-stat-card">
-                            <div className="login-stat-top">
-                                <Activity size={18} className="text-[#FFB2B7]" />
-                                <strong>+2M</strong>
-                            </div>
-                            <span>KẾT NỐI MỖI NGÀY</span>
-                        </div>
-                    </div>
                 </section>
 
                 {/* Cột phải: Form Đăng Nhập */}
@@ -110,26 +87,9 @@ export default function LoginPage() {
                     <h1 id="login-title" className="login-form-title">
                         Đăng nhập tài khoản
                     </h1>
-                    <p className="login-form-desc">
+                    <p className="login-form-desc mb-6">
                         Tiếp tục kết nối, tương tác và sẻ chia khoảnh khắc cùng bạn bè.
                     </p>
-
-                    {/* Đăng nhập 1 chạm mạng xã hội */}
-                    <div className="login-social-buttons">
-                        <button type="button" className="btn btn-light-primary btn-flex rounded-pill w-100 py-3 fs-7 fw-semibold">
-                            <img src={googleIcon} alt="Google" className="w-18px h-18px me-2" />
-                            <span>Google</span>
-                        </button>
-                        <button type="button" className="btn btn-light-primary btn-flex rounded-pill w-100 py-3 fs-7 fw-semibold">
-                            <img src={appleIcon} alt="Apple ID" className="w-18px h-18px me-2" />
-                            <span>Apple ID</span>
-                        </button>
-                    </div>
-
-                    {/* Divider */}
-                    <div className="separator separator-content my-6">
-                        <span className="text-gray-500 fs-8 fw-semibold px-3 text-uppercase">HOẶC ĐĂNG NHẬP VỚI EMAIL</span>
-                    </div>
 
                     {/* Form Fields */}
                     <form onSubmit={formik.handleSubmit} noValidate>

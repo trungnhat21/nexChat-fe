@@ -36,9 +36,19 @@ export default function PostCard(props: PostCardProps) {
                     <UserAvatar name={post.author.name} src={post.author.avatar} size={44} />
                 </Link>
                 <div className="d-flex flex-column min-w-0 flex-grow-1">
-                    <Link to={`/profile/${post.author.id}`} className="fs-6 fw-bold text-gray-800 text-hover-primary text-decoration-none text-truncate">
-                        {post.author.name}
-                    </Link>
+                    <div className="d-flex align-items-center flex-wrap gap-1 fs-6">
+                        <Link to={`/profile/${post.author.id}`} className="fw-bold text-gray-800 text-hover-primary text-decoration-none text-truncate">
+                            {post.author.name}
+                        </Link>
+                        {post.group && (
+                            <>
+                                <span className="text-muted fs-7 mx-0.5">▶</span>
+                                <Link to={`/groups/${post.group.id}`} className="fw-bold text-primary text-hover-primary text-decoration-none text-truncate">
+                                    {post.group.name}
+                                </Link>
+                            </>
+                        )}
+                    </div>
                     <small className="fs-8 text-muted">
                         <time dateTime={post.createdAt}>{createdAt.toLocaleString("vi-VN", { dateStyle: "medium", timeStyle: "short" })}</time> · {privacyLabels[post.privacy]}{post.updatedAt !== post.createdAt && " · Đã chỉnh sửa"}
                     </small>

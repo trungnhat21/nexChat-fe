@@ -131,7 +131,7 @@ export const navigationLinks = [
         { label: "Thông báo", icon: "3352:514", badge: "3" },
         { label: "Tin nhắn", icon: "3352:522", badge: "" },
         { label: "Đã lưu", icon: "3352:530", badge: "" },
-        { label: "Nhóm của bạn", icon: "3352:536", badge: "5" },
+        { label: "Nhóm của bạn", icon: "3352:536", badge: "" },
         { label: "Cài đặt cá nhân", icon: "3352:544", badge: "" },
     ] as const;
 

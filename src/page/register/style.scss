@@ -171,10 +171,65 @@
 .register-field-heading { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .register-input-shell { display: flex; align-items: center; padding: 0 16px; height: 42px; border-radius: 12px; background: var(--register-soft); }
 .register-input-shell.is-plain { background: white; border: 1px solid #e2e8f0; }
-.register-input-shell:focus-within { box-shadow: 0 0 0 2px #4648d440; }
+.register-input-shell:focus-within { box-shadow: none !important; outline: none !important; }
 .register-input-shell.is-invalid { box-shadow: 0 0 0 1px #bb2345; }
-.register-input-control { flex: 1; min-width: 0; }
-.register-input { width: 100%; min-width: 0; height: 42px; border: 0; padding: 0; background: transparent; color: var(--register-text); font-size: 14px !important; outline: none !important; }
+.register-input-control {
+    flex: 1;
+    min-width: 0;
+
+    .form-control,
+    input {
+        width: 100% !important;
+        min-width: 0 !important;
+        height: 40px !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+        color: var(--register-text) !important;
+        font-size: 14px !important;
+        outline: none !important;
+        box-shadow: none !important;
+
+        &:focus,
+        &:focus-visible,
+        &:active {
+            border: 0 !important;
+            border-color: transparent !important;
+            outline: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+
+        &::placeholder {
+            color: #76758699;
+            opacity: 1;
+        }
+    }
+}
+.register-input {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 40px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    color: var(--register-text) !important;
+    font-size: 14px !important;
+    outline: none !important;
+    box-shadow: none !important;
+
+    &:focus,
+    &:focus-visible,
+    &:active {
+        border: 0 !important;
+        border-color: transparent !important;
+        outline: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+    }
+}
 .register-input::placeholder { color: #76758699; opacity: 1; }
 .register-handle-prefix { padding-right: 4px; font-weight: 600; color: #767586; }
 .register-handle-status { display: flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 500; background: #acedff; color: #001f26; }

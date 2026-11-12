@@ -185,7 +185,7 @@ export default function RegisterPage() {
                                         <div className={`register-input-shell${handleError ? " is-invalid border border-danger" : ""}`}>
                                             <span className="register-handle-prefix text-gray-500 fw-semibold">@</span>
                                             <div className="register-input-control">
-                                                <Input compact id="register-userName" {...formik.getFieldProps("userName")} placeholder="an_nguyen24" autoComplete="username" inputClassName="register-input" aria-required="true" aria-invalid={!!handleError} aria-describedby={handleError ? "register-userName-error" : undefined} />
+                                                <Input compact variant="transparent" id="register-userName" {...formik.getFieldProps("userName")} placeholder="an_nguyen24" autoComplete="username" inputClassName="register-input" aria-required="true" aria-invalid={!!handleError} aria-describedby={handleError ? "register-userName-error" : undefined} />
                                             </div>
                                         </div>
                                         {handleError && <p className="text-danger fs-8 mt-1 mb-0" id="register-userName-error">{handleError}</p>}

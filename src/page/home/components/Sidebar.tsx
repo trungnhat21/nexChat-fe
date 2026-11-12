@@ -5,7 +5,7 @@ import { Link, useLocation } from "react-router";
 import { useHome } from "../actions";
 import { useNotificationCenter } from "../notification-center-context";
 import SearchFilterCard, { type FeedFilters } from "./SearchFilterCard";
-import { getTopGroups, type Group } from "../../../axios/groups";
+import { getTopGroups, getGroupNotificationCount, type Group } from "../../../axios/groups";
 import {
     Home,
     Users,
@@ -24,6 +24,7 @@ export default function Sidebar({ filters, onFiltersChange }: { filters?: FeedFi
     // Top groups for dynamic shortcuts
     const [topGroups, setTopGroups] = useState<Group[]>([]);
     const [loadingTopGroups, setLoadingTopGroups] = useState(true);
+    const [groupNotificationCount, setGroupNotificationCount] = useState<number>(0);
 
     useEffect(() => {
         let isMounted = true;
@@ -37,6 +38,13 @@ export default function Sidebar({ filters, onFiltersChange }: { filters?: FeedFi
             .finally(() => {
                 if (isMounted) setLoadingTopGroups(false);
             });
+
+        getGroupNotificationCount()
+            .then((count) => {
+                if (isMounted) setGroupNotificationCount(count);
+            })
+            .catch(() => {});
+
         return () => {
             isMounted = false;
         };
@@ -131,8 +139,14 @@ export default function Sidebar({ filters, onFiltersChange }: { filters?: FeedFi
                                 unreadCount > 0 && <span className="badge badge-light-danger badge-sm ms-auto">{unreadCount > 99 ? "99+" : unreadCount}</span>
                             ) : isMessages ? (
                                 unreadMessageCount > 0 && <span className="badge badge-light-danger badge-sm ms-auto">{unreadMessageCount > 99 ? "99+" : unreadMessageCount}</span>
+                            ) : isGroups ? (
+                                groupNotificationCount > 0 && (
+                                    <span className="badge badge-light-danger badge-sm ms-auto">
+                                        {groupNotificationCount > 99 ? "99+" : groupNotificationCount}
+                                    </span>
+                                )
                             ) : item.badge ? (
-                                <span className={`badge badge-sm ms-auto ${item.badge === "5" ? "badge-light-secondary" : "badge-light-primary"}`}>{item.badge}</span>
+                                <span className="badge badge-sm ms-auto badge-light-primary">{item.badge}</span>
                             ) : null}
                         </>
                     );

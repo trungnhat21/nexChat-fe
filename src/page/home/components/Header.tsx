@@ -77,7 +77,12 @@ export default function Header() {
                 <div className={`home-search position-relative ${searchFocused ? "is-suggestions-open" : ""}`} ref={searchRef}>
                     <DesignIcon id="3352:1027" />
                     <Input
-                        name="feedSearch"
+                        name="search_query"
+                        autoComplete="off"
+                        autoCorrect="off"
+                        autoCapitalize="off"
+                        spellCheck={false}
+                        aria-autocomplete="none"
                         aria-label="Tìm kiếm bạn bè, bài viết, hashtag..."
                         maxLength={200}
                         placeholder="Tìm kiếm bạn bè, bài viết, hashtag..."
@@ -155,7 +160,7 @@ export default function Header() {
                     {isOpen && (
                         <section className="card shadow-lg border-0 position-absolute end-0 top-100 mt-2 z-3 overflow-hidden bg-white" style={{ width: "360px", maxWidth: "calc(100vw - 32px)" }} role="dialog" aria-label="Thông báo">
                             <div className="card-header py-3 px-4 min-h-auto d-flex align-items-center justify-content-between border-bottom border-gray-100">
-                                <h2 className="card-title fs-6 fw-bold text-gray-800 m-0">Thông báo</h2>
+                                <h2 className="card-title fs-6 fw-semibold text-gray-800 m-0">Thông báo</h2>
                                 <span className="fs-9 text-muted">{unreadCount > 0 ? `${unreadCount} chưa đọc` : "Mới nhất"}</span>
                             </div>
                             <div className="card-body p-2 d-flex flex-column gap-1 max-h-400px overflow-y-auto">
@@ -178,7 +183,7 @@ export default function Header() {
                                                 </span>
                                             )}
                                             <span className="d-flex flex-column min-w-0 flex-grow-1">
-                                                <strong className="fs-7 text-gray-800 text-truncate">{actorName}</strong>
+                                                <span className="fs-7 fw-semibold text-gray-800 text-truncate">{actorName}</span>
                                                 <span className="fs-8 text-gray-600 text-truncate-2">{notificationText(notification.type, actorName)}</span>
                                                 <small className="fs-9 text-muted mt-1">{new Date(notification.createdAt).toLocaleString("vi-VN", { dateStyle: "short", timeStyle: "short" })}</small>
                                             </span>
