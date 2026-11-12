@@ -226,3 +226,15 @@ export async function getTopGroups(limit = 3): Promise<Group[]> {
         return unique.slice(0, limit);
     }
 }
+
+/**
+ * Lấy số lượng thông báo / việc cần duyệt từ các nhóm mà user quản lý
+ */
+export async function getGroupNotificationCount(): Promise<number> {
+    try {
+        const response = await api.get<{ success: boolean; count: number }>("/groups/notification-count");
+        return response.data.count ?? 0;
+    } catch {
+        return 0;
+    }
+}

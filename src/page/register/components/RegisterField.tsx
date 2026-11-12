@@ -25,6 +25,7 @@ export default function RegisterField({
                 <div className="register-input-control">
                     <Input
                         compact
+                        variant="transparent"
                         id={`register-${name}`}
                         {...formik.getFieldProps(name)}
                         type={onTogglePassword ? (passwordVisible ? "text" : "password") : type}

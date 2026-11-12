@@ -12,7 +12,9 @@
 
 /* Page Layout */
 .nexchat-home {
-    min-height: 100vh;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
     background-color: #f8fafc;
     color: #1e293b;
     font-size: 14px;
@@ -39,13 +41,12 @@
 
 /* Header */
 .home-header {
-    position: sticky;
-    top: 0;
+    height: 64px;
+    flex-shrink: 0;
     z-index: 999;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--home-border);
-    height: 64px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -194,17 +195,20 @@
     max-width: 1400px;
     width: 100%;
     margin: 0 auto;
-    padding: 24px 16px;
-    align-items: start;
+    padding: 16px 16px 0;
+    align-items: stretch;
+    min-height: 0;
+    overflow: hidden;
     flex: 1;
 }
 
 .home-left,
 .home-right {
-    position: sticky;
-    top: 88px;
-    max-height: calc(100vh - 104px);
+    height: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    padding-bottom: 24px;
     scrollbar-width: thin;
     scrollbar-color: #cbd5e1 transparent;
 
@@ -220,6 +224,23 @@
 
 .home-feed {
     min-width: 0;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    padding-bottom: 24px;
+    padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+    }
 }
 
 /* Shortcuts Widget */
@@ -468,7 +489,7 @@
         h2 {
             font-size: 19px;
             line-height: 26px;
-            font-weight: 700;
+            font-weight: 600;
             letter-spacing: -.2px;
             color: var(--home-text, #131b2e);
             margin: 0;
@@ -529,7 +550,7 @@
             border-radius: 50%;
             background: #e1e0ff;
             color: #07006c;
-            font-weight: 700;
+            font-weight: 600;
             font-size: 15px;
 
             img {
@@ -550,7 +571,7 @@
                 display: block;
                 font-size: 14.5px;
                 line-height: 20px;
-                font-weight: 700;
+                font-weight: 600;
                 color: var(--home-text, #131b2e);
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -589,7 +610,7 @@
             border-radius: 9999px;
             font-size: 13px;
             line-height: 18px;
-            font-weight: 700;
+            font-weight: 600;
             border: none;
             cursor: pointer;
             transition: all 0.15s ease;
@@ -1136,7 +1157,7 @@
 /* FloatingChat Dock */
 .floating-chat {
     position: fixed;
-    bottom: 20px;
+    bottom: 56px;
     right: 24px;
     z-index: 1000;
     width: 350px;
@@ -1379,7 +1400,7 @@
 /* Toast */
 .home-toast {
     position: fixed;
-    bottom: 24px;
+    bottom: 56px;
     left: 24px;
     z-index: 2000;
     pointer-events: none;
@@ -1437,17 +1458,22 @@
 
 /* Footer */
 .home-footer {
+    height: 42px;
+    flex-shrink: 0;
+    z-index: 800;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 24px;
-    padding: 20px 32px;
-    background: white;
+    padding: 10px 32px;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(12px);
     border-top: 1px solid var(--home-border, #e2e8f0);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03);
     color: var(--home-muted, #767586);
     font-size: 11px;
     line-height: 14px;
-    margin-top: 40px;
+    margin-top: 0;
 
     span {
         font-size: 11px;

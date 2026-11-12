@@ -42,7 +42,7 @@ export default function Discovery() {
             {/* 2. Gợi ý kết bạn */}
             <section className="card shadow-sm mb-4 border-0 p-4 home-suggestions">
                 <div className="home-widget-heading">
-                    <h2>Gợi ý kết bạn</h2>
+                    <h2 className="fw-semibold" style={{ fontWeight: 600 }}>Gợi ý kết bạn</h2>
                     <button type="button" onClick={refreshFriends}>
                         Làm mới
                     </button>
@@ -59,7 +59,7 @@ export default function Discovery() {
                                     )}
                                 </span>
                                 <span className="home-friend-info">
-                                    <strong>{friend.name}</strong>
+                                    <span className="fw-semibold text-gray-800" style={{ fontWeight: 600 }}>{friend.name}</span>
                                     <small>
                                         {(friend as any).mutualFriends || (friend as any).mutualCount
                                             ? `${(friend as any).mutualFriends || (friend as any).mutualCount} bạn chung`
@@ -77,7 +77,8 @@ export default function Discovery() {
                                 {friend.friendStatus !== "blocked" && (
                                     <button
                                         type="button"
-                                        className="home-follow"
+                                        className="home-follow fw-semibold"
+                                        style={{ fontWeight: 600 }}
                                         aria-pressed={friend.following}
                                         disabled={busy.includes(friend.id)}
                                         onClick={() => void toggleFollow(friend)}

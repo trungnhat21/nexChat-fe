@@ -6,6 +6,7 @@ export type FeedPost = {
     liked: boolean; likes: number; saved: boolean; comments: number; media: PostMedia[];
     isRepost: boolean; original: FeedPost | null;
     groupId?: string | null;
+    group?: { id: string; name: string; avatar?: string | null; privacy?: string } | null;
     approvalStatus?: "PUBLISHED" | "PENDING_APPROVAL" | "REJECTED";
 };
 export type PostLikeResult = { success: boolean; id: string; liked: boolean; likes: number };
