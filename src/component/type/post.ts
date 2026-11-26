@@ -13,7 +13,7 @@ export type PostLikeResult = { success: boolean; id: string; liked: boolean; lik
 export type LikePostAction = (id: string, liked: boolean) => Promise<void>;
 export type PostDraft = { content: string; privacy: PostPrivacy; files: File[]; keepMediaIds: string[]; groupId?: string };
 export type ProfileAuthor = { id: string; name: string; handle: string | null; avatar: string | null; cover?: string | null; bio: string | null; createdAt: string };
-export type PostPage = { success: boolean; posts: FeedPost[]; nextCursor: string | null; total?: number; author?: ProfileAuthor };
+export type PostPage = { success: boolean; posts: FeedPost[]; nextCursor: string | null; feedSession?: string; total?: number; author?: ProfileAuthor };
 export type PostResult = { success: boolean; post: FeedPost };
 export type NewPostMedia = { id: string; file: File; url: string };
 export type UploadProgress = (percent: number) => void;
