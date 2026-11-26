@@ -11,6 +11,8 @@ export interface ListPostsParams {
     sort?: PostSort;
     period?: PostPeriod;
     mediaOnly?: boolean;
+    randomize?: boolean;
+    feedSession?: string;
 }
 
 export async function listPosts(
@@ -28,6 +30,8 @@ export async function listPosts(
             sort: searchOrParams.sort || undefined,
             period: searchOrParams.period && searchOrParams.period !== "all" ? searchOrParams.period : undefined,
             mediaOnly: searchOrParams.mediaOnly ? true : undefined,
+            randomize: searchOrParams.randomize ? true : undefined,
+            feedSession: searchOrParams.feedSession || undefined,
         };
     } else {
         params = {

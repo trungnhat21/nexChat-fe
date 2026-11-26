@@ -11,7 +11,7 @@ import type { PostCardProps, PostMedia } from "../../../component/type/post";
 
 function Media({ media, onReload }: { media: PostMedia; onReload: () => void }) {
     const [failed, setFailed] = useState(false);
-    if (failed) return <div className="home-media-error"><p>Không tải được {media.name}. Liên kết có thể đã hết hạn.</p><button onClick={onReload}>Tải lại bảng tin</button></div>;
+    if (failed) return <div className="home-media-error"><p className="text-danger">Không tải được {media.name}. Liên kết có thể đã hết hạn.</p><button className="text-danger" onClick={onReload}>Tải lại bảng tin</button></div>;
     return media.type.startsWith("video/") ? <video src={media.url} controls preload="metadata" onError={() => setFailed(true)} aria-label={media.name} /> : <a href={media.url} target="_blank" rel="noreferrer"><img src={media.url} alt={media.name} loading="lazy" onError={() => setFailed(true)} /></a>;
 }
 export default function PostCard(props: PostCardProps) {
