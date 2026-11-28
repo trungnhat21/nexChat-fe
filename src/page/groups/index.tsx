@@ -238,7 +238,7 @@ export default function GroupsPage() {
                                         type="text"
                                         autoComplete="off"
                                         spellCheck={false}
-                                        className="form-control form-control-solid ps-9 fs-7"
+                                        className="form-control form-control-solid ps-10 fs-7"
                                         placeholder="Tìm kiếm nhóm theo tên hoặc nội dung giới thiệu..."
                                         value={searchQuery}
                                         onChange={e => setSearchQuery(e.target.value)}
