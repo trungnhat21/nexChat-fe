@@ -1,10 +1,11 @@
-import { Link, useParams, useSearchParams } from "react-router";
+import { Link, useLocation, useParams, useSearchParams } from "react-router";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import Discovery from "./components/Discovery";
 import Stories from "./components/Stories";
 import Composer from "./components/Composer";
 import PostCard from "./components/PostCard";
+import VideoCenter from "./components/VideoCenter";
 import { useHomeFeedActions, useHomeLayoutActions } from "./actions";
 import { HomeContext } from "./config";
 import type { FeedFilters } from "./components/SearchFilterCard";
@@ -12,6 +13,7 @@ import "./style.scss";
 
 export default function HomePage() {
     const { postId } = useParams<{ postId: string }>();
+    const { pathname } = useLocation();
     const [searchParams, setSearchParams] = useSearchParams();
 
     const urlSort = searchParams.get("sort");
@@ -55,16 +57,21 @@ export default function HomePage() {
     };
 
     const { search, setSearch, notice, setNotice, panel, setPanel, dialogRef, user } = useHomeLayoutActions();
+    const isVideoPage = pathname === "/videos" || panel === "Video";
     const { changePostState, likePost, visiblePosts, addPost, editPost, removePost, loading, loadingMore, error, nextCursor, loadMore, reload } = useHomeFeedActions("", false, filters);
 
     return (
         <HomeContext.Provider value={{ user, search, setSearch, announce: setNotice, openPanel: setPanel }}>
-            <div className="nexchat-home">
+            <div className="nexchat-home d-flex flex-column">
                 <a className="home-skip-link" href="#home-feed">Chuyển đến bảng tin</a>
                 <Header />
-                <main className="home-grid">
-                    <Sidebar filters={filters} onFiltersChange={handleFiltersChange} />
+                <main className="home-grid d-grid gap-6 align-items-stretch">
+                    <Sidebar
+                        filters={isVideoPage ? undefined : filters}
+                        onFiltersChange={isVideoPage ? undefined : handleFiltersChange}
+                    />
                     <div className="home-feed" id="home-feed" tabIndex={-1}>
+                        {isVideoPage ? <VideoCenter /> : <>
                         {!postId && (
                             <>
                                 <Stories />
@@ -116,6 +123,7 @@ export default function HomePage() {
                                 <p className="text-muted fs-6 mb-0">Hãy chia sẻ bài viết đầu tiên của bạn.</p>
                             </div>
                         )}
+                        </>}
                     </div>
                     <Discovery />
                 </main>
@@ -130,12 +138,12 @@ export default function HomePage() {
                     </nav>
                 </footer>
                 <div className="home-toast" role="status" aria-live="polite">{notice}</div>
-                <dialog
+                {panel !== "Video" && <dialog
                     ref={dialogRef}
                     className="home-dialog"
                     aria-labelledby="home-dialog-title"
-                    onCancel={() => setPanel("")}
-                    onClose={() => setPanel("")}
+                    onCancel={() => { if (panel !== "Video") setPanel(""); }}
+                    onClose={() => { if (panel !== "Video") setPanel(""); }}
                     onClick={event => { if (event.target === event.currentTarget) setPanel(""); }}
                 >
                     <div className="home-dialog-body">
@@ -152,7 +160,7 @@ export default function HomePage() {
                             </button>
                         </div>
                     </div>
-                </dialog>
+                </dialog>}
             </div>
         </HomeContext.Provider>
     );

@@ -330,9 +330,9 @@ export default function GroupDetailPage() {
 
     if (loadingGroup || !group) {
         return (
-            <div className="nexchat-home group-detail-page">
+            <div className="nexchat-home group-detail-page d-flex flex-column">
                 <Header />
-                <main className="home-grid">
+                <main className="home-grid d-grid gap-6 align-items-stretch">
                     <Sidebar />
                     <div className="home-feed p-8 text-center text-gray-500">
                         Đang tải thông tin nhóm...
@@ -354,9 +354,9 @@ export default function GroupDetailPage() {
                 openPanel: setPanel,
             }}
         >
-            <div className="nexchat-home group-detail-page">
+            <div className="nexchat-home group-detail-page d-flex flex-column">
                 <Header />
-                <main className="home-grid">
+                <main className="home-grid d-grid gap-6 align-items-stretch">
                     <Sidebar />
 
                     {/* Main content container */}

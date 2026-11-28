@@ -46,27 +46,27 @@ export default function Composer(props: ComposerProps) {
                 </div>
 
                 {!!(retained.length || files.length) && (
-                    <div className="home-media-previews mt-3">
+                    <div className="home-media-previews d-grid gap-2.5 mt-3">
                         {retained.map(media => (
-                            <div className="home-media-preview" key={media.id}>
+                            <div className="home-media-preview position-relative rounded-2 overflow-hidden" key={media.id}>
                                 {media.type.startsWith("video/") ? (
-                                    <video src={media.url} controls preload="metadata" />
+                                    <video className="d-block w-100 object-cover" src={media.url} controls preload="metadata" />
                                 ) : (
-                                    <img src={media.url} alt={media.name} />
+                                    <img className="d-block w-100 object-cover" src={media.url} alt={media.name} />
                                 )}
-                                <button type="button" aria-label={`Bỏ ${media.name}`} onClick={() => setRetained(previous => previous.filter(item => item.id !== media.id))}>✕</button>
-                                <span>{media.name}</span>
+                                <button className="position-absolute rounded-circle border-0 d-flex align-items-center justify-content-center cursor-pointer fs-11 text-white" type="button" aria-label={`Bỏ ${media.name}`} onClick={() => setRetained(previous => previous.filter(item => item.id !== media.id))}>✕</button>
+                                <span className="d-block fs-10 text-truncate">{media.name}</span>
                             </div>
                         ))}
                         {files.map(media => (
-                            <div className="home-media-preview" key={media.id}>
+                            <div className="home-media-preview position-relative rounded-2 overflow-hidden" key={media.id}>
                                 {media.file.type.startsWith("video/") ? (
-                                    <video src={media.url} controls preload="metadata" />
+                                    <video className="d-block w-100 object-cover" src={media.url} controls preload="metadata" />
                                 ) : (
-                                    <img src={media.url} alt={media.file.name} />
+                                    <img className="d-block w-100 object-cover" src={media.url} alt={media.file.name} />
                                 )}
-                                <button type="button" aria-label={`Bỏ ${media.file.name}`} onClick={() => removeFile(media.id)}>✕</button>
-                                <span>{media.file.name}</span>
+                                <button className="position-absolute rounded-circle border-0 d-flex align-items-center justify-content-center cursor-pointer fs-11 text-white" type="button" aria-label={`Bỏ ${media.file.name}`} onClick={() => removeFile(media.id)}>✕</button>
+                                <span className="d-block fs-10 text-truncate">{media.file.name}</span>
                             </div>
                         ))}
                     </div>

@@ -74,7 +74,7 @@ export default function Sidebar({ filters, onFiltersChange }: { filters?: FeedFi
     }
 
     return (
-        <aside className="home-left" aria-label="Hồ sơ và lối tắt">
+        <aside className="home-left h-100 overflow-y-auto" aria-label="Hồ sơ và lối tắt">
             {/* 1. Hồ sơ người dùng tóm tắt */}
             <section className="card shadow-sm mb-4 border-0 p-3">
                 <Link className="d-flex align-items-center gap-3 text-gray-800 text-decoration-none" to="/profile">

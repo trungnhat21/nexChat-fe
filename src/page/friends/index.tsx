@@ -47,9 +47,9 @@ export default function FriendsPage() {
                 openPanel: setNotice,
             }}
         >
-            <div className="nexchat-home friends-page">
+            <div className="nexchat-home friends-page d-flex flex-column">
                 <Header />
-                <main className="home-grid">
+                <main className="home-grid d-grid gap-6 align-items-stretch">
                     <Sidebar />
 
                     <div className="home-feed" id="home-feed" tabIndex={-1}>

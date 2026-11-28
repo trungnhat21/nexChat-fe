@@ -1,7 +1,9 @@
 import PostInteractions from "../../../component/common/post-interactions";
 import OriginalPost from "../../../component/common/post-interactions/OriginalPost";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
+import { X, ZoomIn, ZoomOut } from "lucide-react";
+import { createPortal } from "react-dom";
 import { DesignIcon } from "./DesignAsset";
 import UserAvatar from "./UserAvatar";
 import Composer from "./Composer";
@@ -9,10 +11,71 @@ import { privacyLabels } from "../config";
 import { useHome, usePostActions } from "../actions";
 import type { PostCardProps, PostMedia } from "../../../component/type/post";
 
-function Media({ media, onReload }: { media: PostMedia; onReload: () => void }) {
+function Media({ media, onReload, single }: { media: PostMedia; onReload: () => void; single: boolean }) {
     const [failed, setFailed] = useState(false);
+    const [viewerOpen, setViewerOpen] = useState(false);
+    const [zoom, setZoom] = useState(1);
+
+    useEffect(() => {
+        if (!viewerOpen) return;
+        const closeOnEscape = (event: KeyboardEvent) => {
+            if (event.key === "Escape") setViewerOpen(false);
+        };
+        document.addEventListener("keydown", closeOnEscape);
+        return () => document.removeEventListener("keydown", closeOnEscape);
+    }, [viewerOpen]);
+
     if (failed) return <div className="home-media-error"><p className="text-danger">Không tải được {media.name}. Liên kết có thể đã hết hạn.</p><button className="text-danger" onClick={onReload}>Tải lại bảng tin</button></div>;
-    return media.type.startsWith("video/") ? <video src={media.url} controls preload="metadata" onError={() => setFailed(true)} aria-label={media.name} /> : <a href={media.url} target="_blank" rel="noreferrer"><img src={media.url} alt={media.name} loading="lazy" onError={() => setFailed(true)} /></a>;
+    const mediaClass = "d-block w-100 rounded-2 object-cover";
+    if (media.type.startsWith("video/")) {
+        return <video className={mediaClass} src={media.url} controls preload="metadata" onError={() => setFailed(true)} aria-label={media.name} />;
+    }
+
+    return (
+        <>
+            <button
+                type="button"
+                className={`${single ? "d-flex align-items-center justify-content-center" : "d-block"} w-100 p-0 border-0 bg-transparent overflow-hidden rounded-2 cursor-pointer`}
+                aria-label={`Mở ảnh ${media.name}`}
+                onClick={() => { setZoom(1); setViewerOpen(true); }}
+            >
+                <img className={mediaClass} src={media.url} alt={media.name} loading="lazy" onError={() => setFailed(true)} />
+            </button>
+            {viewerOpen && createPortal(
+                <div className="modal-backdrop" role="presentation" onClick={event => { if (event.target === event.currentTarget) setViewerOpen(false); }}>
+                    <section
+                        className="modal-dialog modal-xl d-flex flex-column bg-dark overflow-hidden"
+                        style={{ width: "min(92vw, 1200px)", maxWidth: "none", height: "min(92dvh, 900px)" }}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label={`Ảnh ${media.name}`}
+                        onClick={event => event.stopPropagation()}
+                    >
+                        <div className="d-flex align-items-center justify-content-end gap-2 p-3 flex-shrink-0">
+                            <button type="button" className="btn btn-sm btn-icon btn-light" aria-label="Thu nhỏ ảnh" title="Thu nhỏ" disabled={zoom <= 1} onClick={() => setZoom(current => Math.max(1, current - 0.25))}>
+                                <ZoomOut size={18} />
+                            </button>
+                            <button type="button" className="btn btn-sm btn-icon btn-light" aria-label="Phóng to ảnh" title="Phóng to" disabled={zoom >= 4} onClick={() => setZoom(current => Math.min(4, current + 0.25))}>
+                                <ZoomIn size={18} />
+                            </button>
+                            <button type="button" className="btn btn-sm btn-icon btn-light" aria-label="Đóng ảnh" title="Đóng" onClick={() => setViewerOpen(false)}>
+                                <X size={18} />
+                            </button>
+                        </div>
+                        <div className="d-flex flex-grow-1 align-items-center justify-content-center overflow-hidden min-h-0">
+                            <img
+                                src={media.url}
+                                alt={media.name}
+                                className="object-contain"
+                                style={{ maxWidth: "100%", maxHeight: "100%", transform: `scale(${zoom})`, transition: "transform 150ms ease" }}
+                            />
+                        </div>
+                    </section>
+                </div>,
+                document.body,
+            )}
+        </>
+    );
 }
 export default function PostCard(props: PostCardProps) {
     const { post, onReload, onStateChange } = props;
@@ -77,8 +140,8 @@ export default function PostCard(props: PostCardProps) {
             )}
 
             {!!post.media.length && (
-                <div className={`home-post-media ${post.media.length === 1 ? "has-one" : ""}`}>
-                    {post.media.map(media => <Media key={media.id + media.url} media={media} onReload={onReload} />)}
+                <div className={`home-post-media d-grid gap-2 mt-3 rounded-3 overflow-hidden ${post.media.length === 1 ? "has-one" : ""}`}>
+                    {post.media.map(media => <Media key={media.id + media.url} media={media} onReload={onReload} single={post.media.length === 1} />)}
                 </div>
             )}
 

@@ -11,6 +11,7 @@ export interface ListPostsParams {
     sort?: PostSort;
     period?: PostPeriod;
     mediaOnly?: boolean;
+    postType?: "post" | "video";
     randomize?: boolean;
     feedSession?: string;
 }
@@ -30,6 +31,7 @@ export async function listPosts(
             sort: searchOrParams.sort || undefined,
             period: searchOrParams.period && searchOrParams.period !== "all" ? searchOrParams.period : undefined,
             mediaOnly: searchOrParams.mediaOnly ? true : undefined,
+            postType: searchOrParams.postType || undefined,
             randomize: searchOrParams.randomize ? true : undefined,
             feedSession: searchOrParams.feedSession || undefined,
         };
@@ -50,6 +52,7 @@ function postForm(draft: PostDraft) {
     data.append("privacy", draft.privacy);
     data.append("keepMediaIds", JSON.stringify(draft.keepMediaIds));
     if (draft.groupId) data.append("groupId", draft.groupId);
+    if (draft.postType) data.append("postType", draft.postType);
     draft.files.forEach(file => data.append("media", file));
     return data;
 }
