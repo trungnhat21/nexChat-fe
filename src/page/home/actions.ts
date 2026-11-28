@@ -88,7 +88,7 @@ export function useHomeFeedActions(search: string, savedOnly = false, filters?: 
         const controller = new AbortController();
         const timer = window.setTimeout(() => {
             setLoading(true); setError(""); setPosts([]); setNextCursor(null); setFeedSession(null);
-            const params: ListPostsParams = { search: query, sort: sortParam, period: periodParam, mediaOnly: mediaOnlyParam, randomize: randomizeFeed };
+            const params: ListPostsParams = { search: query, sort: sortParam, period: periodParam, mediaOnly: mediaOnlyParam, randomize: randomizeFeed, ...(!savedOnly && !postId ? { postType: "post" as const } : {}) };
             void (postId ? getPost(postId, controller.signal).then(result => ({ posts: [result.post], nextCursor: null })) : savedOnly ? listSavedPosts(params, undefined, controller.signal) : listPosts(params, undefined, controller.signal)).then(result => {
                 if (active) { setPosts(result.posts); setNextCursor(result.nextCursor); setFeedSession("feedSession" in result ? result.feedSession ?? null : null); }
             }).catch(error => { if (active) setError(postError(error)); })
@@ -102,7 +102,7 @@ export function useHomeFeedActions(search: string, savedOnly = false, filters?: 
         const version = generation.current;
         setLoadingMore(true); setError("");
         try {
-            const params: ListPostsParams = { search: query, cursor: nextCursor, sort: sortParam, period: periodParam, mediaOnly: mediaOnlyParam, randomize: randomizeFeed, ...(randomizeFeed && feedSession ? { feedSession } : {}) };
+            const params: ListPostsParams = { search: query, cursor: nextCursor, sort: sortParam, period: periodParam, mediaOnly: mediaOnlyParam, randomize: randomizeFeed, ...(!savedOnly && !postId ? { postType: "post" as const } : {}), ...(randomizeFeed && feedSession ? { feedSession } : {}) };
             const result = await (savedOnly ? listSavedPosts(params) : listPosts(params));
             if (version === generation.current) {
                 setPosts(previous => [...previous, ...result.posts.filter(post => !previous.some(existing => existing.id === post.id))]);

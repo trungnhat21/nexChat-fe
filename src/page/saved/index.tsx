@@ -14,9 +14,9 @@ export default function SavedPage() {
 
     return (
         <HomeContext.Provider value={{ user, search, setSearch, announce: setNotice, openPanel: setNotice }}>
-            <div className="nexchat-home nexchat-saved">
+            <div className="nexchat-home nexchat-saved d-flex flex-column">
                 <Header />
-                <main className="home-grid">
+                <main className="home-grid d-grid gap-6 align-items-stretch">
                     <Sidebar />
                     <div className="home-feed" id="home-feed">
                         <section className="card p-6 mb-4">

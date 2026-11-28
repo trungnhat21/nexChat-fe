@@ -12,8 +12,7 @@ function CommentItem({ comment, state }: { comment: PostComment; state: Interact
         <article className="py-2.5" key={comment.id}>
             <div className="d-flex align-items-start gap-2.5">
                 <Link
-                    className="rounded-circle overflow-hidden flex-shrink-0 cursor-pointer d-grid place-items-center bg-gray-200 fw-bold fs-13 text-gray-700 text-decoration-none"
-                    style={{ width: 36, height: 36 }}
+                    className="rounded-circle overflow-hidden flex-shrink-0 cursor-pointer d-grid place-items-center bg-gray-200 fw-bold fs-13 text-gray-700 text-decoration-none w-36px h-36px"
                     to={`/profile/${comment.author.id}`}
                     aria-label={`Trang cá nhân ${comment.author.name}`}
                 >
@@ -158,9 +157,9 @@ export default function CommentsDialog({ post, state, onClose }: Props) {
                     </button>
                 </header>
 
-                <div className="modal-body p-0 d-flex flex-column" style={{ overflowY: "auto" }}>
+                <div className="modal-body p-0 d-flex flex-column overflow-y-auto">
                     {media && (
-                        <div className="bg-black text-center" style={{ maxHeight: "35vh", overflow: "hidden" }}>
+                        <div className="bg-black text-center overflow-hidden" style={{ maxHeight: "35vh" }}>
                             {media.type.startsWith("video/") ? (
                                 <video src={media.url} controls preload="metadata" className="w-100 object-contain" style={{ maxHeight: "35vh" }} />
                             ) : (

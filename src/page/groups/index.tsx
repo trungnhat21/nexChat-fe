@@ -1,5 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import {
     Users,
     Lock,
@@ -15,17 +14,10 @@ import {
 import Header from "../home/components/Header";
 import Sidebar from "../home/components/Sidebar";
 import { HomeContext } from "../home/config";
-import { useHomeLayoutActions } from "../home/actions";
 import Modal from "../../component/UI/Modal/Modal";
-import {
-    getGroups,
-    createGroup,
-    joinGroup,
-    leaveGroup,
-    type Group,
-    type GroupPrivacy,
-} from "../../axios/groups";
-import { showSuccess, showError, confirmDelete } from "../../utils/swal";
+import type { Group } from "../../axios/groups";
+import { useGroupsActions } from "./actions";
+import { groupsPageConfig } from "./config";
 import "../home/style.scss";
 import "./style.scss";
 
@@ -44,9 +36,6 @@ function GroupCard({ group, onJoin, onLeave, busy }: GroupCardProps) {
     const isOwner = group.membership?.role === "OWNER";
     const isAdmin = group.membership?.role === "ADMIN";
 
-    const defaultCover =
-        "linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%)";
-
     return (
         <div className="card h-100 shadow-sm border-0 group-card overflow-hidden transition-all d-flex flex-column">
             {/* Cover image */}
@@ -54,7 +43,7 @@ function GroupCard({ group, onJoin, onLeave, busy }: GroupCardProps) {
                 to={`/groups/${group.id}`}
                 className="group-card-cover position-relative d-block text-decoration-none"
                 style={{
-                    background: group.cover_image ? `url(${group.cover_image}) center/cover no-repeat` : defaultCover,
+                    background: group.cover_image ? `url(${group.cover_image}) center/cover no-repeat` : groupsPageConfig.defaultCover,
                     height: "120px",
                 }}
             >
@@ -104,7 +93,7 @@ function GroupCard({ group, onJoin, onLeave, busy }: GroupCardProps) {
                     </h3>
                 </Link>
                 <p className="fs-8 text-gray-600 mb-3 line-clamp-2 flex-grow-1" style={{ minHeight: "2.4em" }}>
-                    {group.description || "Chưa có mô tả cho nhóm này."}
+                    {group.description || groupsPageConfig.emptyGroupDescription}
                 </p>
 
                 {/* Meta stats & Action */}
@@ -170,169 +159,30 @@ function GroupCard({ group, onJoin, onLeave, busy }: GroupCardProps) {
 // ─── Main GroupsPage ─────────────────────────────────────────────────────────
 
 export default function GroupsPage() {
-    const navigate = useNavigate();
-
-    const [joined, setJoined] = useState<Group[]>([]);
-    const [suggested, setSuggested] = useState<Group[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [busyGroupId, setBusyGroupId] = useState<string | null>(null);
-
-    // Filters
-    const [searchQuery, setSearchQuery] = useState("");
-
-    // Modal Create Group
-    const [isCreateOpen, setIsCreateOpen] = useState(false);
-    const [creating, setCreating] = useState(false);
-    const [createForm, setCreateForm] = useState({
-        name: "",
-        description: "",
-        privacy: "PUBLIC" as GroupPrivacy,
-        requires_approval: false,
-    });
-
-    // Home Context bindings from useHomeLayoutActions
-    const { search: headerSearch, setSearch: setHeaderSearch, notice, setNotice, user, setPanel } = useHomeLayoutActions();
-
-    // Fetch data
-    const fetchGroupsList = async () => {
-        try {
-            setLoading(true);
-            const data = await getGroups();
-            setJoined(data.joined);
-            setSuggested(data.suggested);
-        } catch {
-            showError("Không thể tải danh sách nhóm.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        void fetchGroupsList();
-    }, []);
-
-    // Join action
-    const handleJoin = async (group: Group) => {
-        try {
-            setBusyGroupId(group.id);
-            const res = await joinGroup(group.id);
-            showSuccess(res.message);
-
-            if (res.membership?.status === "JOINED") {
-                // Moved from suggested to joined
-                setSuggested(prev => prev.filter(g => g.id !== group.id));
-                setJoined(prev => [
-                    {
-                        ...group,
-                        memberCount: (group.memberCount ?? 0) + 1,
-                        membership: { role: "MEMBER", status: "JOINED" },
-                    },
-                    ...prev,
-                ]);
-            } else {
-                // Set pending
-                setSuggested(prev =>
-                    prev.map(g =>
-                        g.id === group.id
-                            ? { ...g, membership: { role: "MEMBER", status: "PENDING" } }
-                            : g
-                    )
-                );
-            }
-        } catch (error) {
-            const message = error instanceof Error ? error.message : "Không thể tham gia nhóm.";
-            showError(message);
-        } finally {
-            setBusyGroupId(null);
-        }
-    };
-
-    // Leave action
-    const handleLeave = async (group: Group) => {
-        const confirmed = await confirmDelete(`Bạn có chắc muốn rời nhóm "${group.name}"?`);
-        if (!confirmed) return;
-
-        try {
-            setBusyGroupId(group.id);
-            await leaveGroup(group.id);
-            showSuccess(`Đã rời nhóm "${group.name}".`);
-
-            setJoined(prev => prev.filter(g => g.id !== group.id));
-            if (group.privacy === "PUBLIC") {
-                setSuggested(prev => [
-                    {
-                        ...group,
-                        memberCount: Math.max(0, (group.memberCount ?? 1) - 1),
-                        membership: null,
-                    },
-                    ...prev,
-                ]);
-            }
-        } catch (error) {
-            const message = error instanceof Error ? error.message : "Không thể rời nhóm.";
-            showError(message);
-        } finally {
-            setBusyGroupId(null);
-        }
-    };
-
-    // Create group submit -> Navigate directly to the new group!
-    const handleCreateSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const trimmedName = createForm.name.trim();
-        if (!trimmedName) {
-            showError("Vui lòng nhập tên nhóm.");
-            return;
-        }
-
-        try {
-            setCreating(true);
-            const newGroup = await createGroup({
-                name: trimmedName,
-                description: createForm.description.trim() || null,
-                privacy: createForm.privacy,
-                requires_approval: createForm.requires_approval,
-            });
-
-            showSuccess(`Tạo nhóm "${newGroup.name}" thành công!`);
-            setIsCreateOpen(false);
-            setCreateForm({
-                name: "",
-                description: "",
-                privacy: "PUBLIC",
-                requires_approval: false,
-            });
-
-            // Navigate immediately to the newly created group!
-            navigate(`/groups/${newGroup.id}`);
-        } catch (error) {
-            const message = error instanceof Error ? error.message : "Không thể tạo nhóm.";
-            showError(message);
-        } finally {
-            setCreating(false);
-        }
-    };
-
-    // Filtered lists
-    const filteredJoined = useMemo(() => {
-        if (!searchQuery.trim()) return joined;
-        const q = searchQuery.toLowerCase();
-        return joined.filter(
-            g =>
-                g.name.toLowerCase().includes(q) ||
-                (g.description && g.description.toLowerCase().includes(q))
-        );
-    }, [joined, searchQuery]);
-
-    const filteredSuggested = useMemo(() => {
-        if (!searchQuery.trim()) return suggested;
-        const q = searchQuery.toLowerCase();
-        return suggested.filter(
-            g =>
-                g.name.toLowerCase().includes(q) ||
-                (g.description && g.description.toLowerCase().includes(q))
-        );
-    }, [suggested, searchQuery]);
+    const {
+        headerSearch,
+        setHeaderSearch,
+        notice,
+        setNotice,
+        user,
+        setPanel,
+        joined,
+        suggested,
+        loading,
+        busyGroupId,
+        searchQuery,
+        setSearchQuery,
+        isCreateOpen,
+        setIsCreateOpen,
+        creating,
+        createForm,
+        setCreateForm,
+        filteredJoined,
+        filteredSuggested,
+        handleJoin,
+        handleLeave,
+        handleCreateSubmit,
+    } = useGroupsActions();
 
     return (
         <HomeContext.Provider
@@ -344,9 +194,9 @@ export default function GroupsPage() {
                 openPanel: setPanel,
             }}
         >
-            <div className="nexchat-home groups-page">
+            <div className="nexchat-home groups-page d-flex flex-column">
                 <Header />
-                <main className="home-grid">
+                <main className="home-grid d-grid gap-6 align-items-stretch">
                     <Sidebar />
 
                     {/* Main content container */}
@@ -362,12 +212,8 @@ export default function GroupsPage() {
                                         <Users size={24} />
                                     </div>
                                     <div>
-                                        <h1 className="fs-4 fw-bold text-gray-900 m-0">
-                                            Cộng đồng & Nhóm
-                                        </h1>
-                                        <p className="fs-7 text-muted m-0">
-                                            Khám phá các nhóm sở thích, trao đổi kiến thức hoặc tạo cộng đồng của riêng bạn
-                                        </p>
+                                        <h1 className="fs-4 fw-bold text-gray-900 m-0">{groupsPageConfig.title}</h1>
+                                        <p className="fs-7 text-muted m-0">{groupsPageConfig.subtitle}</p>
                                     </div>
                                 </div>
 
@@ -392,7 +238,7 @@ export default function GroupsPage() {
                                         type="text"
                                         autoComplete="off"
                                         spellCheck={false}
-                                        className="form-control form-control-solid ps-9 fs-7"
+                                        className="form-control form-control-solid ps-10 fs-7"
                                         placeholder="Tìm kiếm nhóm theo tên hoặc nội dung giới thiệu..."
                                         value={searchQuery}
                                         onChange={e => setSearchQuery(e.target.value)}

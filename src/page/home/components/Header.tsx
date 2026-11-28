@@ -20,7 +20,7 @@ function notificationText(type: string, actorName: string) {
 }
 
 export default function Header() {
-    const { search, setSearch, openPanel, user } = useHome();
+    const { search, setSearch, user } = useHome();
     const { notifications, unreadCount, unreadMessageCount, isOpen, openNotifications, closeNotifications, markRead } = useNotificationCenter();
     const { accountMenuOpen, setAccountMenuOpen, loggingOut, accountMenuRef, accountButtonRef, logoutButtonRef, openAccountMenu, handleLogout } = useHeaderActions();
     const notificationsRef = useRef<HTMLDivElement>(null);
@@ -68,13 +68,13 @@ export default function Header() {
     }
 
     return (
-        <header className="home-header">
-            <div className="home-header-start">
-                <Link to="/home" className="home-brand" aria-label="NexChat — Trang chủ">
+        <header className="home-header d-flex align-items-center justify-content-between gap-4">
+            <div className="home-header-start d-flex align-items-center gap-4">
+                <Link to="/home" className="home-brand d-inline-flex align-items-center gap-2 flex-shrink-0" aria-label="NexChat — Trang chủ">
                     <DesignImage id="3352:1019" />
                     <span>NexChat</span>
                 </Link>
-                <div className={`home-search position-relative ${searchFocused ? "is-suggestions-open" : ""}`} ref={searchRef}>
+                <div className={`home-search position-relative d-flex align-items-center gap-2 ${searchFocused ? "is-suggestions-open" : ""}`} ref={searchRef}>
                     <DesignIcon id="3352:1027" />
                     <Input
                         name="search_query"
@@ -110,7 +110,7 @@ export default function Header() {
                 </div>
             </div>
 
-            <nav className="home-top-nav" aria-label="Điều hướng chính">
+            <nav className="home-top-nav d-flex align-items-center justify-content-center gap-2" aria-label="Điều hướng chính">
                 <Link to="/home" aria-current={pathname === "/home" ? "page" : undefined}>
                     Bảng tin
                 </Link>
@@ -120,12 +120,12 @@ export default function Header() {
                 <Link to="/groups" aria-current={pathname === "/groups" ? "page" : undefined}>
                     Nhóm
                 </Link>
-                <button type="button" onClick={() => openPanel("Video")}>
+                <Link to="/videos" aria-current={pathname === "/videos" ? "page" : undefined}>
                     Video
-                </button>
+                </Link>
             </nav>
 
-            <div className="home-header-end d-flex align-items-center gap-2">
+            <div className="home-header-end position-relative flex-shrink-0 d-flex align-items-center gap-2">
                 <Button variant="primary" size="sm" onClick={() => focusComposer(navigate)}>
                     <DesignIcon id="3352:1039" />
                     <span>Đăng bài</span>

@@ -16,6 +16,7 @@ export default function AppRouters() {
             <Route path="/" element={<LoginPgae />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/home" element={<HomePage />} />
+            <Route path="/videos" element={<HomePage />} />
             <Route path="/posts/:postId" element={<HomePage />} />
             <Route path="/saved" element={<SavedPage />} />
             <Route path="/friends" element={<FriendsPage />} />

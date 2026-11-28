@@ -76,6 +76,7 @@ export function useMessagesActions() {
     const typingActiveRef = useRef(false);
     const readInFlightRef = useRef(new Set<string>());
     const messageStatusesRef = useRef(new Map<string, { status: "delivered" | "read"; isRead: boolean }>());
+    const pendingMediaRef = useRef(new Map<string, { files: File[]; type: "image" | "audio"; durationMs?: number }>());
     const recipientId = new URLSearchParams(location.search).get("userId");
 
     useEffect(() => { selectedRef.current = selectedId; }, [selectedId]);
@@ -251,33 +252,37 @@ export function useMessagesActions() {
         updatePreview(received.conversationId, received);
     }, [updatePreview]);
 
-    const attemptSend = useCallback(async (conversationId: string, content: string, clientMessageId: string) => {
+    const attemptSend = useCallback(async (conversationId: string, content: string, clientMessageId: string, files: File[] = [], messageType: "image" | "audio" = "image", durationMs?: number) => {
         if (!online) {
             setMessages(current => current.map(message => message.clientMessageId === clientMessageId ? { ...message, delivery: "failed" } : message));
-            return;
+            return false;
         }
         setMessages(current => current.map(message => message.clientMessageId === clientMessageId ? { ...message, delivery: "sending" } : message));
         try {
-            const result = await sendDirectMessage(conversationId, content, clientMessageId);
+            const result = await sendDirectMessage(conversationId, content, clientMessageId, files, messageType, durationMs);
+            pendingMediaRef.current.delete(clientMessageId);
             if (mountedRef.current) appendMessage(result.message);
             void refreshConversations().catch(() => undefined);
+            return true;
         } catch {
             if (mountedRef.current) {
                 setMessages(current => current.map(message => message.clientMessageId === clientMessageId ? { ...message, delivery: "failed" } : message));
             }
+            return false;
         }
     }, [appendMessage, online, refreshConversations]);
 
-    const send = useCallback(async () => {
+    const send = useCallback(async (files: File[] = [], messageType: "image" | "audio" = "image", durationMs?: number, previews: ChatMessage["attachments"] = []) => {
         const conversationId = selectedRef.current;
         const content = draft.trim();
-        if (!conversationId || !content || !currentUser || content.length > 4000) return;
+        if (!conversationId || (!content && files.length === 0) || !currentUser || content.length > 4000) return;
         const clientMessageId = crypto.randomUUID();
         const pending: ChatMessage = {
             id: `pending:${clientMessageId}`,
             conversationId,
             clientMessageId,
             content,
+            ...(files.length ? { messageType, attachments: previews } : {}),
             createdAt: new Date().toISOString(),
             isMine: true,
             sender: {
@@ -288,13 +293,16 @@ export function useMessagesActions() {
             delivery: "sending",
         };
         appendMessage(pending);
+        if (files.length) pendingMediaRef.current.set(clientMessageId, { files, type: messageType, ...(durationMs === undefined ? {} : { durationMs }) });
         updateDraft("");
         setMessageError("");
-        await attemptSend(conversationId, content, clientMessageId);
+        return await attemptSend(conversationId, content, clientMessageId, files, messageType, durationMs);
     }, [appendMessage, attemptSend, currentUser, draft, updateDraft]);
 
     const retry = useCallback((message: ChatMessage) => {
-        if (message.clientMessageId) void attemptSend(message.conversationId, message.content, message.clientMessageId);
+        if (!message.clientMessageId) return;
+        const media = pendingMediaRef.current.get(message.clientMessageId);
+        void attemptSend(message.conversationId, message.content, message.clientMessageId, media?.files ?? [], media?.type ?? "image", media?.durationMs);
     }, [attemptSend]);
 
     useEffect(() => {
